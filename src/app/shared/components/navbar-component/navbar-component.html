@@ -18,7 +18,11 @@
         <li><a>Otra Cosa</a></li>
       </ul>
     </div>
-    <a class="flex gap-2 items-center text-xl font-bold cursor-pointer hover:scale-105 transition-all duration-100">
+    <a 
+      routerLink="/"
+      (click)="handleLogoClick($event)"
+      class="flex gap-2 items-center text-xl font-bold cursor-pointer hover:scale-105 transition-all duration-100"
+    >
       <img ngSrc="images/logo.webp" alt="Logo" height="40" width="40" class="rounded-full">
       Wallmapu
     </a>

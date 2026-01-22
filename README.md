@@ -289,6 +289,7 @@ ng g c layouts/admin-layout --skip-tests --style=none
 
 ng g c shared/components/navbar-component --skip-tests --style=none
 ng g c shared/components/footer-component --skip-tests --style=none
+ng g c shared/components/arrow-up-component --skip-tests --style=none
 ng g interface shared/models/news
 
 ng g c features/public/home/pages/home-page --skip-tests --style=none

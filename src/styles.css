@@ -6,17 +6,12 @@
 };
 
 @theme {
-  --color-menu-bg: #4A148C;
-  --color-menu-text: #F8F9FA; 
-
-  --color-page-bg: #F8F9FA;
-  --color-page-text: #212529;
-
-  --color-primary-btn: #00897B;
-  --color-primary-text: #F8F9FA;
-
-  --color-footer-bg: #1A1A1A;
-  --color-footer-text: #F8F9FA;
+  --color-my-green: #00897B;
+  --color-my-pink: #D81B60;
+  --color-my-yellow: #FDD835;
+  --color-my-dark: #1A1A1A;
+  --color-my-light: #F8F9FA;
+  --color-my-purple: #4A148C;
 }
 
 html {

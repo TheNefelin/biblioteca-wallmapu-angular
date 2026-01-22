@@ -9,6 +9,7 @@
     "paths": {
       "@layouts/*": ["app/layouts/*"],
       "@shared/*": ["app/shared/*"],
+      "@features/*": ["app/features/*"],
     }
   },
   "include": [

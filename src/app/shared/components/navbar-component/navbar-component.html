@@ -1,9 +1,9 @@
 <div 
   id="id_navbar" 
-  [class.bg-menu-bg/50]="isScrolled"
+  [class.bg-my-purple/50]="isScrolled"
   [class.backdrop-blur-md]="isScrolled"
   [class.shadow-md]="isScrolled"
-  class="navbar text-menu-text fixed z-10 transition-all duration-500">
+  class="navbar text-my-light fixed z-10 transition-all duration-500">
   
   <div class="navbar-start">
     <div class="dropdown">
@@ -12,14 +12,14 @@
       </div>
       <ul
         tabindex="-1"
-        class="menu menu-sm dropdown-content bg-menu-bg/50 text-menu-text backdrop-blur-md rounded-box z-1 mt-3 w-52 p-2 shadow">
+        class="menu menu-sm dropdown-content bg-my-purple/50 text-my-light backdrop-blur-md rounded-box z-1 mt-3 w-52 p-2 shadow">
         <li><a>Biblioteca</a></li>
         <li><a>Noticias</a></li>
         <li><a>Otra Cosa</a></li>
       </ul>
     </div>
-    <a class="flex gap-2 items-center text-xl font-bold cursor-pointer hover:text-menu-text/70">
-      <img ngSrc="images/logo.webp" alt="Logo" height="40" width="40" class="rounded-full hover:scale-105 transition-all duration-300">
+    <a class="flex gap-2 items-center text-xl font-bold cursor-pointer hover:scale-105 transition-all duration-100">
+      <img ngSrc="images/logo.webp" alt="Logo" height="40" width="40" class="rounded-full">
       Wallmapu
     </a>
   </div>
@@ -31,6 +31,6 @@
     </ul>
   </div>
   <div class="navbar-end">
-    <a class="btn bg-primary-btn text-primary-text">Iniciar Sesión</a>
+    <a class="btn bg-my-pink text-my-light">Iniciar Sesión</a>
   </div>
 </div>

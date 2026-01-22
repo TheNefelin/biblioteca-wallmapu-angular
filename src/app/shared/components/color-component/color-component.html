@@ -1,11 +1,26 @@
-<section>
-  <div class="h-20 w-20 bg-[#4A148C] text-[#F8F9FA] flex justify-center items-center">Nav Bar</div>
-  <div class="h-20 w-20 bg-[#F8F9FA] text-[#4A148C] flex justify-center items-center">Page</div>
-  <div class="h-20 w-20 bg-[#212529] text-[#F8F9FA] flex justify-center items-center">Text</div>
-  <div class="h-20 w-20 bg-[#D81B60] text-[#F8F9FA] flex justify-center items-center">Btn Pri</div>
-  <div class="h-20 w-20 bg-[#00897B] text-[#F8F9FA] flex justify-center items-center">Btn Sec</div>
-  <div class="h-20 w-20 bg-[#FDD835] text-[#212529] flex justify-center items-center">Alert</div>
-  <div class="h-20 w-20 bg-[#1A1A1A] text-[#F8F9FA] flex justify-center items-center">Footer</div>
-  <div class="h-20 w-20 bg-[#D81B60] text-[#F8F9FA] flex justify-center items-center">Error</div>
-  <div class="h-20 w-20 bg-[#00897B] text-[#F8F9FA] flex justify-center items-center">Success</div>
+<section class="flex gap-4 justify-center flex-wrap p-10">
+  <div class="h-20 w-20 bg-my-purple text-my-light flex justify-center items-center">Nav Bar</div>
+  <div class="h-20 w-20 bg-my-light text-my-purple flex justify-center items-center">Page <br> H1</div>
+  <div class="h-20 w-20 bg-my-light text-my-dark flex justify-center items-center">Page <br> text</div>
+  <div class="h-20 w-20 bg-my-green text-my-light flex justify-center items-center">Primary</div>
+  <div class="h-20 w-20 bg-my-pink text-my-light flex justify-center items-center">Secondary</div>
+  <div class="h-20 w-20 bg-my-yellow text-my-dark flex justify-center items-center">Alert</div>
+  <div class="h-20 w-20 bg-my-dark text-my-light flex justify-center items-center">Footer</div>
+
+  <button class="btn bg-my-green text-my-light">Iniciar Sesión</button>
+  <button class="btn bg-my-pink text-my-light">Iniciar Sesión</button>
+
+  <div role="alert" class="alert bg-my-green text-my-light">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>Your purchase has been confirmed!</span>
+  </div>
+  
+  <div role="alert" class="alert bg-my-pink text-my-light">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>Error! Task failed successfully.</span>
+  </div>
 </section>

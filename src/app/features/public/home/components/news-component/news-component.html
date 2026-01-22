@@ -1,64 +1,45 @@
-<div class="carousel w-full">
-  <div id="slide1" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp"
-      class="w-full h-96 object-cover" />
-
-    <div class="absolute inset-0 bg-gradient-to-r from-white via-white to-transparent"></div>
-
-    <div class="absolute inset-0 flex flex-col justify-center pl-8 pr-96">
-      <h3 class="text-2xl font-bold text-gray-800">Título Noticia 1</h3>
-      <p class="text-gray-600 mt-2 line-clamp-3">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
-      </p>
-      <a href="#" class="btn btn-sm btn-primary mt-4 w-fit">Leer más</a>
+<section class="bg-gray-50 py-12 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-10 flex justify-between items-end">
+      <div>
+        <h2 class="text-3xl font-bold text-my-purple tracking-tight">Últimas Noticias</h2>
+        <p class="text-my-dark mt-2">Mantente al día con las tendencias de nuestra biblioteca.</p>
+      </div>
+      <button class="btn btn-outline bg-my-green text-my-light">Ver todas</button>
     </div>
 
-    <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-      <a href="#slide3" class="btn btn-circle">❮</a>
-      <a href="#slide2" class="btn btn-circle">❯</a>
-    </div>
-  </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (item of news; track item.id) {
+        <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+          
+          <div class="relative overflow-hidden h-52">
+            <img 
+              [src]="item.image" 
+              [alt]="item.title"
+              class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+          </div>
 
-  <div id="slide2" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp"
-      class="w-full h-96 object-cover" />
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-my-green group-hover:text-my-purple transition-colors">
+              {{ item.title }}
+            </h3>
+            <p class="text-my-dark mt-3 line-clamp-3 text-sm leading-relaxed">
+              {{ item.description }}
+            </p>
+            
+            <div class="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
+              <span class="text-xs text-my-dark/50">{{ item.date }}</span>
+              <a href="#" class="text-primary font-bold text-sm inline-flex items-center group/link">
+                Leer noticia
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
 
-    <div class="absolute inset-0 bg-gradient-to-r from-white via-white to-transparent"></div>
-
-    <div class="absolute inset-0 flex flex-col justify-center pl-8 pr-96">
-      <h3 class="text-2xl font-bold text-gray-800">Título Noticia 2</h3>
-      <p class="text-gray-600 mt-2 line-clamp-3">
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.
-      </p>
-      <a href="#" class="btn btn-sm btn-primary mt-4 w-fit">Leer más</a>
-    </div>
-
-    <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-      <a href="#slide1" class="btn btn-circle">❮</a>
-      <a href="#slide3" class="btn btn-circle">❯</a>
-    </div>
-  </div>
-
-  <div id="slide3" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp"
-      class="w-full h-96 object-cover" />
-
-    <div class="absolute inset-0 bg-gradient-to-r from-white via-white to-transparent"></div>
-
-    <div class="absolute inset-0 flex flex-col justify-center pl-8 pr-96">
-      <h3 class="text-2xl font-bold text-gray-800">Título Noticia 3</h3>
-      <p class="text-gray-600 mt-2 line-clamp-3">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-      </p>
-      <a href="#" class="btn btn-sm btn-primary mt-4 w-fit">Leer más</a>
-    </div>
-
-    <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-      <a href="#slide2" class="btn btn-circle">❮</a>
-      <a href="#slide1" class="btn btn-circle">❯</a>
+        </article>
+      }
     </div>
   </div>
-</div>
+</section>

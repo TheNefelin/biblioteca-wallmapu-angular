@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiResponseService<T> {
   private http = inject(HttpClient);
-  private apiUrl = "http://localhost:3000";
+  private apiUrl = environment.apiUrl;;
 
   getAll(endpoint: string): Observable<T[]> {
     return this.http.get<T[]>(`${this.apiUrl}/${endpoint}`);

@@ -1,0 +1,17 @@
+<app-header-component image="images/header.png"/>
+
+<section class="p-10 grid items-center">
+  <app-palette-component/>
+</section>
+
+<div class="container mx-auto py-8 px-4">
+  <h1 class="text-4xl font-bold mb-8">Detalles del Libro</h1>
+
+  @if (loading()) {
+    <span class="loading loading-spinner loading-lg"></span>
+  } @else if (books(); as book) {
+    <pre class="bg-gray-100 p-6 rounded-lg overflow-auto">{{ book | json }}</pre>
+  } @else {
+    <p class="text-red-500">Libro no encontrado</p>
+  }
+</div>

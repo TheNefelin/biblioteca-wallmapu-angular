@@ -16,8 +16,10 @@ project
 │   │   ├─ core/
 │   │   │   ├─ guards/        <- sin implementar
 │   │   │   ├─ helpers/
+│   │   │   │   └─ api-response-service.ts
 │   │   │   ├─ interceptors/ 
-│   │   │   └─ services/      <- sin implementar
+│   │   │   └─ services/
+│   │   │       └─ book-service.ts
 │   │   │
 │   │   ├─ features/
 │   │   │   ├─ admin/
@@ -29,7 +31,10 @@ project
 │   │   │   │   │   ├─ pages/
 │   │   │   │   │   └─ home.routes.ts
 │   │   │   │   ├─ library/
+│   │   │   │   │   ├─ components/
 │   │   │   │   │   ├─ pages/
+│   │   │   │   │   │   ├─ book-details-page/
+│   │   │   │   │   │   └─ books-page/
 │   │   │   │   │   └─ library.routes.ts
 │   │   │   │   └─ news/
 │   │   │   │       ├─ pages/
@@ -146,6 +151,7 @@ export class NavbarComponent {
 ```bash
 ng g s core/helpers/api-response-service --skip-tests
 ng generate interceptor core/interceptors/auth --skip-tests
+ng g s core/services/book-service --skip-tests
 
 ng g c layouts/public-layout --skip-tests --style=none
 ng g c layouts/user-layout --skip-tests --style=none
@@ -160,11 +166,16 @@ ng g interface shared/models/news
 ng g interface shared/models/book
 
 ng g c features/public/home/pages/home-page --skip-tests --style=none
-ng g c features/public/library/pages/library-page --skip-tests --style=none
-ng g c features/public/news/pages/news-page --skip-tests --style=none
+ng g c features/public/home/components/title-component --skip-tests --style=none
 ng g c features/public/home/components/banner-component --skip-tests --style=none
 ng g c features/public/home/components/latest-news-component --skip-tests --style=none
 ng g c features/public/home/components/recommended-books-component --skip-tests --style=none
+
+ng g c features/public/library/pages/books-page --skip-tests --style=none
+ng g c features/public/library/pages/book-details-page --skip-tests --style=none
+
+ng g c features/public/news/pages/news-page --skip-tests --style=none
+
 ```
 
 ## To keep your Fork updated

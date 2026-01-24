@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
 export class HeaderComponent {
   @Input() title: string = 'Sin Titulo';
   @Input() description: string = 'Sin Sescripción';
-  @Input() image: string= '/images/header.png'
+  @Input() image: string= '/images/header.webp'
 
   getBackgroundImage() {
     return `url(${this.image})`;

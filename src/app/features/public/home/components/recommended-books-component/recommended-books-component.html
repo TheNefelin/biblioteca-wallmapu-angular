@@ -1,27 +1,24 @@
-<div class="bg-my-light pt-6 pb-4 px-4">
-  <div class="mx-auto max-w-7xl  mb-10 flex justify-between items-end">
-    <div>
-      <h2 class="text-3xl font-bold text-my-purple tracking-tight">Libros Recomendados</h2>
-      <p class="text-my-dark mt-2">Joyas de papel, títulos que no puedes dejar pasar..</p>
-    </div>
-    <button class="btn btn-outline bg-my-green text-my-light">Ver todas</button>
-  </div>
-</div>
-
 <div class="flex gap-8 flex-wrap px-4 py-8 mx-auto justify-center max-w-7xl">
-  @for (book of books; track book.id) {
-    <article class="group w-56 bg-my-light shadow-sm cursor-pointer shadow-my-light hover:shadow-2xl transition-all duration-300 rounded-2xl">
-      <figure class="relative overflow-hidden h-80 w-56 rounded-t-2xl">
-        <img
-          fill
-          class="w-full h-full object-cover transform group-hover:scale-103 transition-transform duration-500 borde"
-          [ngSrc]="'/images/test/' + book.coverImageUrl"
-          [alt]="book.title" />
-      </figure>
-      <div class="text-center p-2">
-        <h2 class="card-title justify-center text-my-green">{{ book.title }}</h2>
-        <p class="text-sm text-my-dark/50">{{ book.author }}</p>
-      </div>
-    </article>
-  }
+  @if (loading()) {
+    <span class="loading loading-spinner loading-lg"></span>
+  } @else {
+    @for (book of books(); track book.id) {
+      <article 
+        [routerLink]="['/library/book', book.id]"
+        class="group w-56 bg-my-light shadow-sm cursor-pointer shadow-my-light hover:shadow-2xl transition-all duration-300 rounded-2xl"
+      >
+        <figure class="relative overflow-hidden h-80 w-56 rounded-t-2xl">
+          <img
+            fill
+            class="w-full h-full object-cover transform group-hover:scale-103 transition-transform duration-500 borde"
+            [ngSrc]="'/images/test/' + book.coverImageUrl"
+            [alt]="book.title" />
+        </figure>
+        <div class="text-center p-2">
+          <h2 class="card-title justify-center text-my-green">{{ book.title }}</h2>
+          <p class="text-sm text-my-dark/50">{{ book.author }}</p>
+        </div>
+      </article>
+    }
+  }  
 </div>  

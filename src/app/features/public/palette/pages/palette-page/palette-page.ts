@@ -1,18 +1,20 @@
-import { NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { BookService } from '@core/services/book-service';
+import { HeaderComponent } from "@shared/components/header-component/header-component";
+import { PaletteComponent } from "@shared/components/palette-component/palette-component";
 import { Book } from '@shared/models/book';
 
 @Component({
-  selector: 'app-recommended-books-component',
+  selector: 'app-palette-page',
   imports: [
-    NgOptimizedImage,
-    RouterModule,
+    CommonModule,
+    HeaderComponent, 
+    PaletteComponent,
   ],
-  templateUrl: './recommended-books-component.html',
+  templateUrl: './palette-page.html',
 })
-export class RecommendedBooksComponent implements OnInit {
+export class PalettePage implements OnInit {
   private bookService = inject(BookService);
   
   books = signal<Book[]>([]);
@@ -33,5 +35,4 @@ export class RecommendedBooksComponent implements OnInit {
       }
     });
   }
-
 }

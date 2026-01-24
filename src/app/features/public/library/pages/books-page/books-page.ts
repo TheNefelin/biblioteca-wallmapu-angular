@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from '@shared/components/header-component/header-component';
 
 @Component({
-  selector: 'app-library-page',
+  selector: 'app-books-page',
   imports: [
     HeaderComponent,
   ],
-  templateUrl: './library-page.html',
+  templateUrl: './books-page.html',
 })
-export class LibraryPage {
+export class BooksPage {
 
 }

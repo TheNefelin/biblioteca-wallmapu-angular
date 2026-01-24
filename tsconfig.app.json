@@ -7,9 +7,11 @@
     "types": [],
     "baseUrl": "./src",
     "paths": {
+      "@core/*": ["app/core/*"],
       "@layouts/*": ["app/layouts/*"],
       "@shared/*": ["app/shared/*"],
       "@features/*": ["app/features/*"],
+      "@environments/*": ["environments/*"],
     }
   },
   "include": [

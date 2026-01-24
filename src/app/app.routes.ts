@@ -18,7 +18,11 @@ export const routes: Routes = [
       {
         path: 'news',
         loadChildren: () => import('@features/public/news/news.routes').then(m => m.NEWS_ROUTES),
-      },      
+      },
+      {
+        path: 'palette',
+        loadChildren: () => import('@features/public/palette/palette.routes').then(m => m.PALETTE_ROUTES),
+      },
     ]
   },
   {

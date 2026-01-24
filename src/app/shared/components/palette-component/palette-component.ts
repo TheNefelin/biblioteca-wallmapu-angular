@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 
 @Component({
   selector: 'app-palette-component',
-  imports: [],
+  imports: [
+    CommonModule,
+  ],
   templateUrl: './palette-component.html',
 })
 export class PaletteComponent {

@@ -1,4 +1,4 @@
-<app-header-component title="test" description="test" image="images/header.png"/>
+<app-header-component title="TEST" description="test"/>
 
 <section class="pt-8 px-8 flex gap-4 justify-center flex-wrap">
   <div class="h-20 w-20 bg-my-purple text-my-light flex justify-center items-center">Nav Bar</div>
@@ -24,7 +24,7 @@
   @if (loading()) {
     <span class="loading loading-spinner loading-lg"></span>
   } @else {
-    <pre class="bg-gray-100 p-6 rounded-lg overflow-auto">{{ news() | json }}</pre>
-    <pre class="bg-gray-100 p-6 rounded-lg overflow-auto">{{ books() | json }}</pre>
+    <pre class="bg-gray-100 p-6 rounded-lg overflow-auto h-60">{{ news() | json }}</pre>
+    <pre class="bg-gray-100 p-6 rounded-lg overflow-auto h-60">{{ books() | json }}</pre>
   }
 </div>

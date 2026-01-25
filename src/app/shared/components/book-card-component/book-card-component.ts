@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ROUTES } from '@shared/constants/routes';
 import { Book } from '@shared/models/book';
 
 @Component({
@@ -13,8 +14,6 @@ import { Book } from '@shared/models/book';
 })
 export class BookCardComponent {
   @Input({ required: true }) book!: Book;
-
-  bookRouterLink = computed<[string, number]>(() => 
-    ['/library/book', this.book.id] as [string, number]
-  );
+  
+  bookRouterLink = computed(() => ROUTES.LIBRARY.BOOK(this.book.id));
 }

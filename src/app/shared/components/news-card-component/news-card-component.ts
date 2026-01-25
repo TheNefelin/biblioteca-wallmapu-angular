@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ROUTES } from '@shared/constants/routes';
 import { News } from '@shared/models/news';
 
 @Component({
@@ -14,7 +15,5 @@ import { News } from '@shared/models/news';
 export class NewsCardComponent {
   @Input({ required: true }) news!: News;
 
-  newsRouterLink = computed<[string, number]>(() => 
-    ['/news', this.news.id] as [string, number]
-  );
+  newsRouterLink = computed(() => ROUTES.NEWS.DETAIL(this.news.id));
 }

@@ -21,7 +21,7 @@ export const routes: Routes = [
         loadChildren: () => import('@features/public/news/news.routes').then(m => m.NEWS_ROUTES),
       },
       {
-        path: 'palette',
+        path: 'test',
         component: TestPage
       },
     ]

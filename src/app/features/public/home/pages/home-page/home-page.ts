@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { BannerComponent } from '@features/public/home/components/banner-component/banner-component';
-import { RecommendedBooksComponent } from "@features//public/home/components/recommended-books-component/recommended-books-component";
-import { LatestNewsComponent } from '../../components/latest-news-component/latest-news-component';
-import { TitleComponent } from "../../components/title-component/title-component";
+import { RecommendedBooksComponent } from "@features/public/home/components/recommended-books-component/recommended-books-component";
+import { LatestNewsComponent } from '@features/public/home/components/latest-news-component/latest-news-component';
+import { TitleComponent } from "@features/public/home/components/title-component/title-component";
+import { ROUTES } from '@shared/constants/routes';
 
 @Component({
   selector: 'app-home-page',
@@ -15,5 +16,5 @@ import { TitleComponent } from "../../components/title-component/title-component
   templateUrl: './home-page.html',
 })
 export class HomePage {
-
+  protected readonly ROUTES = ROUTES;
 }

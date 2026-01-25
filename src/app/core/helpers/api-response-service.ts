@@ -8,7 +8,7 @@ import { environment } from '@environments/environment';
 })
 export class ApiResponseService<T> {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;;
+  private apiUrl = environment.apiUrl;
 
   getAll(endpoint: string): Observable<T[]> {
     return this.http.get<T[]>(`${this.apiUrl}/${endpoint}`);

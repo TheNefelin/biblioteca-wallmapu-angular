@@ -4,7 +4,7 @@
   <app-title-component 
     title="Últimas Noticias" 
     description="Mantente al día con las tendencias de nuestra biblioteca.."
-    route="/news"
+    [route]="ROUTES.NEWS.BASE"
   />
 
   <app-latest-news-component/>
@@ -12,7 +12,7 @@
   <app-title-component 
     title="Libros Recomendados" 
     description="Joyas de papel, títulos que no puedes dejar pasar.."
-    route="/library"
+    [route]="ROUTES.LIBRARY.BASE"
   />
   
   <app-recommended-books-component/>

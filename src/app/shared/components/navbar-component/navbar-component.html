@@ -1,27 +1,32 @@
 <div 
   id="id_navbar"
-  [class.bg-linear-to-b]="isScrolled"
-  [class.from-my-purple/50]="isScrolled"
-  [class.via-my-purple/50]="isScrolled"
-  [class.to-transparent]="isScrolled"
-  [class.backdrop-blur-md]="isScrolled"
-  [class.shadow-md]="isScrolled"
+  [class.bg-linear-to-b]="isScrolled()"
+  [class.from-my-purple/50]="isScrolled()"
+  [class.via-my-purple/50]="isScrolled()"
+  [class.to-transparent]="isScrolled()"
+  [class.backdrop-blur-md]="isScrolled()"
+  [class.shadow-md]="isScrolled()"
   class="fixed z-10 w-full transition-all duration-500">
   
   <section class="navbar text-my-light max-w-7xl mx-auto">
     <div class="navbar-start">
-      <div class="dropdown">
-        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden mr-2">
+      <div class="dropdown" [class.dropdown-open]="isMenuOpen()">
+        <div 
+          tabindex="0" 
+          role="button" 
+          class="btn btn-ghost lg:hidden mr-2"
+          (click)="isMenuOpen.set(!isMenuOpen())"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
         </div>
         <ul class="menu menu-sm dropdown-content bg-my-purple text-my-light rounded-box z-1 mt-3 w-52 p-2 shadow">
-          <li><a routerLink="/library">Biblioteca</a></li>
-          <li><a routerLink="/news">Noticias</a></li>
-          <li><a routerLink="/palette">Paleta</a></li>
+          @for (page of ROUTES_PAGES; track $index) {
+            <li><a [routerLink]="page.URI" (click)="closeMenu()">{{ page.NAME }}</a></li>
+          }
         </ul>
       </div>
       <a 
-        routerLink="/"
+        [routerLink]="ROUTES_HOME"
         (click)="handleLogoClick($event)"
         class="flex gap-2 items-center text-xl font-bold cursor-pointer hover:scale-105 transition-all duration-100"
       >
@@ -33,9 +38,9 @@
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
-        <li><a routerLink="/library">Biblioteca</a></li>
-        <li><a routerLink="/news">Noticias</a></li>
-        <li><a routerLink="/palette">Paleta</a></li>
+        @for (page of ROUTES_PAGES; track $index) {
+          <li><a [routerLink]="page.URI">{{ page.NAME }}</a></li>
+        }
       </ul>
     </div>
     <div class="navbar-end">

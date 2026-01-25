@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiResponseService } from '@core/helpers/api-response-service';
 import { News } from '@shared/models/news';
-import { NewsImage } from '@shared/models/news-image';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
@@ -22,7 +21,6 @@ export class NewsService {
     const news = this.news.find(n => n.id === id);
     return of(news!);
   }
-
 
   news: News[] = [
     {

@@ -1,7 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, HostListener, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { HeaderComponent } from '../header-component/header-component';
 
 @Component({
   selector: 'app-navbar-component',

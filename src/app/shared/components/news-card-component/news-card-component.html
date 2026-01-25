@@ -1,0 +1,33 @@
+<article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+          
+  <div class="relative overflow-hidden h-52">
+    <img 
+      [ngSrc]="news.images[0].url" 
+      [alt]="news.images[0].alt"
+      fill
+      class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+  </div>
+
+  <div class="p-6">
+    <h3 class="text-xl font-bold text-my-green group-hover:text-my-purple transition-colors">
+      {{ news.title }}
+    </h3>
+    <p class="text-my-dark mt-3 line-clamp-3 text-sm leading-relaxed">
+      {{ news.subtitle }}
+    </p>
+    
+    <div class="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
+      <span class="text-xs text-my-dark/50">{{ news.date }}</span>
+      <a 
+        [routerLink]="newsRouterLink()" 
+        class="text-primary font-bold text-sm inline-flex items-center group/link"
+      >
+        Leer noticia
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  </div>
+
+</article>

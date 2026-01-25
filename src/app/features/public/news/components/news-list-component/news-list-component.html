@@ -3,54 +3,18 @@
   <p class="text-my-dark mt-2">Talleres de velas, de papelería, caja del tiempo y actividades varias.</p>
 </div>
 
-<section class="p-4">
-  <div class="max-w-7xl mx-auto">
-    @if (loading()) {
-      <div class="flex justify-center py-8">
-        <span class="loading loading-spinner loading-lg"></span>
-      </div>
-    } @else if (error()) {
-      <div class="alert alert-error">
-        <span>{{ error() }}</span>
-      </div>
-    } @else {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        @for (item of news(); track item.id) {
-        <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-          
-          <div class="relative overflow-hidden h-52">
-            <img 
-              [ngSrc]="item.images[0].url" 
-              [alt]="item.title"
-              fill
-              class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
-          </div>
+<section class="p-4 max-w-7xl mx-auto">
+  @if (loading()) {
+    <div class="flex justify-center items-center">
+      <span class="loading loading-spinner loading-lg bg-my-green"></span>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-          <div class="p-6">
-            <h3 class="text-xl font-bold text-my-green group-hover:text-my-purple transition-colors">
-              {{ item.title }}
-            </h3>
-            <p class="text-my-dark mt-3 line-clamp-3 text-sm leading-relaxed">
-              {{ item.subtitle }}
-            </p>
-            
-            <div class="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
-              <span class="text-xs text-my-dark/50">{{ item.date }}</span>
-              <a 
-                routerLink="{{ item.id }}" 
-                class="text-primary font-bold text-sm inline-flex items-center group/link"
-              >
-                Leer noticia
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
+      @for (news of news(); track news.id) {
+          <app-news-card-component [news]="news" />
+      }
 
-        </article>
-        }
-      </div>
-    }
-  </div>
+    </div>
+  } 
 </section>

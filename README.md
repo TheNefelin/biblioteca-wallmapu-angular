@@ -163,6 +163,7 @@ ng g c shared/components/footer-component --skip-tests --style=none
 ng g c shared/components/arrow-up-component --skip-tests --style=none
 ng g c shared/components/header-component --skip-tests --style=none
 ng g c shared/components/book-card-component --skip-tests --style=none
+ng g c shared/components/news-card-component --skip-tests --style=none
 ng g c shared/components/message-error-component --skip-tests --style=none
 ng g c shared/components/message-success-component --skip-tests --style=none
 ng g c shared/pages/not-found-page --skip-tests --style=none

@@ -1,7 +1,7 @@
 import { NewsGallery } from "./news-gallery";
 
 export interface News {
-  id: number,
+  id_news: number,
   title: string,
   subtitle: string,
   body: string,

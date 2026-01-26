@@ -11,7 +11,7 @@
   } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      @for (news of news(); track news.id) {
+      @for (news of news(); track news.id_news) {
           <app-news-card-component [news]="news" />
       }
 

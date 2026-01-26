@@ -15,5 +15,5 @@ import { News } from '@shared/models/news';
 export class NewsCardComponent {
   @Input({ required: true }) news!: News;
 
-  newsRouterLink = computed(() => ROUTES.NEWS.DETAIL(this.news.id));
+  newsRouterLink = computed(() => ROUTES.NEWS.DETAIL(this.news.id_news));
 }

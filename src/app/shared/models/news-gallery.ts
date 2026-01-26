@@ -1,5 +1,5 @@
 export interface NewsGallery {
-  id: number,
+  id_news_gallery: number,
   alt: string,
   url: string,
 }

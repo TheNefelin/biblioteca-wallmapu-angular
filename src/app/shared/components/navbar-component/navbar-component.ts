@@ -4,13 +4,15 @@ import { fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { ROUTES } from '@shared/constants/routes';
+import { AuthButtonComponent } from "@features/auth/components/auth-button-component/auth-button-component";
 
 @Component({
   selector: 'app-navbar-component',
   imports: [
     RouterLink,
     NgOptimizedImage,
-  ],
+    AuthButtonComponent
+],
   templateUrl: './navbar-component.html',
 })
 export class NavbarComponent {

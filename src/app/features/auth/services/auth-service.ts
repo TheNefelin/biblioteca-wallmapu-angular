@@ -84,6 +84,8 @@ export class AuthService {
     } catch (error) {
       console.error('Error al decodificar el token JWT de Google:', error);
       this.isLoading.set(false);
+    } finally {
+
     }
   }
   
@@ -121,6 +123,10 @@ export class AuthService {
               this.isLoading.set(false);
             }
           },
+          error_callback: (error: any) => {
+            console.log('Usuario canceló el login o cerró la ventana:', error);
+            this.isLoading.set(false); 
+          }
         });
         
         client.requestAccessToken();
@@ -160,6 +166,9 @@ export class AuthService {
     })
     .catch((error) => {
       console.error('Error al obtener información del usuario:', error);
+      this.isLoading.set(false);
+    })
+    .finally(() => {
       this.isLoading.set(false);
     });
   }

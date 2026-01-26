@@ -1,8 +1,8 @@
 <!-- auth-button-component.html -->
 @if (loading()) {
   <!-- Estado cargando -->
-  <button class="btn btn-ghost" disabled>
-    <span class="loading loading-spinner loading-xs"></span>
+  <button class="btn btn-ghost text-my-pink" disabled>
+    <span class="loading loading-spinner loading-xs "></span>
     Cargando...
   </button>
 } @else if (isAuthenticated()) {
@@ -14,21 +14,21 @@
           [src]="user()?.picture" 
           [alt]="user()?.name" 
           class="rounded-full" 
-          onerror="this.src='https://img.daisyui.com/images/profile/demo/spiderperson@192.webp'" />
+          onerror="this.src='/images/book.png'" />
       </div>
     </div>
     
-    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow mt-3">
-      <li class="menu-title text-sm">Hola, {{ user()?.name }}</li>
+    <ul tabindex="0" class="dropdown-content menu text-my-light bg-my-purple/60 backdrop-blur-md rounded-box z-0 w-52 p-2 shadow mt-3">
+      <li class="menu-title text-sm text-my-green font-bold">Hola, {{ user()?.name }}</li>
       <li><a class="text-sm">{{ user()?.email }}</a></li>
       <li><hr class="my-1"></li>
-      <li><a class="text-sm">📚 Mi Biblioteca</a></li>
+      <li><a class="text-sm">⚙️ Mi Biblioteca</a></li>
       <li><a class="text-sm">⚙️ Configuración</a></li>
       <li><hr class="my-1"></li>
       <li>
         <button 
           (click)="logout()" 
-          class="text-error text-sm font-medium">
+          class="text-sm font-medium text-my-pink bg-my-light">
           👋 Cerrar Sesión
         </button>
       </li>
@@ -38,8 +38,7 @@
   <!-- No logueado - Botón de login -->
   <button 
     (click)="login()"
-    class="btn bg-my-pink text-my-light hover:bg-my-pink/90 
-           transition-all duration-300 hover:scale-105">
-    Login Google
+    class="btn bg-my-pink text-my-light hover:bg-my-pink/90 t|ransition-all duration-300 hover:scale-105">
+    Iniciar Sesión
   </button>
 }

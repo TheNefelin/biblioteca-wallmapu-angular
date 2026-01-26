@@ -1,4 +1,4 @@
-import { NewsImage } from "./news-image";
+import { NewsGallery } from "./news-gallery";
 
 export interface News {
   id: number,
@@ -6,5 +6,5 @@ export interface News {
   subtitle: string,
   body: string,
   date: string,
-  images: NewsImage[],
+  images: NewsGallery[],
 }

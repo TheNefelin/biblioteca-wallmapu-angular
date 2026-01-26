@@ -1,4 +1,4 @@
-export interface NewsImage {
+export interface NewsGallery {
   id: number,
   alt: string,
   url: string,

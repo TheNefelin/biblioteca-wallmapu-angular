@@ -11,7 +11,15 @@ export const ROUTES = {
   },
   PROTECTED: {
     USER: '/user',
-    ADMIN: '/admin'
+    ADMIN: {
+      BASE: '/admin',
+      DASHBOARD: '/admin',
+      BOOKS: '/admin/books',
+      NEWS: '/admin/news',
+      USERS: '/admin/users',
+      PROFILE: '/admin/profile',
+      SETTINGS: '/admin/settings'
+    }
   },
   PAGES: [
     {

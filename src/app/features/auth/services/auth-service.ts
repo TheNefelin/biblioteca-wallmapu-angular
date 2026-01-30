@@ -1,19 +1,18 @@
+import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@environments/environment';
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  picture?: string;
-}
+import { firstValueFrom } from 'rxjs';
+import { ApiAuthRequest } from '@features/auth/models/api-auth-request';
+import { ApiAuthResponse } from '@features/auth/models/api-auth-response';
+import { User } from '@features/auth/models/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private router = inject(Router);
+  private http = inject(HttpClient);  // ✅ 5. Inyectar HttpClient
   
   // ✅ Estado reactivo con señales
   private currentUser = signal<User | null>(this.getStoredUser());
@@ -24,8 +23,9 @@ export class AuthService {
   isAuthenticated = computed(() => !!this.currentUser());
   loading = computed(() => this.isLoading());
   
-  // ✅ Client ID de Google
+  // Client ID de Google y API URL
   private clientId = environment.googleClientId;
+  private apiUrl = environment.apiUrl; 
 
   // ✅ Obtener usuario del localStorage
   private getStoredUser(): User | null {
@@ -54,36 +54,21 @@ export class AuthService {
     }
   }
   
-  // ✅ Manejar respuesta de Google (One Tap - JWT)
-  private handleGoogleResponse(response: any): void {
-    this.isLoading.set(true);
-    const googleToken = response.credential; // JWT de Google
-    
-    console.log('Token JWT recibido de Google:', googleToken.substring(0, 50) + '...');
-    
-    // Decodificar el JWT para obtener información del usuario
-    try {
-      const payload = JSON.parse(atob(googleToken.split('.')[1]));
+    // Manejar respuesta de Google (One Tap - JWT)
+    private async handleGoogleResponse(response: any): Promise<void> {
+      this.isLoading.set(true);
+      const googleToken = response.credential; // JWT de Google
       
-      const user: User = {
-        id: payload.sub || 'google_' + Date.now(),
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture
-      };
+      console.log('Token JWT recibido de Google');
       
-      // Guardar en estado y localStorage
-      this.currentUser.set(user);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('google_jwt_token', googleToken);
-      this.isLoading.set(false);
-      
-      this.router.navigate(['/']);
-    } catch (error) {
-      console.error('Error al decodificar el token JWT de Google:', error);
-      this.isLoading.set(false);
+      try {
+        // ✅ 7. Enviar token a tu backend
+        await this.authenticateWithBackend(googleToken);
+      } catch (error) {
+        console.error('Error en autenticación:', error);
+        this.isLoading.set(false);
+      }
     }
-  }
   
   // ✅ Trigger manual del login (para tu botón)
   triggerGoogleLogin(): void {
@@ -110,13 +95,11 @@ export class AuthService {
         const client = google.accounts.oauth2.initTokenClient({
           client_id: this.clientId,
           scope: 'email profile',
-          callback: (response: any) => {
+          callback: async (response: any) => { // ✅ 8. Hacer callback async
             if (response.access_token) {
               // Obtener información del usuario usando el access token
-
-              console.log(response.access_token);
-
-              this.getUserInfo(response.access_token);
+              // ✅ 9. Enviar token a tu backend
+              await this.authenticateWithBackend(response.access_token);
             } else if (response.error) {
               console.error('Error en login de Google:', response.error);
               this.isLoading.set(false);
@@ -139,43 +122,70 @@ export class AuthService {
     }
   }
   
-  // ✅ Obtener información del usuario usando el access token
-  private getUserInfo(accessToken: string): void {
-    fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    })
-    .then(response => response.json())
-    .then((data: any) => {
-      const user: User = {
-        id: data.id || 'google_' + Date.now(),
-        email: data.email,
-        name: data.name,
-        picture: data.picture
+  // ✅ 10. NUEVO MÉTODO: Autenticar con tu backend
+  private async authenticateWithBackend(googleToken: string): Promise<void> {
+    try {
+      // Crear el request body
+      const requestBody: ApiAuthRequest = {
+        googleToken: googleToken
       };
       
-      // Guardar en estado y localStorage
+      // Llamar a tu API
+      const response = await firstValueFrom(
+        this.http.post<ApiAuthResponse>(`${this.apiUrl}/auth/google`, requestBody)
+      );
+      
+      console.log('✅ Autenticación exitosa con backend');
+      
+      // ✅ 11. Guardar JWT de TU backend (no el de Google)
+      localStorage.setItem('token', response.token);
+      
+      // ✅ 12. Crear objeto User con los datos del backend
+      const user: User = {
+        id_user: response.user.id_user,
+        email: response.user.email,
+        name: response.user.name || '',
+        picture: response.user.picture || undefined,
+        profileComplete: response.user.profileComplete,
+        user_role_id: response.user.user_role_id
+      };
+      
+      // Guardar usuario en estado y localStorage
       this.currentUser.set(user);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('google_access_token', accessToken);
       this.isLoading.set(false);
       
-      this.router.navigate(['/']);
-    })
-    .catch((error) => {
-      console.error('Error al obtener información del usuario:', error);
+      // ✅ 13. Redirigir según profileComplete
+      if (!user.profileComplete) {
+        console.log('⚠️ Perfil incompleto, redirigiendo a completar perfil...');
+        this.router.navigate(['/user/profile']);  // Ajusta esta ruta según tu estructura
+      } else {
+        console.log('✅ Perfil completo, redirigiendo a home...');
+        this.router.navigate(['/']);
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Error al autenticar con backend:', error);
+      
+      // ✅ 14. Manejo de errores amigable
+      if (error.status === 401) {
+        alert('No se pudo verificar tu cuenta de Google. Intenta de nuevo.');
+      } else if (error.status === 400) {
+        alert('Email no verificado en Google.');
+      } else {
+        alert('Error en el servidor. Intenta de nuevo más tarde.');
+      }
+      
       this.isLoading.set(false);
-    })
-    .finally(() => {
-      this.isLoading.set(false);
-    });
+      throw error;
+    }
   }
   
-  // ✅ Logout
+  // ✅ 15. Actualizar logout para limpiar el token
   logout(): void {
     this.currentUser.set(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');  // ✅ Limpiar JWT del backend
     this.router.navigate(['/']);
   }
 }

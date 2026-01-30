@@ -42,6 +42,8 @@ project
 │   │   │   │   ├─ components/
 │   │   │   │   │   └─ auth-button-component/
 │   │   │   │   ├─ models/
+│   │   │   │   │   ├─ api-auth-request.ts
+│   │   │   │   │   ├─ api-auth-response.ts
 │   │   │   │   │   └─ user-google.ts
 │   │   │   │   └─ services/
 │   │   │   │       └─ auth-service.ts
@@ -74,6 +76,14 @@ project
 │   │   │   │       │   └─ news-page/
 │   │   │   │       └─ news.routes.ts
 │   │   │   └─ user/
+│   │   │       ├─ dashboard/
+│   │   │       │   ├─ pages/
+│   │   │       │   │   └─ dashboard-page/
+│   │   │       │   └─ user-dashboard.routes.ts
+│   │   │       └─ profile/
+│   │   │           ├─ pages/
+│   │   │           │   └─ profile-page/
+│   │   │           └─ user-profile.routes.ts
 │   │   │
 │   │   ├─ layouts/
 │   │   │   ├─ admin-layout/  <- sin implementar
@@ -229,6 +239,7 @@ ng g interface shared/models/news
 ng g interface shared/models/news-image
 ng g interface shared/models/book
 
+ng g interface features/auth/models/user
 ng g interface features/auth/models/user-google
 ng g interface features/auth/models/api-auth-request
 ng g interface features/auth/models/api-auth-response

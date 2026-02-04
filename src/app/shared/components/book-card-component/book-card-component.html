@@ -4,13 +4,13 @@
 >
   <figure class="relative overflow-hidden h-80 w-56 rounded-t-2xl">
     <img
-      [ngSrc]="book.coverImageUrl"
-      [alt]="book.title"
+      [ngSrc]="book().coverImageUrl"
+      [alt]="book().title"
       fill
       class="w-full h-full object-cover transform group-hover:scale-103 transition-transform duration-500 borde"/>
   </figure>
   <div class="text-center p-2">
-    <h2 class="card-title justify-center text-my-green">{{ book.title }}</h2>
-    <p class="text-sm text-my-dark/50">{{ book.author }}</p>
+    <h2 class="card-title justify-center text-my-green">{{ book().title }}</h2>
+    <p class="text-sm text-my-dark/50">{{ book().author }}</p>
   </div>
 </article>

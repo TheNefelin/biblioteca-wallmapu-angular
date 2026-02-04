@@ -18,12 +18,12 @@
       </div>
     </div>
     
-    <ul tabindex="0" class="dropdown-content menu text-my-light bg-my-purple/60 backdrop-blur-md rounded-box z-10 w-52 p-2 shadow mt-3">
-      <li class="menu-title text-sm text-my-green font-bold">Hola, {{ user()?.name }}</li>
+    <ul tabindex="0" class="dropdown-content menu text-my-light bg-my-purple/70 backdrop-blur-xl rounded-box z-10 w-52 p-2 shadow mt-3">
+      <li class="menu-title text-sm text-my-light bg-my-purple font-bold">Hola, {{ user()?.name }}</li>
       <li><a class="text-sm">{{ user()?.email }}</a></li>
       <li><hr class="my-1"></li>
-      <li><a class="text-sm">⚙️ Mi Biblioteca</a></li>
-      <li><a class="text-sm">⚙️ Configuración</a></li>
+      <li><a routerLink="/" class="text-sm">⚙️ Inicio</a></li>
+      <li><a routerLink="/user" class="text-sm">⚙️ Panel</a></li>
       <li><hr class="my-1"></li>
       <li>
         <button 

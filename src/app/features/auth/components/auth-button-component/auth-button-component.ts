@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '@features/auth/services/auth-service';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-auth-button-component',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './auth-button-component.html',
 })
 export class AuthButtonComponent implements OnInit {

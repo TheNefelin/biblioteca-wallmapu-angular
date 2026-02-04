@@ -10,6 +10,7 @@ import { News } from '@shared/models/news';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { AuthButtonComponent } from "@features/auth/components/auth-button-component/auth-button-component";
+import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 
 @Component({
   selector: 'app-test-page',
@@ -18,7 +19,8 @@ import { AuthButtonComponent } from "@features/auth/components/auth-button-compo
     HeaderComponent,
     MessageErrorComponent,
     MessageSuccessComponent,
-    AuthButtonComponent
+    AuthButtonComponent,
+    SectionHeaderComponent
 ],
   templateUrl: './test-page.html',
 })

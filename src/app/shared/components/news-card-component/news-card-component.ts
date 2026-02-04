@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ROUTES } from '@shared/constants/routes';
 import { News } from '@shared/models/news';
@@ -13,7 +13,7 @@ import { News } from '@shared/models/news';
   templateUrl: './news-card-component.html',
 })
 export class NewsCardComponent {
-  @Input({ required: true }) news!: News;
+  readonly news = input.required<News>();
 
-  newsRouterLink = computed(() => ROUTES.NEWS.DETAIL(this.news.id_news));
+  newsRouterLink = computed(() => ROUTES.NEWS.DETAIL(this.news().id_news));
 }

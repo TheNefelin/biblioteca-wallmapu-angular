@@ -1,19 +1,25 @@
 <div class="bg-page-bg/80 backdrop-blur-sm text-page-text grid">
-  <app-banner-component/>
+  <app-header-component 
+    title="Bienvenido" 
+    description="A la biblioteca de Wallmapu de Mesana.
+    Aquí podrás encontrar una gran variedad de libros para leer y cultivar tu mente."
+    image="/images/banner.webp"
+  />
   
-  <app-title-component 
-    title="Últimas Noticias" 
-    description="Mantente al día con las tendencias de nuestra biblioteca.."
+  <app-section-header-component
+    title="Últimas Noticias"
+    description="Mantente al día con las tendencias de nuestra biblioteca."
     [route]="ROUTES.NEWS.BASE"
   />
 
   <app-latest-news-component/>
-
-  <app-title-component 
-    title="Libros Recomendados" 
-    description="Joyas de papel, títulos que no puedes dejar pasar.."
+  
+  <app-section-header-component
+    title="Libros..."
+    description="Joyas de papel, títulos que no puedes dejar pasar."
+    searchPlaceholder="Buscar libro..."
     [route]="ROUTES.LIBRARY.BASE"
   />
-  
+
   <app-recommended-books-component/>
 </div>

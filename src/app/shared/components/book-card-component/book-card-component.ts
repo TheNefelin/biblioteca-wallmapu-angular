@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ROUTES } from '@shared/constants/routes';
 import { Book } from '@shared/models/book';
@@ -13,7 +13,7 @@ import { Book } from '@shared/models/book';
   templateUrl: './book-card-component.html',
 })
 export class BookCardComponent {
-  @Input({ required: true }) book!: Book;
+  readonly book = input.required<Book>();
   
-  bookRouterLink = computed(() => ROUTES.LIBRARY.BOOK(this.book.id));
+  bookRouterLink = computed(() => ROUTES.LIBRARY.BOOK(this.book().id));
 }

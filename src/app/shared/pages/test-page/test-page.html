@@ -1,5 +1,25 @@
 <app-header-component title="TEST" description="test"/>
 
+<section class="grid gap-4 bg-transparent">
+  <app-section-header-component 
+    title="Explorar Noticias"
+    description="Talleres de velas, de papelería, caja del tiempo y actividades varias."
+  />
+
+  <app-section-header-component 
+    title="Últimas Noticias"
+    description="Mantente al día con las tendencias de nuestra biblioteca."
+    route="/news"
+  />
+
+  <app-section-header-component
+    title="Libros..."
+    description="Joyas de papel, títulos que no puedes dejar pasar."
+    searchPlaceholder="Buscar libro..."
+  />    
+
+</section>
+
 <section class="pt-8 px-8 flex gap-4 justify-center flex-wrap">
   <app-auth-button-component/>
 </section>

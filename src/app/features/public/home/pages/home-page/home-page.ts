@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
-import { BannerComponent } from '@features/public/home/components/banner-component/banner-component';
 import { RecommendedBooksComponent } from "@features/public/home/components/recommended-books-component/recommended-books-component";
 import { LatestNewsComponent } from '@features/public/home/components/latest-news-component/latest-news-component';
-import { TitleComponent } from "@features/public/home/components/title-component/title-component";
 import { ROUTES } from '@shared/constants/routes';
+import { HeaderComponent } from "@shared/components/header-component/header-component";
+import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 
 @Component({
   selector: 'app-home-page',
   imports: [
-    BannerComponent,
     LatestNewsComponent,
     RecommendedBooksComponent,
-    TitleComponent
+    HeaderComponent,
+    SectionHeaderComponent
 ],
   templateUrl: './home-page.html',
 })

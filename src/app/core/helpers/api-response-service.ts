@@ -10,8 +10,8 @@ export class ApiResponseService<T> {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
-  getAll(endpoint: string): Observable<T[]> {
-    return this.http.get<T[]>(`${this.apiUrl}/${endpoint}`);
+  getAll(endpoint: string): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}/${endpoint}`);
   }
 
   getById(endpoint: string, id: string | number): Observable<T> {

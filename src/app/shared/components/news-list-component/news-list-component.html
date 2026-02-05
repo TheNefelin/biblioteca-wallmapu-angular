@@ -1,0 +1,9 @@
+<section class="p-4 max-w-7xl mx-auto">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+    @for (news of newsList(); track news.id_news) {
+      <app-news-card-component [news]="news"/>
+    }
+
+  </div>
+</section>

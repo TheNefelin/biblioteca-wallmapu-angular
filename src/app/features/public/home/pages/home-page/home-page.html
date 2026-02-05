@@ -12,8 +12,12 @@
     [route]="ROUTES.NEWS.BASE"
   />
 
-  <app-latest-news-component/>
-  
+  @if (loading()) {
+    <app-loading-component />
+  } @else {
+    <app-news-list-component [newsList]="newsResult()" />
+  }
+
   <app-section-header-component
     title="Libros..."
     description="Joyas de papel, títulos que no puedes dejar pasar."

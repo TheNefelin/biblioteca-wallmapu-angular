@@ -224,21 +224,24 @@ ng g c layouts/public-layout --skip-tests --style=none
 ng g c layouts/user-layout --skip-tests --style=none
 ng g c layouts/admin-layout --skip-tests --style=none
 
-ng g c shared/components/navbar-component --skip-tests --style=none
+ng g c shared/components/arrow-up-component --skip-tests --style=none
+ng g c shared/components/book-card-component --skip-tests --style=none
 ng g c shared/components/dashboard-component --skip-tests --style=none
 ng g c shared/components/footer-component --skip-tests --style=none
-ng g c shared/components/arrow-up-component --skip-tests --style=none
 ng g c shared/components/header-component --skip-tests --style=none
-ng g c shared/components/book-card-component --skip-tests --style=none
-ng g c shared/components/news-card-component --skip-tests --style=none
+ng g c shared/components/loading-component --skip-tests --style=none
 ng g c shared/components/message-error-component --skip-tests --style=none
 ng g c shared/components/message-success-component --skip-tests --style=none
-ng g c shared/components/loading-component --skip-tests --style=none
+ng g c shared/components/navbar-component --skip-tests --style=none
+ng g c shared/components/news-card-component --skip-tests --style=none
+ng g c shared/components/news-list-component --skip-tests --style=none
 ng g c shared/components/section-header-component --skip-tests --style=none
-ng g c shared/pages/not-found-page --skip-tests --style=none
-ng g interface shared/models/news
-ng g interface shared/models/news-image
 ng g interface shared/models/book
+ng g interface shared/models/NavigationItem
+ng g interface shared/models/news-gallery
+ng g interface shared/models/news
+ng g interface shared/models/pagination-model
+ng g c shared/pages/not-found-page --skip-tests --style=none
 
 ng g interface features/auth/models/user
 ng g interface features/auth/models/user-google
@@ -259,7 +262,6 @@ ng g c features/public/library/components/book-details-component --skip-tests --
 
 ng g c features/public/news/pages/news-page --skip-tests --style=none
 ng g c features/public/news/pages/news-details-page --skip-tests --style=none
-ng g c features/public/news/components/news-list-component --skip-tests --style=none
 ng g c features/public/news/components/news-details-component --skip-tests --style=none
 
 ng g c features/admin/dashboard/pages/dashboard-page --skip-tests --style=none

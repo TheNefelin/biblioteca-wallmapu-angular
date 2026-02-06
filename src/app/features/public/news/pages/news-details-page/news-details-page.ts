@@ -17,7 +17,7 @@ export class NewsDetailsPage {
   private route = inject(ActivatedRoute);
   
   // ✅ Reactividad moderna con toSignal
-  private newsResult = toSignal(
+  private newsSignal = toSignal(
     this.route.paramMap.pipe(
       switchMap(params => {
         const id = Number(params.get('id'));
@@ -30,6 +30,6 @@ export class NewsDetailsPage {
   );
   
   // ✅ Estados computados claros
-  news = computed(() => this.newsResult());
-  loading = computed(() => this.newsResult() === undefined);
+  newsResult = computed(() => this.newsSignal());
+  loading = computed(() => this.newsSignal() === undefined);
 }

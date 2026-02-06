@@ -20,8 +20,7 @@ export class NewsService {
   }
 
   getById(id: number): Observable<News> {
-    const news = this.news.find(n => n.id_news === id);
-    return of(news!);
+    return this.apiResponseService.getById(this.endpoint, id);
   }
   
   getAllTemp(): Observable<News[]> {

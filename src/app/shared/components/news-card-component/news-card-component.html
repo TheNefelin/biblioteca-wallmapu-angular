@@ -3,8 +3,8 @@
   <!-- [ngSrc]="news().images[0].url"  -->
   <div class="relative overflow-hidden h-52">
     <img 
-      [ngSrc]="news().images.length > 0 ? news().images[0].img : '/images/layout.webp'"
       placeholder="/images/layout.webp"
+      [ngSrc]="news().images.length > 0 ? news().images[0].img : '/images/layout.webp'"
       [alt]="news().images.length > 0 ? news().images[0].alt : 'Imagen por defecto'"
       fill
       class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />

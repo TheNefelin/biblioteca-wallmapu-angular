@@ -6,8 +6,9 @@
     <!-- Imagen principal de la noticia -->
     <figure class="w-full h-96 relative overflow-hidden">
       <img 
-        [ngSrc]="news().images[0].img" 
-        [alt]="news().images[0].alt"
+        placeholder="/images/layout.webp"
+        [ngSrc]="news().images.length > 0 ? news().images[0].img : '/images/layout.webp'"
+        [alt]="news().images.length > 0 ? news().images[0].alt : 'Imagen por defecto'"
         fill
         class="w-full h-full object-cover"
       />

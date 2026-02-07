@@ -1,3 +1,17 @@
 <section class="min-h-dvh bg-linear-to-b from-my-green/60 from-0% via-my-light via-25% to-my-light/60">
-  <app-news-details-component [news]="newsResult()!"/> 
+  
+  @if (loading()) {
+    <div class="pt-48">
+      <app-loading-component />
+    </div>
+  } @else {
+    @if (newsResult().isSuccess) {
+      <app-news-details-component [news]="newsResult().data!"/>
+    } @else {
+      <div class="pt-48">
+        <app-message-error-component [message]="newsResult().message" />
+      </div>
+    }
+  }
+
 </section>

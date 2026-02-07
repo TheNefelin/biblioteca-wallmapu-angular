@@ -215,10 +215,11 @@ export class NavbarComponent {
 - Shortcut
 ```bash
 ng g s core/helpers/api-response-service --skip-tests
-ng g interceptor core/interceptors/auth --skip-tests
-ng g interceptor core/interceptors/error --skip-tests
 ng g s core/services/book-service --skip-tests
 ng g s core/services/news-service --skip-tests
+ng g interface core/models/api-response-model
+ng g interceptor core/interceptors/auth --skip-tests
+ng g interceptor core/interceptors/error --skip-tests
 
 ng g c layouts/public-layout --skip-tests --style=none
 ng g c layouts/user-layout --skip-tests --style=none

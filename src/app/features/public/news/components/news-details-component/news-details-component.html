@@ -10,6 +10,7 @@
         [ngSrc]="news().images.length > 0 ? news().images[0].img : '/images/layout.webp'"
         [alt]="news().images.length > 0 ? news().images[0].alt : 'Imagen por defecto'"
         fill
+        priority
         class="w-full h-full object-cover"
       />
     </figure>
@@ -86,6 +87,7 @@
               [ngSrc]="img.img" 
               [alt]="img.alt"
               fill
+              priority
               class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           </figure>

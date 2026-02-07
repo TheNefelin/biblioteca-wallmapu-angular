@@ -8,14 +8,19 @@ import { catchError, defer, finalize, of, switchMap, tap } from 'rxjs';
 import { PaginationModel } from '@shared/models/pagination-model';
 import { News } from '@shared/models/news';
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
+import { ApiResponseModel } from '@core/models/api-response-model';
+import { CommonModule } from '@angular/common';
+import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
   selector: 'app-news-page',
   imports: [
+    CommonModule,
     HeaderComponent,
     NewsListComponent,
     SectionHeaderComponent,
-    PaginationComponent
+    PaginationComponent,
+    MessageErrorComponent
 ],
   templateUrl: './news-page.html',
 })
@@ -30,12 +35,17 @@ export class NewsPage {
   readonly totalPages = signal<number>(1);
   readonly loading = signal(false);
 
-  private readonly errorResult: PaginationModel<News[]> = {
-    count: 0,
-    pages: 0,
-    next: '',
-    prev: '',
-    result: [] 
+  private readonly defaultApiResponse: ApiResponseModel<PaginationModel<News[]>> = {
+    isSuccess: true,
+    statusCode: 0,
+    message: "",
+    data: {
+      count: 0,
+      pages: 0,
+      next: '',
+      prev: '',
+      result: [] 
+    }
   }
 
   // Parámetros reactivos combinados 
@@ -55,12 +65,10 @@ export class NewsPage {
           params.offset,
           params.search
         ).pipe(
-          tap(result => {
-            this.totalPages.set(result.pages || 1);
-          }),
+          tap(result => this.totalPages.set(result.data.pages || 1)),
           catchError(err => {
             console.error('Error cargando noticias:', err);
-            return of(this.errorResult);
+            return of(this.defaultApiResponse);
           }),
           finalize(() => this.loading.set(false)) 
         )
@@ -70,7 +78,7 @@ export class NewsPage {
   );
 
   // Señales derivadas
-  newsResult = computed(() => this.newsSignal()?.result ?? []);
+  newsResult = computed(() => this.newsSignal() ?? this.defaultApiResponse);
 
   // Métodos 
   searchText(text: string) {

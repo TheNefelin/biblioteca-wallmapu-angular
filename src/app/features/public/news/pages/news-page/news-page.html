@@ -13,7 +13,12 @@
       (searchChange)="searchText($event)"
     />
 
-    <app-news-list-component [loading]="loading()" [newsList]="newsResult()" />
+    @if (newsResult().isSuccess) {
+      <app-news-list-component [loading]="loading()" [newsList]="newsResult().data.result" />
+    } @else {
+      <app-message-error-component [message]="newsResult().message"/>
+    }
+
   </section>
 
   <app-pagination-component 

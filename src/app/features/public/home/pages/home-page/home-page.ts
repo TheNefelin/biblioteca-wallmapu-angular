@@ -9,6 +9,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { News } from '@shared/models/news';
 import { PaginationModel } from '@shared/models/pagination-model';
 import { NewsListComponent } from "@shared/components/news-list-component/news-list-component";
+import { ApiResponseModel } from '@core/models/api-response-model';
+import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
   selector: 'app-home-page',
@@ -17,6 +19,7 @@ import { NewsListComponent } from "@shared/components/news-list-component/news-l
     HeaderComponent,
     SectionHeaderComponent,
     NewsListComponent,
+    MessageErrorComponent
 ],
   templateUrl: './home-page.html',
 })
@@ -24,22 +27,29 @@ export class HomePage {
   protected readonly ROUTES = ROUTES;
   private newsService = inject(NewsService);
   
+  private readonly defaultApiResponse: ApiResponseModel<PaginationModel<News[]>> = {
+    isSuccess: true,
+    statusCode: 0,
+    message: "",
+    data: {
+      count: 0,
+      pages: 0,
+      next: '',
+      prev: '',
+      result: [] 
+    }
+  }
+
   private newsSignal = toSignal(
     this.newsService.getTop3().pipe(
       catchError((err) => {
         console.error('Error cargando libros:', err);
-        return of({
-          count: 0,
-          pages: 0,
-          next: '',
-          prev: '',
-          result: []
-        } as PaginationModel<News[]>);
+        return of(this.defaultApiResponse);
       })
     ),
     { initialValue: undefined }
   );
 
-  newsResult = computed(() => this.newsSignal()?.result ?? []);
+  newsResult = computed(() => this.newsSignal() ?? this.defaultApiResponse);
   loading = computed(() => this.newsSignal() === undefined);  
 }

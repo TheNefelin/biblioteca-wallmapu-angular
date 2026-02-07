@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiResponseService } from '@core/helpers/api-response-service';
+import { ApiResponseModel } from '@core/models/api-response-model';
 import { News } from '@shared/models/news';
 import { PaginationModel } from '@shared/models/pagination-model';
 import { Observable, of, retry } from 'rxjs';
@@ -11,15 +12,15 @@ export class NewsService {
   private apiResponseService = inject(ApiResponseService<News>)
   private readonly endpoint = 'news';
 
-  getTop3(): Observable<PaginationModel<News[]>> {
+  getTop3(): Observable<ApiResponseModel<PaginationModel<News[]>>> {
     return this.apiResponseService.getAll(`${this.endpoint}/?page=1&page_size=3`);
   }
 
-  getAll(currentPage: number, offset:number, search: string): Observable<PaginationModel<News[]>> {
+  getAll(currentPage: number, offset:number, search: string): Observable<ApiResponseModel<PaginationModel<News[]>>> {
     return this.apiResponseService.getAll(`${this.endpoint}/?page=${currentPage}&page_size=${offset}&search=${search}`);
   }
 
-  getById(id: number): Observable<News> {
+  getById(id: number): Observable<ApiResponseModel<News | null>> {
     return this.apiResponseService.getById(this.endpoint, id);
   }
   

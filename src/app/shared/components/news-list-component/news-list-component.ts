@@ -13,5 +13,5 @@ import { NewsModel } from '@core/models/news-model';
 })
 export class NewsListComponent {
   readonly newsList = input.required<NewsModel[]>();
-  readonly loading = input<boolean | null>(false);
+  readonly loading = input<boolean | null>(true);
 }

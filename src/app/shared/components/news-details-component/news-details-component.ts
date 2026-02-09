@@ -6,9 +6,9 @@ import { NewsModel } from '@core/models/news-model';
   selector: 'app-news-details-component',
   imports: [
     NgOptimizedImage,
-],
+  ],
   templateUrl: './news-details-component.html',
 })
 export class NewsDetailsComponent {
-  news = input.required<NewsModel>();
+  readonly news = input.required<NewsModel>();
 }

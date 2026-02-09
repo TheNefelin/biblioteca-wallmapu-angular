@@ -7,7 +7,7 @@ export interface AdminNavigationItem {
   tooltip?: string;
 }
 
-export const ADMIN_NAVIGATION: AdminNavigationItem[] = [
+export const NAVIGATION_ADMIN: AdminNavigationItem[] = [
   {
     label: 'Panel',
     route: ROUTES.PROTECTED.ADMIN.DASHBOARD,

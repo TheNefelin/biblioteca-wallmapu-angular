@@ -6,12 +6,21 @@
     </div>
   } @else {
     @if (newsResult().isSuccess) {
-      <app-news-details-component [news]="newsResult().result!"/>
+      <div class="container mx-auto px-4 pb-4 pt-20 max-w-4xl">
+        <!-- Tarjeta principal de la noticia -->
+        <app-news-details-component [news]="newsResult().result!" />
+
+        <!-- Separador -->
+        <div class="divider my-12 text-base-content/40">Galería de Imágenes</div>
+
+        <!-- Galería de imágenes -->
+        <app-news-gallery-component [newsGalleryList]="newsResult().result?.images ?? []" />
+      </div>
     } @else {
       <div class="pt-48">
         <app-message-error-component [message]="newsResult().message" />
       </div>
     }
   }
-
+  
 </section>

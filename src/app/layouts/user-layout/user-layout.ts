@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DashboardComponent } from "@shared/components/dashboard-component/dashboard-component";
-import { USER_NAVIGATION } from '@shared/constants/user-navigation';
+import { NAVIGATION_USER } from '@shared/constants/navigation-user';
 
 @Component({
   selector: 'app-user-layout',
@@ -10,5 +10,5 @@ import { USER_NAVIGATION } from '@shared/constants/user-navigation';
   templateUrl: './user-layout.html',
 })
 export class UserLayout {
-  protected readonly navigationItems = USER_NAVIGATION;
+  protected readonly navigationItems = NAVIGATION_USER;
 }

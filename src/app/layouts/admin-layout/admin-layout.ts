@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ADMIN_NAVIGATION } from '@shared/constants/admin-navigation';
+import { NAVIGATION_ADMIN } from '@shared/constants/navigation-admin';
 import { DashboardComponent } from "@shared/components/dashboard-component/dashboard-component";
 import { ArrowUpComponent } from "@shared/components/arrow-up-component/arrow-up-component";
 
@@ -12,5 +12,5 @@ import { ArrowUpComponent } from "@shared/components/arrow-up-component/arrow-up
   templateUrl: './admin-layout.html',
 })
 export class AdminLayout {
-  protected readonly navigationItems = ADMIN_NAVIGATION;
+  protected readonly navigationItems = NAVIGATION_ADMIN;
 }

@@ -1,7 +1,7 @@
 import { ROUTES } from '@shared/constants/routes';
 import { NavigationItem } from '@shared/models/NavigationItem';
 
-export const USER_NAVIGATION: NavigationItem[] = [
+export const NAVIGATION_USER: NavigationItem[] = [
   {
     label: 'Panel',
     route: ROUTES.PROTECTED.USER.DASHBOARD,

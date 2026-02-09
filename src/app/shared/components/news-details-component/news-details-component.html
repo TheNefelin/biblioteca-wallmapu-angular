@@ -1,0 +1,72 @@
+<!-- Tarjeta principal de la noticia -->
+<article class="bg-my-light rounded-2xl shadow-xl overflow-hidden">
+    
+  <!-- Imagen principal de la noticia -->
+  <figure class="w-full h-96 relative overflow-hidden">
+    <img 
+      placeholder="/images/layout.webp"
+      [ngSrc]="news().images.length > 0 ? news().images[0].url : '/images/layout.webp'"
+      [alt]="news().images.length > 0 ? news().images[0].alt : 'Imagen por defecto'"
+      fill
+      priority
+      class="w-full h-full object-cover"
+    />
+  </figure>
+
+  <!-- Contenido de la noticia -->
+  <div class="p-8">
+    
+    <!-- Fecha de la noticia -->
+    <div class="flex items-center gap-2 mb-4 text-sm text-base-content/60">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span>{{ news().date }}</span>
+      <span class="mx-2">•</span>
+      <span>Código de la Noticia: [{{ news().id_news }}]</span>
+    </div>
+
+    <!-- Título principal de la noticia -->
+    <h1 class="text-4xl md:text-5xl font-bold text-base-content mb-4 leading-tight">
+      {{ news().title }}
+    </h1>
+
+    <!-- Subtítulo de la noticia -->
+    <h2 class="text-xl md:text-2xl text-base-content/70 font-medium mb-6 leading-relaxed">
+      {{ news().subtitle }}  
+    </h2>
+
+    <!-- Autor info -->
+    <div class="flex items-center gap-3 mb-8 pb-6 border-b border-base-300">
+      <div class="avatar">
+        <div class="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="Autor" />
+        </div>
+      </div>
+      <div>
+        <p class="font-semibold text-base-content">Carlos Martínez</p>
+        <p class="text-sm text-base-content/60">Periodista tecnológico</p>
+      </div>
+    </div>
+
+    <!-- Body - Contenido de la noticia -->
+    <div class="prose prose-lg max-w-none dark:prose-invert mb-8">
+      <p class="mb-4 first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-3 first-letter:float-left">
+        {{ news().body }}  
+      </p>
+    </div>
+
+    <!-- Acciones de la noticia -->
+    <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-t border-b border-base-300">
+      <div class="flex gap-4">        
+        <button class="btn btn-ghost btn-sm gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+          <span>Compartir</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</article>

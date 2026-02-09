@@ -1,16 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { HeaderComponent } from '@shared/components/header-component/header-component';
-import { NewsListComponent } from "@shared/components/news-list-component/news-list-component";
-import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { NewsService } from '@core/services/news-service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, finalize, of, switchMap, tap } from 'rxjs';
-import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '@shared/components/header-component/header-component';
+import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
+import { NewsListComponent } from "@shared/components/news-list-component/news-list-component";
+import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { NewsModel } from '@core/models/news-model';
-import { PaginationModel } from '@core/models/pagination-model';
+import { API_RESPONSE_PAGINATION_NEWS_LIST } from '@shared/constants/default-api-result';
 
 @Component({
   selector: 'app-news-page',
@@ -28,30 +26,19 @@ export class NewsPage {
   private readonly newsService = inject(NewsService);
 
   // Estado 
-  private readonly offset = signal(6);
+  private readonly items = signal(6);
   private readonly search = signal('');
 
   readonly currentPage = signal(1);
   readonly totalPages = signal<number>(1);
   readonly loading = signal(false);
 
-  private readonly defaultApiResponse: ApiResponseModel<PaginationModel<NewsModel[]>> = {
-    isSuccess: true,
-    statusCode: 0,
-    message: "ERROR",
-    result: {
-      count: 0,
-      pages: 0,
-      next: '',
-      prev: '',
-      result: [] 
-    }
-  }
+  private readonly defaultApiResponse = API_RESPONSE_PAGINATION_NEWS_LIST;
 
   // Parámetros reactivos combinados 
   private readonly params = computed(() => ({
     page: this.currentPage(),
-    offset: this.offset(),
+    items: this.items(),
     search: this.search()
   }));  
 
@@ -62,11 +49,12 @@ export class NewsPage {
       switchMap(params => 
         this.newsService.getAll(
           params.page,
-          params.offset,
+          params.items,
           params.search
         ).pipe(
           tap(result => this.totalPages.set(result.result.pages || 1)),
           catchError(err => {
+            console.error('Error cargando noticia:', err);
             return of(this.defaultApiResponse);
           }),
           finalize(() => this.loading.set(false)) 

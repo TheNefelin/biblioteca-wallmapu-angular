@@ -44,7 +44,8 @@ project
 │   │   │   │   ├─ models/
 │   │   │   │   │   ├─ api-auth-request.ts
 │   │   │   │   │   ├─ api-auth-response.ts
-│   │   │   │   │   └─ user-google.ts
+│   │   │   │   │   ├─ user-google.ts
+│   │   │   │   │   └─ user.ts
 │   │   │   │   └─ services/
 │   │   │   │       └─ auth-service.ts
 │   │   │   ├─ public/
@@ -76,14 +77,6 @@ project
 │   │   │   │       │   └─ news-page/
 │   │   │   │       └─ news.routes.ts
 │   │   │   └─ user/
-│   │   │       ├─ dashboard/
-│   │   │       │   ├─ pages/
-│   │   │       │   │   └─ dashboard-page/
-│   │   │       │   └─ user-dashboard.routes.ts
-│   │   │       └─ profile/
-│   │   │           ├─ pages/
-│   │   │           │   └─ profile-page/
-│   │   │           └─ user-profile.routes.ts
 │   │   │
 │   │   ├─ layouts/
 │   │   │   ├─ admin-layout/  <- sin implementar
@@ -94,19 +87,27 @@ project
 │   │   │   ├─ components/
 │   │   │   │   ├─ arrow-up-component/
 │   │   │   │   ├─ book-card-component/
+│   │   │   │   ├─ dashboard-component/
 │   │   │   │   ├─ footer-component/
 │   │   │   │   ├─ header-component/
+│   │   │   │   ├─ loading-component/
 │   │   │   │   ├─ newmessage-error-component/
 │   │   │   │   ├─ message-success-component/
 │   │   │   │   ├─ navbar-component/
 │   │   │   │   ├─ news-card-component/
-│   │   │   │   └─ palette-component/
+│   │   │   │   ├─ news-details-component/
+│   │   │   │   ├─ news-gallery-component/
+│   │   │   │   ├─ news-list-component/
+│   │   │   │   ├─ news-skeleton-component/
+│   │   │   │   ├─ pagination-component/
+│   │   │   │   └─ section-header-component/
 │   │   │   ├─ constants/
+│   │   │   │   ├─ default-api-result.ts
+│   │   │   │   ├─ navigation-admin.ts
+│   │   │   │   ├─ navigation-user.ts
 │   │   │   │   └─ routes.ts
 │   │   │   ├─ models/
-│   │   │   │   ├─ book.ts
-│   │   │   │   ├─ news-image.ts
-│   │   │   │   └─ news.ts
+│   │   │   │   └─ NavigationItem.ts
 │   │   │   └─ pages/
 │   │   │       ├─ not-found-page/
 │   │   │       └─ test-page/
@@ -239,6 +240,8 @@ ng g c shared/components/message-error-component --skip-tests --style=none
 ng g c shared/components/message-success-component --skip-tests --style=none
 ng g c shared/components/navbar-component --skip-tests --style=none
 ng g c shared/components/news-card-component --skip-tests --style=none
+ng g c shared/components/news-details-component --skip-tests --style=none
+ng g c shared/components/news-gallery-component --skip-tests --style=none
 ng g c shared/components/news-list-component --skip-tests --style=none
 ng g c shared/components/news-skeleton-component --skip-tests --style=none
 ng g c shared/components/Pagination-component --skip-tests --style=none
@@ -263,11 +266,9 @@ ng g c features/public/library/pages/book-details-page --skip-tests --style=none
 ng g c features/public/library/components/book-list-component --skip-tests --style=none
 ng g c features/public/library/components/book-details-component --skip-tests --style=none
 
-ng g c features/public/news/pages/news-page --skip-tests --style=none
 ng g c features/public/news/pages/news-details-page --skip-tests --style=none
-ng g c features/public/news/components/news-details-component --skip-tests --style=none
+ng g c features/public/news/pages/news-page --skip-tests --style=none
 
-ng g c features/admin/dashboard/pages/dashboard-page --skip-tests --style=none
 ng g c features/admin/book/pages/book-page --skip-tests --style=none
 ng g c features/admin/news/pages/news-page --skip-tests --style=none
 

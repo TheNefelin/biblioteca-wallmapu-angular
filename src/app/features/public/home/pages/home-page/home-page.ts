@@ -1,16 +1,14 @@
 import { Component, computed, inject } from '@angular/core';
 import { RecommendedBooksComponent } from "@features/public/home/components/recommended-books-component/recommended-books-component";
 import { ROUTES } from '@shared/constants/routes';
-import { HeaderComponent } from "@shared/components/header-component/header-component";
-import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { NewsService } from '@core/services/news-service';
 import { catchError, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { NewsService } from '@core/services/news-service';
+import { HeaderComponent } from "@shared/components/header-component/header-component";
+import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { NewsListComponent } from "@shared/components/news-list-component/news-list-component";
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { NewsModel } from '@core/models/news-model';
-import { PaginationModel } from '@core/models/pagination-model';
+import { API_RESPONSE_PAGINATION_NEWS_LIST } from '@shared/constants/default-api-result';
 
 @Component({
   selector: 'app-home-page',
@@ -27,23 +25,12 @@ export class HomePage {
   protected readonly ROUTES = ROUTES;
   private newsService = inject(NewsService);
   
-  private readonly defaultApiResponse: ApiResponseModel<PaginationModel<NewsModel[]>> = {
-    isSuccess: true,
-    statusCode: 0,
-    message: "",
-    result: {
-      count: 0,
-      pages: 0,
-      next: '',
-      prev: '',
-      result: [] 
-    }
-  }
+  private readonly defaultApiResponse = API_RESPONSE_PAGINATION_NEWS_LIST;
 
   private newsSignal = toSignal(
-    this.newsService.getTop3().pipe(
+    this.newsService.getAll(1,3,'').pipe(
       catchError((err) => {
-        console.error('Error cargando libros:', err);
+        console.error('Error cargando noticia:', err);
         return of(this.defaultApiResponse);
       })
     ),

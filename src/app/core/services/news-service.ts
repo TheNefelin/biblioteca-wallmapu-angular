@@ -16,8 +16,8 @@ export class NewsService {
     return this.apiResponseService.getAll(`${this.endpoint}/?page=1&items=3`);
   }
 
-  getAll(currentPage: number, offset:number, search: string): Observable<ApiResponseModel<PaginationModel<NewsModel[]>>> {
-    return this.apiResponseService.getAll(`${this.endpoint}/?page=${currentPage}&items=${offset}&search=${search}`);
+  getAll(currentPage: number, maxItems:number, search: string = ""): Observable<ApiResponseModel<PaginationModel<NewsModel[]>>> {
+    return this.apiResponseService.getAll(`${this.endpoint}/?page=${currentPage}&items=${maxItems}&search=${search}`);
   }
 
   getById(id: number): Observable<ApiResponseModel<NewsModel | null>> {

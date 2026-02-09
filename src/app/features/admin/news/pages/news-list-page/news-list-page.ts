@@ -7,6 +7,8 @@ import { NgOptimizedImage } from '@angular/common';
 import { API_RESPONSE_PAGINATION_NEWS_LIST } from '@shared/constants/default-api-result';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, finalize, of, switchMap, tap } from 'rxjs';
+import { NewsListComponent } from "@shared/components/news-list-component/news-list-component";
+import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
   selector: 'app-news-list-page',
@@ -14,14 +16,16 @@ import { catchError, finalize, of, switchMap, tap } from 'rxjs';
     NgOptimizedImage,
     SectionHeaderComponent,
     PaginationComponent,
-    LoadingComponent
+    LoadingComponent,
+    NewsListComponent,
+    MessageErrorComponent
 ],
   templateUrl: './news-list-page.html',
 })
 export class NewsListPage {
   private newsService = inject(NewsService);
   private readonly defaultApiResponse = API_RESPONSE_PAGINATION_NEWS_LIST;
-  private readonly items = signal(6);
+  private readonly items = signal(10);
   private readonly search = signal('');
 
   readonly currentPage = signal(1);

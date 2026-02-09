@@ -4,36 +4,10 @@
   (searchChange)="($event)"
 />
 
-@if(loading()){
-  <app-loading-component/>
+@if (newsResult().isSuccess) {
+  <app-news-list-component viewMode="table" [loading]="loading()" [newsList]="newsResult().result.result" />
 } @else {
-  <ul class="list bg-base-100 rounded-box shadow-md mx-auto">
-    <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Lista de Libros</li>
-
-    @for (item of newsResult().result.result; track item.id_news) {
-      <li class="list-row">
-        <div class="relative overflow-hidden size-10">
-          @if (item.images && item.images.length > 0) {
-            <img 
-              placeholder="/images/layout.webp"
-              [ngSrc]="item.images.length > 0 ? item.images[0].url : '/images/layout.webp'"
-              [alt]="item.images.length > 0 ? item.images[0].alt : 'Imagen por defecto'"
-              fill
-              class="object-cover rounded-box" 
-            /> 
-          }
-          </div>
-        <div>
-          <div>{{ item.date }}</div>
-          <div class="text-xs uppercase font-semibold opacity-60">{{ item.title }}</div>
-        </div>
-
-        <button class="btn bg-my-green text-my-light"> Modificar
-          
-        </button>
-      </li>
-    }
-  </ul>
+  <app-message-error-component [message]="newsResult().message"/>
 }
 
 <app-pagination-component 

@@ -1,0 +1,21 @@
+<li class="list-row">
+  <div class="relative overflow-hidden size-10">
+    @if (news().images) {
+      <img 
+        placeholder="/images/layout.webp"
+        [ngSrc]="news().images.length > 0 ? news().images[0].url : '/images/layout.webp'"
+        [alt]="news().images.length > 0 ? news().images[0].alt : 'Imagen por defecto'"
+        fill
+        class="object-cover rounded-box" 
+      /> 
+    }
+    </div>
+  <div>
+    <div>{{ news().date }}</div>
+    <div class="text-xs uppercase font-semibold opacity-60">{{ news().title }}</div>
+  </div>
+
+  <button class="btn bg-my-green text-my-light"> Modificar
+    
+  </button>
+</li>

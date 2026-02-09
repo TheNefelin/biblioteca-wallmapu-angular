@@ -1,15 +1,33 @@
-<section class="p-4 max-w-7xl mx-auto">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+@switch (viewMode()) {
+  @case ('card') {
+    <section class="p-4 max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+        @if (loading()) {
+          <app-news-skeleton-component/>
+          <app-news-skeleton-component/>
+          <app-news-skeleton-component/>
+        } @else {
+          @for (news of newsList(); track news.id_news) {
+            <app-news-card-component [news]="news"/>
+          }
+        }
 
+      </div>
+    </section>
+  }
+
+  @case ('table') {
     @if (loading()) {
-      <app-news-skeleton-component/>
-      <app-news-skeleton-component/>
-      <app-news-skeleton-component/>
+      <app-loading-component />
     } @else {
-      @for (news of newsList(); track news.id_news) {
-        <app-news-card-component [news]="news"/>
-      }
+      <ul class="list bg-base-100 rounded-box shadow-md m-4">
+        <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Lista de Noticias</li>
+      
+        @for (news of newsList(); track news.id_news) {
+          <app-news-table-row-component [news]="news" />
+        }
+      </ul>
     }
-
-  </div>
-</section>
+  }
+}

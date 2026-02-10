@@ -6,25 +6,27 @@
       (searchChange)="searchText($event)"
     />
 
-    <div class="flex justify-between m-4">
-      <button (click)="refreshList()" class="btn max-w-48 bg-my-purple text-my-light">
-        Refrescar
-      </button>  
-
-      <button (click)="onCreate()" class="btn max-w-48 bg-my-pink text-my-light">
-        Crear Noticia
-      </button>
-    </div>
-
-    @if (newsResult().isSuccess) {
-      <app-news-list-component 
-        viewMode="table" 
-        [loading]="loading()" 
-        [newsList]="newsResult().result.result"
-      />
-    } @else {
-      <app-message-error-component [message]="newsResult().message"/>
-    }
+    <section class="max-w-7xl m-auto">
+      <div class="flex justify-between m-4">
+        <button (click)="refreshList()" class="btn max-w-48 bg-my-purple text-my-light">
+          Refrescar
+        </button>  
+  
+        <button (click)="onCreate()" class="btn max-w-48 bg-my-pink text-my-light">
+          Crear Noticia
+        </button>
+      </div>
+  
+      @if (newsResult().isSuccess) {
+        <app-news-list-component 
+          viewMode="table" 
+          [loading]="loading()" 
+          [newsList]="newsResult().result.result"
+        />
+      } @else {
+        <app-message-error-component [message]="newsResult().message"/>
+      }
+    </section>
   </div>
 
   <app-pagination-component 

@@ -7,47 +7,49 @@
 <pre>{{ news() | json }}</pre>
 
 <section class="p-4 flex flex-wrap gap-4 justify-center">
-  <form class="fieldset bg-my-light rounded-box border p-4 w-sm">
-    <fieldset class="fieldset">
-      <label class="label">Título</label>
-      <input type="text" class="input validator w-full" placeholder="Título" required />
-      <p class="validator-hint hidden mt-0">Requerido</p>
-    </fieldset>
-  
-    <fieldset class="fieldset">
-      <label class="label">Subtítulo</label>
-      <input type="text" class="input validator w-full" placeholder="Subtítulo" required />
-      <p class="validator-hint hidden mt-0">Requerido</p>
-    </fieldset>
-  
-    <fieldset class="fieldset">
-      <label class="label">Descripción</label>
-      <textarea class="textarea validator mt-2 w-full" required placeholder="Descripción"></textarea>
-      <p class="validator-hint hidden mt-0">Requerido</p>
-    </fieldset>
-  
-    <fieldset class="fieldset">
-      <label class="label">Cargar imagenes 1 hasta 3</label>
-      <input
-        type="file" class="file-input validator mt-2 w-full" accept="image/*" multiple required 
-        (change)="onChangeImages($event)"
-      />
-      <p class="validator-hint hidden mt-0">Requerido</p>
+  <div>
+    <form class="fieldset bg-my-light rounded-box border p-4 w-sm">
+      <fieldset class="fieldset">
+        <label class="label">Título</label>
+        <input type="text" class="input validator w-full" placeholder="Título" required />
+        <p class="validator-hint hidden mt-0">Requerido</p>
+      </fieldset>
     
-      @if (imageError()) {
-        <p class="text-error text-sm mt-1">
-          {{ imageError() }}
-        </p>
-      }
-    </fieldset>
-  
-    <button class="btn bg-my-purple text-my-light mt-4" type="submit">Submit form</button>
-  </form>
+      <fieldset class="fieldset">
+        <label class="label">Subtítulo</label>
+        <input type="text" class="input validator w-full" placeholder="Subtítulo" required />
+        <p class="validator-hint hidden mt-0">Requerido</p>
+      </fieldset>
+    
+      <fieldset class="fieldset">
+        <label class="label">Descripción</label>
+        <textarea class="textarea validator mt-2 w-full" required placeholder="Descripción"></textarea>
+        <p class="validator-hint hidden mt-0">Requerido</p>
+      </fieldset>
+    
+      <fieldset class="fieldset">
+        <label class="label">Cargar imagenes 1 hasta 3</label>
+        <input
+          type="file" class="file-input validator mt-2 w-full" accept="image/*" multiple required 
+          (change)="onChangeImages($event)"
+        />
+        <p class="validator-hint hidden mt-0">Requerido</p>
+      
+        @if (imageError()) {
+          <p class="text-error text-sm mt-1">
+            {{ imageError() }}
+          </p>
+        }
+      </fieldset>
+    
+      <button class="btn bg-my-purple text-my-light mt-4" type="submit">Submit form</button>
+    </form>
+  </div>  
 
   @if (selectedImages().length > 0) {
-    <div class="flex gap-4 flex-wrap max-w-5xl">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-5xl">
       @for (file of selectedImages(); track file.name) {
-        <div class="relative w-full aspect-video overflow-hidden rounded-lg border max-w-md">
+        <div class="relative w-full aspect-video overflow-hidden rounded-lg border">
           <img
             [src]="createPreview(file)"
             alt="{{ file.name }}"

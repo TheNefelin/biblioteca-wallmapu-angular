@@ -73,4 +73,8 @@ export class NewsListPage {
       this.currentPage.update(e => e - 1);
     }
   }
+
+  refreshAction() {
+    this.currentPage.set(1);
+  }
 }

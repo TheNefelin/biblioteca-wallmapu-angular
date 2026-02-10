@@ -1,30 +1,32 @@
-<app-section-header-component 
-  title="Noticias" 
-  searchPlaceholder="Buscar Noticia"
-  (searchChange)="($event)"
-/>
-
-<div class="flex justify-between m-4">
-  <button class="btn max-w-48 bg-my-purple text-my-light">
-    Refrescar
-  </button>  
-
-  <button class="btn max-w-48 bg-my-pink text-my-light">
-    Crear Noticia
-  </button>
-</div>
-
-@if (newsResult().isSuccess) {
-  <app-news-list-component viewMode="table" [loading]="loading()" [newsList]="newsResult().result.result" />
-} @else {
-  <app-message-error-component [message]="newsResult().message"/>
-}
-
-@if (!loading()) {
-  <app-pagination-component 
-    [currentPage]=1
-    [totalPages]=1
-    (prevPage)="($event)"
-    (nextPage)="($event)" 
+<section>
+  <app-section-header-component 
+    title="Noticias" 
+    searchPlaceholder="Buscar Noticia"
+    (searchChange)="searchText($event)"
   />
-}
+
+  <div class="flex justify-between m-4">
+    <button class="btn max-w-48 bg-my-purple text-my-light">
+      Refrescar
+    </button>  
+
+    <button class="btn max-w-48 bg-my-pink text-my-light">
+      Crear Noticia
+    </button>
+  </div>
+
+  @if (newsResult().isSuccess) {
+    <app-news-list-component viewMode="table" [loading]="loading()" [newsList]="newsResult().result.result" />
+  } @else {
+    <app-message-error-component [message]="newsResult().message"/>
+  }
+
+  @if (!loading()) {
+    <app-pagination-component 
+      [currentPage]=1
+      [totalPages]=1
+      (prevPage)="($event)"
+      (nextPage)="($event)" 
+    />
+  }
+</section>

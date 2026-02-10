@@ -7,6 +7,9 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, finalize, of, switchMap, tap } from 'rxjs';
 import { NewsListComponent } from "@shared/components/news-list-component/news-list-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { Router } from '@angular/router';
+import { NewsModel } from '@core/models/news-model';
+import { ROUTES } from '@shared/constants/routes';
 
 @Component({
   selector: 'app-news-list-page',
@@ -19,6 +22,7 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
   templateUrl: './news-list-page.html',
 })
 export class NewsListPage {
+  private router = inject(Router);
   private newsService = inject(NewsService);
   private readonly defaultApiResponse = API_RESPONSE_PAGINATION_NEWS_LIST;
   private readonly items = signal(10);
@@ -74,7 +78,15 @@ export class NewsListPage {
     }
   }
 
-  refreshAction() {
-    this.currentPage.set(1);
+  refreshList() {
+   this.search.set('')
+  }
+
+  onCreate() {
+    this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS, 'form']);
+  }
+
+  onEdit(item: NewsModel) {
+    this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS, 'form'], { state: { url: item } });
   }
 }

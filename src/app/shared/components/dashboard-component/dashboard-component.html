@@ -1,12 +1,14 @@
 <div class="drawer lg:drawer-open">
   <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
 
-  <div class="drawer-content">
+  <div class="drawer-content flex flex-col min-h-dvh">
     <!-- sidebar -->
     <app-dashboard-navbar-component />
 
     <!-- Page content here -->
-    <router-outlet />
+    <div class="flex-1">
+      <router-outlet />
+    </div>
   </div>
 
   <div class="drawer-side is-drawer-close:overflow-visible">

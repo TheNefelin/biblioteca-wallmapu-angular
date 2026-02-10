@@ -1,1 +1,60 @@
-<p>news-form-page works!</p>
+<app-section-header-component
+  title="Crear Noticia" 
+  [route]="ROUTES.PROTECTED.ADMIN.NEWS"
+  routeText="Volver"
+/>
+
+<pre>{{ news() | json }}</pre>
+
+<section class="p-4">
+  <form class="fieldset bg-my-light border-base-300 rounded-box w-xs border p-4">
+    <fieldset class="fieldset">
+      <label class="label">Título</label>
+      <input type="text" class="input validator" placeholder="Título" required />
+      <p class="validator-hint hidden mt-0">Requerido</p>
+    </fieldset>
+  
+    <fieldset class="fieldset">
+      <label class="label">Subtítulo</label>
+      <input type="text" class="input validator" placeholder="Subtítulo" required />
+      <p class="validator-hint hidden mt-0">Requerido</p>
+    </fieldset>
+  
+    <fieldset class="fieldset">
+      <label class="label">Descripción</label>
+      <textarea class="textarea validator mt-2" required placeholder="Descripción"></textarea>
+      <p class="validator-hint hidden mt-0">Requerido</p>
+    </fieldset>
+  
+    <fieldset class="fieldset">
+      <label class="label">Cargar imagenes 1 hasta 3</label>
+      <input
+        type="file" class="file-input validator mt-2" accept="image/*" multiple required 
+        (change)="onChangeImages($event)"
+      />
+      <p class="validator-hint hidden mt-0">Requerido</p>
+    
+      @if (imageError()) {
+        <p class="text-error text-sm mt-1">
+          {{ imageError() }}
+        </p>
+      }
+    </fieldset>
+  
+    <button class="btn bg-my-purple text-my-light mt-4" type="submit">Submit form</button>
+  </form>
+  
+  @if (selectedImages().length > 0) {
+    <div class="flex gap-4 mt-4 flex-wrap">
+      @for (file of selectedImages(); track file.name) {
+        <div class="relative w-full aspect-video overflow-hidden rounded-lg border border-base-300">
+          <img
+            [src]="createPreview(file)"
+            alt="{{ file.name }}"
+            class="object-cover w-full h-full"
+          />
+        </div>
+      }
+    </div>
+  }
+</section>

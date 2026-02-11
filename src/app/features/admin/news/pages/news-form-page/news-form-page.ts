@@ -8,6 +8,7 @@ import { NewsService } from '@core/services/news-service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { NewsGalleryService } from '@core/services/news-gallery-service';
 
 @Component({
   selector: 'app-news-form-page',
@@ -22,6 +23,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 export class NewsFormPage {
   private readonly initialUrl: NewsWithImagesModel | null = history.state.url;
   private readonly newsService = inject(NewsService);
+  private readonly newsGalleryService = inject(NewsGalleryService);
   private router = inject(Router);
   
   readonly ROUTES = ROUTES;
@@ -84,22 +86,72 @@ export class NewsFormPage {
       body: body
     }
 
-    const request = isEdit
-      ? this.newsService.update(payload)
-      : this.newsService.create(payload);
+    //const request = isEdit
+    //  ? this.newsService.update(payload)
+    //  : this.newsService.create(payload);
 
-    this.isLoading.set(true);
+    //this.isLoading.set(true);
 
-    request.subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
-      },
-      error: (e: HttpErrorResponse) => {
-        this.isLoading.set(false);
-        this.errorMessage.set(e?.message ?? 'Error inesperado')
-      },
-    }); 
+    //request.subscribe({
+    //  next: () => {
+    //    this.isLoading.set(false);
+    //    this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
+    //  },
+    //  error: (e: HttpErrorResponse) => {
+    //    this.isLoading.set(false);
+    //    this.errorMessage.set(e?.message ?? 'Error inesperado')
+    //  },
+    //});
+
+    if (isEdit) {
+      // Lógica de edición existente
+      this.newsService.update(payload).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
+        },
+        error: (e: HttpErrorResponse) => {
+          this.isLoading.set(false);
+          this.errorMessage.set(e?.message ?? 'Error inesperado');
+        },
+      });
+    } else {
+      // CREAR NUEVA NOTICIA
+      this.newsService.create(payload).subscribe({
+        next: (apiResponse) => {
+          const newsId = apiResponse.result.id_news;
+  
+          console.log(newsId)
+
+          // Solo si hay imágenes seleccionadas
+          const images = this.selectedImages().map(img => img.file);
+          const alts = this.selectedImages().map((_, i) => `Imagen ${i + 1}`);
+  
+          console.log(images)
+          console.log(alts)
+
+          if (images.length > 0) {
+            this.newsGalleryService.create(newsId, images, alts).subscribe({
+              next: () => {
+                this.isLoading.set(false);
+                this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
+              },
+              error: (e: HttpErrorResponse) => {
+                this.isLoading.set(false);
+                this.errorMessage.set(e?.message ?? 'Error al subir imágenes');
+              }
+            });
+          } else {
+            this.isLoading.set(false);
+            this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
+          }
+        },
+        error: (e: HttpErrorResponse) => {
+          this.isLoading.set(false);
+          this.errorMessage.set(e?.message ?? 'Error al crear noticia');
+        }
+      });
+    }
   }
 
   protected onChangeImages(event: Event): void {

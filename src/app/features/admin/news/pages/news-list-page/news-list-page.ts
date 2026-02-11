@@ -85,8 +85,4 @@ export class NewsListPage {
   onCreate() {
     this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS, 'form']);
   }
-
-  onEdit(item: NewsModel) {
-    this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS, 'form'], { state: { url: item } });
-  }
 }

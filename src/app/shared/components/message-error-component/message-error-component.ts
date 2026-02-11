@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-message-error-component',
@@ -6,5 +6,5 @@ import { Component, Input } from '@angular/core';
   templateUrl: './message-error-component.html',
 })
 export class MessageErrorComponent {
-  @Input() message: string = "Error";
+  readonly message = input<string | null>("Error");
 }

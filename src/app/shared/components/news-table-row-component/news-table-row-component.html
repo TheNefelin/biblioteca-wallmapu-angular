@@ -15,7 +15,7 @@
     <div class="text-xs uppercase font-semibold opacity-60">{{ news().title }}</div>
   </div>
 
-  <button class="btn bg-my-green text-my-light"> Modificar
-    
-  </button>
+  <button
+    (click)="onEdit(news())" 
+    class="btn bg-my-green text-my-light">Modificar</button>
 </li>

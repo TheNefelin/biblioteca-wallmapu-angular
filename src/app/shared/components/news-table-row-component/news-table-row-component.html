@@ -9,9 +9,13 @@
         class="object-cover rounded-box" 
       /> 
     }
-    </div>
+  </div>
+  
   <div>
-    <div>{{ news().created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</div>
+    <div class="text-sm">
+      <span>{{ news().created_at | date:'yyyy-MM-dd' }}</span>
+      <span class="hidden md:inline"> - {{ news().created_at | date:'HH:mm:ss' }}</span>
+    </div>
     <div class="text-xs uppercase font-semibold opacity-60">{{ news().title }}</div>
   </div>
 

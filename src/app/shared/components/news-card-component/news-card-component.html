@@ -19,7 +19,7 @@
     </p>
     
     <div class="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
-      <span class="text-xs text-my-dark/50">{{ news().date }}</span>
+      <span class="text-xs text-my-dark/50">{{ news().created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</span>
       <a 
         [routerLink]="newsRouterLink()"
         class="text-primary font-bold text-sm inline-flex items-center group/link"

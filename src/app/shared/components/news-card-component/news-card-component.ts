@@ -1,7 +1,7 @@
-import { NgOptimizedImage } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NewsModel } from '@core/models/news-model';
+import { NewsWithImagesModel } from '@core/models/news-model';
 import { ROUTES } from '@shared/constants/routes';
 
 @Component({
@@ -9,11 +9,12 @@ import { ROUTES } from '@shared/constants/routes';
   imports: [
     RouterLink,
     NgOptimizedImage,
+    DatePipe,
   ],
   templateUrl: './news-card-component.html',
 })
 export class NewsCardComponent {
-  readonly news = input.required<NewsModel>();
+  readonly news = input.required<NewsWithImagesModel>();
 
   newsRouterLink = computed(() => ROUTES.NEWS.DETAIL(this.news().id_news));
 }

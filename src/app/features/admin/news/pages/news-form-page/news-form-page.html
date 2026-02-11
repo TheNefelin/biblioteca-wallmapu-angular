@@ -56,10 +56,6 @@
           (change)="onChangeImages($event)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-
-        @if (imageError()) {
-          <p class="text-error text-sm mt-1">{{ imageError() }}</p>
-        }
       </fieldset>
       
       <!-- Botón de envío -->

@@ -1,8 +1,8 @@
 import { ApiResponseModel } from "@core/models/api-response-model";
-import { NewsModel } from "@core/models/news-model";
+import { NewsModel, NewsWithImagesModel } from "@core/models/news-model";
 import { PaginationModel } from "@core/models/pagination-model";
 
-export const API_RESPONSE_PAGINATION_NEWS_LIST: ApiResponseModel<PaginationModel<NewsModel[]>> = {
+export const API_RESPONSE_PAGINATION_NEWS_LIST: ApiResponseModel<PaginationModel<NewsWithImagesModel[]>> = {
   isSuccess: true,
   statusCode: 0,
   message: "",
@@ -17,7 +17,8 @@ export const API_RESPONSE_PAGINATION_NEWS_LIST: ApiResponseModel<PaginationModel
         title: '',
         subtitle: '',
         body: '',
-        date: '',
+        created_at: '',
+        updated_at: '',
         images: [
           {
             id_news_gallery: 0,
@@ -31,7 +32,7 @@ export const API_RESPONSE_PAGINATION_NEWS_LIST: ApiResponseModel<PaginationModel
   }
 }
 
-export const API_RESPONSE_NEWS: ApiResponseModel<NewsModel> = {
+export const API_RESPONSE_NEWS: ApiResponseModel<NewsWithImagesModel> = {
   isSuccess: true,
   statusCode: 0,
   message: "",
@@ -40,7 +41,8 @@ export const API_RESPONSE_NEWS: ApiResponseModel<NewsModel> = {
     title: '',
     subtitle: '',
     body: '',
-    date: '',
+    created_at: '',
+    updated_at: '',
     images: [
       {
         id_news_gallery: 0,

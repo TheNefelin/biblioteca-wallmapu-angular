@@ -22,11 +22,11 @@ export class ApiResponseService<T> {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, data);
   }
 
-  update(endpoint: string, data: T): Observable<T> {
-    return this.http.put<T>(`${this.apiUrl}/${endpoint}`, data);
+  update(endpoint: string, id: string | number, data: T): Observable<T> {
+    return this.http.put<T>(`${this.apiUrl}/${endpoint}/${id}`, data);
   }
 
-  delete(endpoint: string, id: string | number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${endpoint}/${id}`);
+  delete(endpoint: string, id: string | number): Observable<T> {
+    return this.http.delete<T>(`${this.apiUrl}/${endpoint}/${id}`);
   }
 }

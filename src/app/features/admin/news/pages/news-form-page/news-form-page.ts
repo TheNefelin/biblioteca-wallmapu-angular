@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal,  } from '@angular/core';
-import { NewsModel } from '@core/models/news-model';
+import { FormNewsModel, NewsWithImagesModel } from '@core/models/news-model';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { ROUTES } from '@shared/constants/routes';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { NewsService } from '@core/services/news-service';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-news-form-page',
@@ -16,19 +18,19 @@ import { NewsService } from '@core/services/news-service';
   templateUrl: './news-form-page.html',
 })
 export class NewsFormPage {
-  private readonly initialUrl: NewsModel | null = history.state.url;
+  private readonly initialUrl: NewsWithImagesModel | null = history.state.url;
   private readonly newsService = inject(NewsService);
-
+  private router = inject(Router);
+  
   readonly ROUTES = ROUTES;
-  readonly news = signal<NewsModel | null>(this.initialUrl);
+  readonly news = signal<NewsWithImagesModel | null>(this.initialUrl);
   readonly isEditMode = computed(() => this.news() !== null);
   readonly actionText = computed(() => this.news() ? "Modificar Noticia" : "Crear Noticia");
-  readonly imageError = signal<string | null>(null);
   readonly selectedImages = signal<File[]>([]);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly formData = signal<Partial<NewsModel>>({
+  readonly formData = signal<Partial<NewsWithImagesModel>>({
     title: this.initialUrl?.title ?? '',
     subtitle: this.initialUrl?.subtitle ?? '',
     body: this.initialUrl?.body ?? '',
@@ -58,22 +60,44 @@ export class NewsFormPage {
     const subtitle = (data.subtitle ?? '').trim();
     const body = (data.body ?? '').trim();
     
-    if (!title) {
-      this.errorMessage.set('El título es obligatorio');
-      return;
+    const requiredFields = [
+      { value: title, message: 'El título es obligatorio' },
+      { value: subtitle, message: 'El subtítulo es obligatorio' },
+      { value: body, message: 'La descripción es obligatoria' }
+    ];
+
+    for (const field of requiredFields) {
+      if (!field.value) {
+        this.errorMessage.set(field.message);
+        return;
+      }
     }
 
-    if (!subtitle) {
-      this.errorMessage.set('El subtítulo es obligatorio');
-      return;
+    const isEdit = this.isEditMode();
+
+    const payload: FormNewsModel = {
+      id_news: isEdit ? this.news()?.id_news ?? 0 : 0,
+      title: title,
+      subtitle: subtitle,
+      body: body
     }
 
-    if (!body) {
-      this.errorMessage.set('La descripción es obligatorio');
-      return;
-    }
+    const request = isEdit
+      ? this.newsService.update(payload)
+      : this.newsService.create(payload);
 
+    this.isLoading.set(true);
 
+    request.subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
+      },
+      error: (e: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(e?.message ?? 'Error inesperado')
+      },
+    }); 
   }
 
   protected onChangeImages(event: Event): void {
@@ -82,14 +106,14 @@ export class NewsFormPage {
 
     // requerido
     if (files.length === 0) {
-      this.imageError.set('Debes seleccionar al menos una imagen');
+      this.errorMessage.set('Debes seleccionar al menos una imagen');
       input.value = '';
       return;
     }
 
     // máximo 3
     if (files.length > 3) {
-      this.imageError.set('Máximo 3 imágenes permitidas');
+      this.errorMessage.set('Máximo 3 imágenes permitidas');
       input.value = '';
       return;
     }
@@ -97,13 +121,13 @@ export class NewsFormPage {
     // solo imágenes
     for (const file of files) {
       if (!file.type.startsWith('image/')) {
-        this.imageError.set('Solo se permiten imágenes');
+        this.errorMessage.set('Solo se permiten imágenes');
         input.value = '';
         return;
       }
     }
 
-    this.imageError.set(null);
+    this.errorMessage.set(null);
     this.selectedImages.set(files);
   }
 

@@ -237,6 +237,7 @@ ng g c shared/components/book-card-component --skip-tests --style=none
 ng g c shared/components/dashboard-component --skip-tests --style=none
 ng g c shared/components/dashboard-navbar-component --skip-tests --style=none
 ng g c shared/components/dashboard-sidebar-component --skip-tests --style=none
+ng g c shared/components/modal-delete-component --skip-tests --style=none
 ng g c shared/components/footer-component --skip-tests --style=none
 ng g c shared/components/header-component --skip-tests --style=none
 ng g c shared/components/loading-component --skip-tests --style=none

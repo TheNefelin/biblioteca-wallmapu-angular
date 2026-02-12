@@ -1,0 +1,36 @@
+@if (isOpen()) {
+  <div class="modal modal-open" role="dialog">
+    <div class="modal-box bg-my-light">
+      
+      <h3 class="text-lg font-bold text-my-pink">
+        {{ title() }}
+      </h3>
+
+      <p class="py-4 text-my-dark">
+        ¿Estás seguro que deseas eliminar: 
+        <strong class="text-my-purple">{{ itemName() }}</strong>?
+      </p>
+      
+      <div class="modal-action">
+        <button 
+          class="btn bg-my-pink text-my-light"
+          (click)="confirm.emit()"
+        >
+          @if (loading()) {
+            <span class="loading loading-spinner text-my-light"></span>
+          } @else {
+            Eliminar
+          }  
+        </button>
+
+        <button 
+          class="btn"
+          (click)="cancel.emit()"
+        >
+          Cancelar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

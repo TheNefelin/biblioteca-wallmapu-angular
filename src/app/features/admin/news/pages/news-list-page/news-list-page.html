@@ -37,3 +37,13 @@
     (nextPage)="($event)" 
   />
 </section>
+
+<app-modal-delete-component
+  [isOpen]="showDeleteModal()"
+  [loading]="loading()"
+  title="Eliminar noticia"
+  [itemName]="selectedItem()?.title"
+  (confirm)="confirmDelete()"
+  (cancel)="closeModal()"
+/>
+

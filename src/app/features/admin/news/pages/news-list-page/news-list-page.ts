@@ -10,6 +10,7 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
 import { Router } from '@angular/router';
 import { NewsModel } from '@core/models/news-model';
 import { ROUTES } from '@shared/constants/routes';
+import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
 
 @Component({
   selector: 'app-news-list-page',
@@ -17,7 +18,8 @@ import { ROUTES } from '@shared/constants/routes';
     SectionHeaderComponent,
     PaginationComponent,
     NewsListComponent,
-    MessageErrorComponent
+    MessageErrorComponent,
+    ModalDeleteComponent
 ],
   templateUrl: './news-list-page.html',
 })
@@ -28,6 +30,9 @@ export class NewsListPage {
   private readonly items = signal(10);
   private readonly search = signal('');
   private readonly refreshTrigger = signal(0);
+  
+  readonly showDeleteModal = signal(false);
+  readonly selectedItem = signal<NewsModel | null>(null);
 
   readonly currentPage = signal(1);
   readonly totalPages = signal<number>(1);
@@ -89,14 +94,30 @@ export class NewsListPage {
   }
 
   onDelete(item: NewsModel) {
-    this.loading.set(true);
+    this.selectedItem.set(item);
+    this.showDeleteModal.set(true);
+  }
 
+  closeModal() {
+    this.showDeleteModal.set(false);
+    this.selectedItem.set(null);
+  }
+
+  confirmDelete() {
+    const item = this.selectedItem();
+    if (!item) return;
+  
+    this.loading.set(true);
+  
     this.newsService.delete(item.id_news).subscribe({
       next: () => {
-        // volver a cargar datos
-        this.refreshTrigger.update(v => v + 1); // dispara recarga
+        this.closeModal();
+        this.refreshTrigger.update(v => v + 1);
       },
-      error: err => console.error(err)
+      error: err => {
+        console.error(err);
+        this.loading.set(false);
+      }
     });
-  }
+  }  
 }

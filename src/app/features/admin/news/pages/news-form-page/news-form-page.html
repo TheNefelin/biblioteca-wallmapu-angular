@@ -9,7 +9,7 @@
 
   <section 
     class="p-4 flex flex-wrap justify-center gap-4"
-    [class.justify-center]="selectedImages().length > 0"
+    [class.justify-center]="imageList().length > 0"
   >
 
     <!-- Formulario -->
@@ -54,13 +54,13 @@
         <!-- Carga de imágenes -->
         <fieldset class="fieldset flex flex-col">
           <label class="label font-semibold">Cargar imágenes (1 a 3)</label>
-          <input
-            type="file" class="file-input validator mt-2 w-full" accept="image/*" multiple required 
-            (change)="onChangeImages($event)"
-          />
+          <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
+            <span class="font-bold text-">Elegir Imagenes</span>
+            <input type="file" class="hidden" accept="image/*" multiple (change)="onChangeImages($event)">
+          </label>
           <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
         </fieldset>
-        
+                
         <!-- Botón de envío -->
         <button class="btn bg-my-purple text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
           {{ actionText() }}
@@ -76,19 +76,60 @@
     </div>
 
     <!-- Previsualización de imágenes -->
-    @if (selectedImages().length > 0) {
+    @if (imageList().length > 0) {
       <div class="grid gap-4 w-full max-w-2xl">
-        @for (item of selectedImages(); track item.file.name) {
-          <div class="relative w-full aspect-video overflow-hidden rounded-lg border">
+        @for (item of imageList(); track item.preview) {
+          <div class="relative w-full aspect-video overflow-hidden rounded-lg border group">
+            
+            <!-- Imagen -->
             <img
               [src]="item.preview"
-              [alt]="item.file.name"
+              [alt]="item.alt || 'Imagen sin nombre'"
               class="object-cover w-full h-full"
             />
+
+            <!-- Overlay semi-transparente con info -->
+            <div class="absolute top-0 left-0 w-full h-full bg-black/30 opacity-0 group-hover:opacity-100 transition flex justify-between items-start p-2">
+              <!-- ID o Nueva -->
+              <span class="text-white font-bold text-sm">
+                {{ item.existing ? 'ID: ' + item.id : 'Nueva' }}
+              </span>
+
+              @if (item.existing) {
+                <p class="text-my-light">{{ item.alt }}</p>               
+              } @else {
+                <input
+                  class="input text-sm text-my-dark"
+                  type="text"
+                  placeholder="Imagen sin nombre"
+                  [value]="item.alt"
+                  (input)="updateImageAlt(item, $any($event.target).value)"
+                >
+              }
+
+              <!-- Botón eliminar -->
+              <button 
+                type="button"
+                class="bg-my-pink text-sm px-2 py-1 rounded hover:bg-my-pink/80 text-my-light"
+                (click)="confirmDeleteImage(item)"
+              >
+                Eliminar
+              </button>
+            </div>
+
           </div>
         }
       </div>
     }
-    
+
   </section>
 }
+
+<app-modal-delete-component
+  [isOpen]="modalDeleteOpen()"
+  [loading]="modalDeleteLoading()"
+  [itemName]="modalDeleteItem()?.existing ? 'ID ' + modalDeleteItem()?.id : 'Nueva'"
+  [title]="'Confirmar eliminación de imagen'"
+  (confirm)="executeDeleteImage()"
+  (cancel)="modalDeleteOpen.set(false)"
+/>

@@ -275,6 +275,8 @@ ng g c features/public/news/pages/news-details-page --skip-tests --style=none
 ng g c features/public/news/pages/news-page --skip-tests --style=none
 
 ng g c features/admin/book/pages/book-page --skip-tests --style=none
+
+ng g interface features/admin/news/models/image-item
 ng g c features/admin/news/pages/news-list-page --skip-tests --style=none
 ng g c features/admin/news/pages/news-form-page --skip-tests --style=none
 

@@ -26,4 +26,10 @@ export class NewsGalleryService {
       `${this.endpoint}/news/${news_id}`, formData
     );
   }
+
+  delete(id: number): Observable<ApiResponseModel<string>> {
+    return this.apiResponseService.delete<ApiResponseModel<string>>(
+      this.endpoint, id
+    );
+  }
 }

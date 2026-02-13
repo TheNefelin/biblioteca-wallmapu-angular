@@ -11,6 +11,8 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 import { NewsGalleryService } from '@core/services/news-gallery-service';
 import { ImageItem } from '@features/admin/news/models/image-item';
 import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
+import { finalize, of, switchMap, throwError } from 'rxjs';
+import { ApiResponseModel } from '@core/models/api-response-model';
 
 @Component({
   selector: 'app-news-form-page',
@@ -37,21 +39,19 @@ export class NewsFormPage {
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly imageList = signal<ImageItem[]>(
-    this.initialUrl?.images?.map(img => ({
-      id: img.id_news_gallery,
-      alt: img.alt,
-      preview: img.url,
-      existing: true
-    })) ?? []
-  );
+  readonly imageList = signal<ImageItem[]>(this.initialUrl?.images?.map(img => ({
+    id: img.id_news_gallery,
+    alt: img.alt,
+    preview: img.url,
+    existing: true
+  })) ?? []);
 
   // Modal delete
   readonly modalDeleteOpen = signal(false);
   readonly modalDeleteLoading = signal(false);
   readonly modalDeleteItem = signal<ImageItem | null>(null);
 
-  // Form
+  // Form data
   readonly formData = signal<Partial<NewsWithImagesModel>>({
     title: this.initialUrl?.title ?? '',
     subtitle: this.initialUrl?.subtitle ?? '',
@@ -68,76 +68,112 @@ export class NewsFormPage {
     this.errorMessage.set(null);
   }
 
-  /* ------------------- Submit Form ------------------- */
+  /* ------------------- Submit ------------------- */
   protected onSubmit(event: Event) {
     event.preventDefault();
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
 
     const { title, subtitle, body } = this.formData();
-    const trimmed = { title: title?.trim(), subtitle: subtitle?.trim(), body: body?.trim() };
+    const trimmed = {
+      title: title?.trim(),
+      subtitle: subtitle?.trim(),
+      body: body?.trim()
+    };
 
-    for (const field of [
-      { value: trimmed.title, message: 'El título es obligatorio' },
-      { value: trimmed.subtitle, message: 'El subtítulo es obligatorio' },
-      { value: trimmed.body, message: 'La descripción es obligatoria' }
-    ]) {
-      if (!field.value) {
-        this.handleError(null, field.message);
-        return;
-      }
-    }
+    // Validaciones obligatorias
+    if (!trimmed.title) { return this.handleError(null, 'El título es obligatorio'); }
+    if (!trimmed.subtitle) { return this.handleError(null, 'El subtítulo es obligatorio'); }
+    if (!trimmed.body) { return this.handleError(null, 'La descripción es obligatoria'); }
+
+    // Validaciones de longitud según BD
+    if (trimmed.title.length > 45) { return this.handleError(null, 'El título no puede superar 45 caracteres'); }
+    if (trimmed.subtitle.length > 45) { return this.handleError(null, 'El subtítulo no puede superar 45 caracteres'); }
 
     const payload: FormNewsModel = {
       id_news: this.isEditMode() ? this.news()!.id_news : 0,
       title: trimmed.title!,
       subtitle: trimmed.subtitle!,
       body: trimmed.body!
-    };    
+    };
 
-    if (this.isEditMode()) {
-      this.updateNews(payload);
-    } else {
-      this.createNews(payload);
-    }
+    this.saveNews(payload);
   }
 
-  private updateNews(payload: FormNewsModel) {
-    this.newsService.update(payload).subscribe({
-      next: () => this.uploadNewImages(payload.id_news),
-      error: (e: HttpErrorResponse) => this.handleError(e, 'Error al modificar noticia')
+/* ------------------- Save (Create / Update) ------------------- */
+private saveNews(payload: FormNewsModel) {
+  this.isLoading.set(true);
+  this.errorMessage.set(null);
+
+  const request$ = this.isEditMode()
+    ? this.newsService.update(payload)
+    : this.newsService.create(payload);
+
+  request$
+    .pipe(
+      switchMap((res: ApiResponseModel<any>) => {
+        if (!res.isSuccess) {
+          return throwError(() => new Error(res.message || 'Error al guardar noticia'));
+        }
+
+        const newsId = this.isEditMode() ? payload.id_news : res.result.id_news;
+
+        // Subir imágenes solo si hay nuevas
+        const newImages = this.imageList().filter(img => !img.existing && img.file);
+        if (!newImages.length) return of(null);
+
+        const files = newImages.map(img => img.file!);
+        const alts = newImages.map(img => img.alt?.trim() || 'Imagen sin nombre');
+
+        return this.newsGalleryService.create(newsId, files, alts).pipe(
+          switchMap((resImages: ApiResponseModel<any>) => {
+            if (!resImages.isSuccess) {
+              return throwError(() => new Error(resImages.message || 'Error al subir imágenes'));
+            }
+            return of(resImages.result);
+          })
+        );
+      }),
+      finalize(() => this.isLoading.set(false)) // siempre se desactiva el loading
+    )
+    .subscribe({
+      next: () => this.navigateBack(),
+      error: (err: HttpErrorResponse | Error) => {
+        if (err instanceof HttpErrorResponse) {
+          this.handleError(err, err.message);
+        } else {
+          this.handleError(null, err.message); // pasamos null al error HTTP, pero el mensaje se mantiene
+        }
+      }
     });
   }
 
-  private createNews(payload: FormNewsModel) {
-    this.newsService.create(payload).subscribe({
-      next: res => this.uploadNewImages(res.result.id_news),
-      error: (e: HttpErrorResponse) => this.handleError(e, 'Error al crear noticia')
-    });
-  }
-
-  /** Subir solo imágenes nuevas, tanto en creación como edición */
+  /* ------------------- Upload Images ------------------- */
   private uploadNewImages(newsId: number) {
     const newImages = this.imageList().filter(img => !img.existing && img.file);
-    if (!newImages.length) return this.navigateBack();
+
+    if (!newImages.length) return of(null);
 
     const files = newImages.map(img => img.file!);
-    const alts = newImages.map(img => img.alt?.trim() || "Imagen sin nombre");
+    const alts = newImages.map(img => img.alt?.trim() || 'Imagen sin nombre');
 
-    this.newsGalleryService.create(newsId, files, alts).subscribe({
-      next: () => this.navigateBack(),
-      error: (e: HttpErrorResponse) => this.handleError(e, 'Error al subir imágenes')
-    });
+    return this.newsGalleryService.create(newsId, files, alts).pipe(
+      switchMap((res: ApiResponseModel<any>) => {
+        if (!res.isSuccess) {
+          return throwError(() => new Error(res.message || 'Error al subir imágenes'));
+        }
+        return of(res.result);
+      })
+    );
   }
 
+  /* ------------------- Navigation & Errors ------------------- */
   private navigateBack() {
-    this.isLoading.set(false);
     this.router.navigate([ROUTES.PROTECTED.ADMIN.NEWS]);
   }
 
-  private handleError(e: HttpErrorResponse | null, fallback: string) {
-    this.isLoading.set(false);
-    this.errorMessage.set(e?.message ?? fallback);
+  /* ------------------- Manejo de errores ------------------- */
+  private handleError(e: HttpErrorResponse | null, message: string) {
+    this.errorMessage.set(message);
+    this.isLoading.set(false); // <--- clave para que loading no quede pegado
   }
 
   /* ------------------- Image Handling ------------------- */
@@ -171,10 +207,6 @@ export class NewsFormPage {
     input.value = '';
   }
 
-  protected createPreview(file: File) {
-    return URL.createObjectURL(file);
-  }
-
   protected confirmDeleteImage(item: ImageItem) {
     this.modalDeleteItem.set(item);
     this.modalDeleteOpen.set(true);
@@ -187,25 +219,31 @@ export class NewsFormPage {
     this.modalDeleteLoading.set(true);
 
     if (item.existing && item.id) {
-      this.newsGalleryService.delete(item.id).subscribe({
-        next: () => this.removeImageFromList(item),
-        error: (e: HttpErrorResponse) => this.handleError(e, 'Error al eliminar imagen')
-      });
+      this.newsGalleryService.delete(item.id)
+        .pipe(finalize(() => {
+          this.modalDeleteLoading.set(false);
+          this.modalDeleteOpen.set(false);
+        }))
+        .subscribe({
+          next: () => this.removeImageFromList(item),
+          error: (e: HttpErrorResponse) =>
+            this.handleError(e, 'Error al eliminar imagen')
+        });
     } else {
       this.removeImageFromList(item);
+      this.modalDeleteLoading.set(false);
+      this.modalDeleteOpen.set(false);
     }
   }
 
   private removeImageFromList(item: ImageItem) {
-    if (!item.existing && item.file) URL.revokeObjectURL(item.preview); // liberar memoria
+    if (!item.existing && item.file) URL.revokeObjectURL(item.preview);
     this.imageList.update(list => list.filter(i => i !== item));
-    this.modalDeleteLoading.set(false);
-    this.modalDeleteOpen.set(false);
   }
 
   protected updateImageAlt(item: ImageItem, alt: string) {
     this.imageList.update(list =>
       list.map(i => i === item ? { ...i, alt: alt.trim() || 'Imagen sin nombre' } : i)
     );
-  }  
+  }
 }

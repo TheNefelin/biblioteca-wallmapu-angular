@@ -11,7 +11,6 @@ export class ApiResponseService {
   private apiUrl = environment.apiUrl;
 
   getAll<TResponse>(endpoint: string): Observable<TResponse> {
-    console.log(`${this.apiUrl}/${endpoint}`)
     return this.http.get<TResponse>(`${this.apiUrl}/${endpoint}`);
   }
 

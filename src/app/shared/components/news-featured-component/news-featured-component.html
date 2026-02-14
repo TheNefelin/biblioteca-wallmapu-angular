@@ -4,51 +4,55 @@
     <div class="skeleton h-64 bg-my-light/50"></div>
   </section>  
 } @else {
-  <div class="rounded-2xl overflow-hidden shadow-lg bg-my-light">
-    <div class="flex flex-col lg:flex-row">
-  
-      <!-- Imagen -->
-      <div class="lg:w-1/2 relative aspect-square lg:aspect-auto max-h-96">
-        <img
-          [ngSrc]="news().images[0].url"
-          [alt]="news().images[0].alt"
-          fill
-          class="w-full h-full object-cover object-center"
-        />
-      </div>
-  
-      <!-- Contenido -->
-      <div class="lg:w-1/2 bg-linear-to-tr from-my-pink/80 via-my-pink to-my-pink/60 text-white p-8 flex flex-col justify-center">
-  
-        <!-- Badge -->
-        <span class="badge badge-sm bg-white/20 text-white border-none w-fit mb-4">
-          Artículo Destacado
-        </span>
-  
-        <!-- Título -->
-        <h2 class="text-2xl lg:text-3xl font-bold leading-tight mb-4">
-          {{ news().title }}
-        </h2>
-  
-        <!-- Descripción -->
-        <p class="text-sm text-white/90 mb-6">
-          {{ news().subtitle }}  
-        </p>
-  
-        <!-- Meta -->
-        <div class="flex items-center gap-4 text-xs text-white/80 mb-6">
-          <span>📅 {{ news().created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</span>
+  <section class="max-w-7xl mx-auto p-4 pb-0">
+
+    <div class="rounded-2xl overflow-hidden shadow-lg bg-my-light">
+      <div class="flex flex-col lg:flex-row">
+    
+        <!-- Imagen -->
+        <div class="lg:w-1/2 relative aspect-square lg:aspect-auto max-h-96">
+          <img
+            [ngSrc]="news().images[0].url"
+            [alt]="news().images[0].alt"
+            fill
+            class="w-full h-full object-cover object-center"
+          />
         </div>
-  
-        <!-- Botón -->
-        <div>
-          <button [routerLink]="newsRouterLink()" class="btn bg-white text-my-green border-none hover:bg-gray-100">
-            Leer Noticia Completa →
-          </button>
+    
+        <!-- Contenido -->
+        <div class="lg:w-1/2 bg-linear-to-tr from-my-pink/80 via-my-pink to-my-pink/60 text-white p-8 flex flex-col justify-center">
+    
+          <!-- Badge -->
+          <span class="badge badge-sm bg-white/20 text-white border-none w-fit mb-4">
+            Artículo Destacado
+          </span>
+    
+          <!-- Título -->
+          <h2 class="text-2xl lg:text-3xl font-bold leading-tight mb-4">
+            {{ news().title }}
+          </h2>
+    
+          <!-- Descripción -->
+          <p class="text-sm text-white/90 mb-6">
+            {{ news().subtitle }}  
+          </p>
+    
+          <!-- Meta -->
+          <div class="flex items-center gap-4 text-xs text-white/80 mb-6">
+            <span>📅 {{ news().created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</span>
+          </div>
+    
+          <!-- Botón -->
+          <div>
+            <button [routerLink]="newsRouterLink()" class="btn bg-white text-my-green border-none hover:bg-gray-100">
+              Leer Noticia Completa →
+            </button>
+          </div>
+    
         </div>
-  
+    
       </div>
-  
-    </div>
-  </div>  
+    </div> 
+
+  </section> 
 }

@@ -12,9 +12,7 @@
   />
 
   @if (newsResult().isSuccess) {
-    <section class="p-4 pb-0">
-      <app-news-featured-component [loading]="loading()" [news]="newsFeatured()"/>
-    </section>
+    <app-news-featured-component [loading]="loading()" [news]="newsFeatured()"/>
   
     <app-news-list-component [loading]="loading()" [newsList]="newsList()" />
   } @else {

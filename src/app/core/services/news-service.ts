@@ -3,7 +3,7 @@ import { ApiResponseService } from '@core/helpers/api-response-service';
 import { ApiResponseModel } from '@core/models/api-response-model';
 import { FormNewsModel, NewsWithImagesModel, NewsModel } from '@core/models/news-model';
 import { PaginationModel } from '@core/models/pagination-model';
-import { Observable, of, retry } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

@@ -260,7 +260,11 @@ ng g interface features/auth/models/user
 ng g interface features/auth/models/user-google
 ng g interface features/auth/models/api-auth-request
 ng g interface features/auth/models/api-auth-response
+ng g interface features/auth/models/api-auth-google-request
+ng g interface features/auth/models/api-auth-google-response
 ng g s features/auth/services/auth-service --skip-tests
+ng g s features/auth/services/auth-store --skip-tests
+ng g s features/auth/services/auth-google-service --skip-tests
 ng g c features/auth/components/auth-button-component --skip-tests --style=none
 ng g c features/auth/components/google-signin-component --skip-tests --style=none
 
@@ -280,6 +284,7 @@ ng g c features/admin/book/pages/book-page --skip-tests --style=none
 ng g interface features/admin/news/models/image-item
 ng g c features/admin/news/pages/news-list-page --skip-tests --style=none
 ng g c features/admin/news/pages/news-form-page --skip-tests --style=none
+ng g c features/admin/user/pages/user-panel-page --skip-tests --style=none
 
 ng g c features/user/dashboard/pages/dashboard-page --skip-tests --style=none
 ng g c features/user/profile/pages/profile-page --skip-tests --style=none

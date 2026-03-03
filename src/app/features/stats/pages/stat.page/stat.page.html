@@ -206,18 +206,28 @@
   @if (errorMessage()) {
     <app-message-error-component [message]="errorMessage()" />
   }  
+
+  <div>DASHBOARD DEMO</div>
 </section>
 
 <section class="grid p-4 gap-4">
+  <div class="divider text-base-content/40">Prueba Libros</div>
   <app-author-select-components />
   <app-editorial-select-components />
   <app-subject-select-components />
-  <div class="divider text-base-content/40">Prueba</div>
+  <div class="divider text-base-content/40">Prueba Direccion</div>
   <app-commune-select-components />
-  <app-province-select-components />
-  <app-region-select-components />
-  <div class="divider text-base-content/40">Prueba</div>
+  <div>
+    <app-province-select-components />
+    <span> NO SE USARA, por ahora</span>
+  </div>
+  <div>
+    <app-region-select-components />
+    <span> NO SE USARA, por ahora</span>
+  </div>
+  <div class="divider text-base-content/40">Prueba Usuario</div>
   <app-user-role-select-components />
   <app-user-status-select-components />
+  <div class="divider text-base-content/40"></div>
 </section>
 

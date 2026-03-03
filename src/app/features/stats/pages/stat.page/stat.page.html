@@ -231,3 +231,96 @@
   <div class="divider text-base-content/40"></div>
 </section>
 
+
+<!-- BookSearchComponent -->
+<div class="w-full">
+  <div class="card bg-base-100 shadow-md border border-base-300">
+    <div class="card-body">
+
+      <h2 class="card-title text-xl md:text-2xl">
+        📚 Buscador de Libros
+      </h2>
+
+      <form class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        <!-- Texto libre -->
+        <div class="form-control md:col-span-4">
+          <label class="label">
+            <span class="label-text font-semibold">Buscar</span>
+          </label>
+          <input
+            type="text"
+            name="query"
+            placeholder="Título, descripción, ISBN..."
+            class="input input-bordered w-full focus:input-primary"
+          />
+        </div>
+
+        <!-- Autor -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Autor</span>
+          </label>
+          <select name="author" class="select select-bordered">
+            <option value="">Todos</option>
+            <option value="garcia_marquez">Gabriel García Márquez</option>
+            <option value="allende">Isabel Allende</option>
+            <option value="vargas_llosa">Mario Vargas Llosa</option>
+            <option value="rowling">J.K. Rowling</option>
+          </select>
+        </div>
+
+        <!-- Editorial -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Editorial</span>
+          </label>
+          <select name="publisher" class="select select-bordered">
+            <option value="">Todas</option>
+            <option value="planeta">Planeta</option>
+            <option value="penguin">Penguin Random House</option>
+            <option value="alfaguara">Alfaguara</option>
+            <option value="anagrama">Anagrama</option>
+          </select>
+        </div>
+
+        <!-- Género -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Género</span>
+          </label>
+          <select name="genre" class="select select-bordered">
+            <option value="">Todos</option>
+            <option value="novela">Novela</option>
+            <option value="ciencia_ficcion">Ciencia Ficción</option>
+            <option value="historia">Historia</option>
+            <option value="fantasia">Fantasía</option>
+          </select>
+        </div>
+
+        <!-- Orden -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Ordenar por</span>
+          </label>
+          <select name="sort" class="select select-bordered">
+            <option value="recent">Más recientes</option>
+            <option value="title_asc">Título A-Z</option>
+            <option value="title_desc">Título Z-A</option>
+          </select>
+        </div>
+
+        <!-- Acciones -->
+        <div class="md:col-span-4 flex justify-end gap-3 mt-4">
+          <button type="reset" class="btn btn-ghost">
+            Limpiar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Buscar
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

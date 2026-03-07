@@ -4,4 +4,25 @@
   (actionClicked)="navigateGoBack()"
 />
 
-<app-book-form-component [bookModel]="bookModel()" />
+@if (errorMessage()) {
+  <section class="p-4 pb-0">
+    <app-message-error-component 
+      [message]="errorMessage()"
+    />
+  </section>  
+}
+
+<app-book-form-component
+  [actionText]="headerText()" 
+  [isLoading]="isLoading()"
+  [bookFormModel]="bookFormModel()"
+  [subjectModelList]="subjectModelList()"
+  [AuthorModelList]="authorModelList()"
+  (onNewSelectedGenreId)="newSelectedGenreId($event)"
+  (onNewSelectedAuthor)="newSelectedAuthor($event)"
+  (onDeleteAuthor)="deleteAuthor($event)"
+  (onNewSelectedSubject)="newSelectedSubject($event)"
+  (onDeleteSubject)="deleteSubject($event)"
+/>
+
+<pre>{{bookFormModel() | json}}</pre>

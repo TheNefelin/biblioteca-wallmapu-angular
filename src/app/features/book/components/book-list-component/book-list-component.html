@@ -9,7 +9,7 @@
   
     @for (book of bookList(); track $index) {
       <app-book-list-row-component 
-        [bookModel]="book"
+        [bookDetail]="book"
         (edit)="onEdit($event)"
         (delete)="onDelete($event)"
       />

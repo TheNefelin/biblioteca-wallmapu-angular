@@ -15,7 +15,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 export class GenreSelectComponents {
   // ─── Inputs/Outputs ─────────────────────────────
   readonly disabled = input<boolean>(false);
-  readonly selectedId = input<number>(0);
+  readonly selectedId = input<number>();
   readonly newSelectedId = output<number>();  
 
   // ─── Estado interno ─────────────────────────────

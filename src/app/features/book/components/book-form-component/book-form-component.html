@@ -18,7 +18,8 @@
         <label class="label font-semibold">Género</label>
         <div class="my-auto">
           <app-genre-select-components 
-            [selectedId]="formData().genre?.id_genre || 0"
+            [selectedId]="formData().genre_id"
+            (newSelectedId)="newSelectedGenreId($event)"
           />
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -47,10 +48,13 @@
       <div class="divider text-base-content/40">Autores</div>
       <label class="label font-semibold">Seleccionar Autor/es</label>
       <div class="my-2">
-        <app-author-select-components />
+        <app-author-select-components 
+          (onNewSelectedAuthor)="newSelectedAuthor($event)"
+        />
       </div>
       <app-author-list-components
-        [authorList]="bookModel()?.authors"
+        [authorList]="AuthorModelList()"
+        (onDelete)="deleteAuthor($event)"
       />
     </div>
 
@@ -58,17 +62,23 @@
       <div class="divider text-base-content/40">Descriptores</div>
       <label class="label font-semibold">Descriptor/es</label>
       <div class="my-2">
-        <app-subject-select-components />
+        <app-subject-select-components 
+          (onNewSelectedSubject)="newSelectedSubject($event)"
+        />
       </div>
       <app-subject-list-components 
-        [subjectList]="bookModel()?.subjects"
-      />
-
-      <app-subject-select-with-list-components 
-        
+        [subjectList]="subjectModelList()"
+        (onDelete)="deleteSubject($event)"
       />
     </div>
 
+    @if (isLoading()) {
+      <app-loading-component/>
+    } @else {
+    <button class="btn btn-lg bg-my-purple text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
+      {{ actionText() }}
+    </button>  
+    }
   </form>
 
   @if (errorMessage()) {
@@ -77,5 +87,3 @@
     </div>
   }
 </div>
-
-<pre>{{bookModel() | json}}</pre>

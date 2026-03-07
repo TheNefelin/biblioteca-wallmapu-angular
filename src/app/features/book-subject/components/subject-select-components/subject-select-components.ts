@@ -16,7 +16,7 @@ export class SubjectSelectComponents {
   // ─── Inputs/Outputs ─────────────────────────────
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
-  readonly newSelectedId = output<number>();  
+  readonly onNewSelectedSubject = output<SubjectModel>();  
 
   // ─── Estado interno ─────────────────────────────
   protected readonly isOpen = signal(false);
@@ -77,20 +77,19 @@ export class SubjectSelectComponents {
     }
   }
 
-  protected select(author: SubjectModel, event: MouseEvent) {
+  protected select(item: SubjectModel, event: MouseEvent) {
     event.preventDefault();
-    this.selectedSubject.set(author);
+    this.selectedSubject.set(item);
     this.searchText.set('');
     this.isOpen.set(false);
     this.inputRef()?.nativeElement.blur();
-    this.newSelectedId.emit(author.id_subject);
+    this.onNewSelectedSubject.emit(item);
   }
 
   protected clearSelection(event: MouseEvent) {
     event.preventDefault();
     this.selectedSubject.set(null);
     this.searchText.set('');
-    this.newSelectedId.emit(0);
   }
 
   protected onBlur() {

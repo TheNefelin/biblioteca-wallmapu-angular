@@ -8,9 +8,9 @@ import { AuthorModel } from '@features/book-author/models/author-model';
 })
 export class AuthorListComponents {
   readonly authorList = input<AuthorModel[]>();
-  readonly delete = output<AuthorModel>();
+  readonly onDelete = output<AuthorModel>();
 
-  protected onDelete(item: AuthorModel): void {
-    this.delete.emit(item);
+  protected delete(item: AuthorModel): void {
+    this.onDelete.emit(item);
   }
 }

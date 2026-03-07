@@ -15,5 +15,5 @@ export class SubjectService {
     return this.apiResponseService.getAll<ApiResponseModel<SubjectModel[]>>(
       `${this.endpoint}`
     );
-  } 
+  }
 }

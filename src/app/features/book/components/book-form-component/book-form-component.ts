@@ -1,6 +1,5 @@
-import { DatePipe, JsonPipe, NgOptimizedImage } from '@angular/common';
-import { Component, computed, effect, input, output, signal } from '@angular/core';
-import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
+import { DatePipe, JsonPipe } from '@angular/common';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { GenreSelectComponents } from "@features/book-genre/components/genre-select-components/genre-select-components";
 import { AuthorSelectComponents } from "@features/book-author/components/author-select-components/author-select-components";
@@ -8,12 +7,14 @@ import { SubjectSelectComponents } from "@features/book-subject/components/subje
 import { AuthorListComponents } from "@features/book-author/components/author-list-components/author-list-components";
 import { SubjectListComponents } from "@features/book-subject/components/subject-list-components/subject-list-components";
 import { BookDetailModel } from '@features/book/models/book-detail-model';
-import { SubjectSelectWithListComponents } from "@features/book-subject/components/subject-select-with-list-components/subject-select-with-list-components";
+import { SubjectModel } from '@features/book-subject/models/subject-model';
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { BookFormModel } from '@features/book/models/book-form-model';
+import { AuthorModel } from '@features/book-author/models/author-model';
 
 @Component({
   selector: 'app-book-form-component',
   imports: [
-    JsonPipe,
     DatePipe,
     MessageErrorComponent,
     GenreSelectComponents,
@@ -21,19 +22,33 @@ import { SubjectSelectWithListComponents } from "@features/book-subject/componen
     SubjectSelectComponents,
     AuthorListComponents,
     SubjectListComponents,
-    SubjectSelectWithListComponents
+    LoadingComponent
 ],
   templateUrl: './book-form-component.html',
 })
 export class BookFormComponent {
-  readonly bookModel = input<BookDetailModel | null>(null);
-  readonly onFormSubmit = output<BookDetailModel>();
+  readonly isLoading = input<boolean>(false);
+  readonly actionText = input.required<string>();
+  readonly bookFormModel = input<BookFormModel | null>(null);
+  readonly AuthorModelList = input<AuthorModel[]>([])
+  readonly subjectModelList = input<SubjectModel[]>([])
+  //------------------------------------------------
+  readonly onNewSelectedGenreId = output<number>();
+  //------------------------------------------------
+  readonly onNewSelectedAuthor = output<AuthorModel>();
+  readonly onDeleteAuthor = output<AuthorModel>();
+  //------------------------------------------------
+  readonly onNewSelectedSubject = output<SubjectModel>();
+  readonly onDeleteSubject = output<SubjectModel>();
+  //------------------------------------------------
+  readonly onFormSubmit = output<BookFormModel>();
+  //------------------------------------------------
 
   readonly errorMessage = signal<string | null>(null);
-  readonly formData = signal<Partial<BookDetailModel>>({});
+  readonly formData = signal<Partial<BookFormModel>>({});
 
   private readonly effect = effect(() => {
-    const book = this.bookModel();
+    const book = this.bookFormModel();
     if (book) {
       this.formData.set(book);
     }
@@ -47,12 +62,12 @@ export class BookFormComponent {
     this.updateField('summary', value, input);
   }
 
-  private updateField<K extends keyof BookDetailModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof BookFormModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
-      if (input) input.value = this.formData()[key] as string ?? ''; // ✅ Forzar el valor anterior de vuelta en el DOM
-      return; // valor inválido, no actualiza
+      if (input) input.value = this.formData()[key] as string ?? '';
+      return;
     } 
 
     this.formData.update(data => ({ ...data, [key]: sanitized }));
@@ -68,72 +83,69 @@ export class BookFormComponent {
         return value;
     }
   }
-
-  /*  
-
-  protected updateDescription(value: string, input: HTMLTextAreaElement) { 
-    this.updateField('description', value, input);
+  
+  protected newSelectedGenreId(genre_id: number) {
+    this.onNewSelectedGenreId.emit(genre_id);
   }
 
-  protected updateISBN(value: string, input: HTMLInputElement) { 
-    this.updateField('isbn', value, input);
+  protected newSelectedAuthor(item: AuthorModel) {
+    this.onNewSelectedAuthor.emit(item)
   }
 
-  protected updateYear(value: string, input: HTMLInputElement) { 
-    this.updateField('publication_year', value, input);
+  protected deleteAuthor(item: AuthorModel): void {
+    this.onDeleteAuthor.emit(item);
   }
 
-  protected updatePages(value: string, input: HTMLInputElement) { 
-    this.updateField('pages', value, input);
+  protected newSelectedSubject(item: SubjectModel) {
+    this.onNewSelectedSubject.emit(item)
   }
 
-  protected updateEdition(value: string, input: HTMLInputElement) { 
-    this.updateField('edition', value, input);
+  protected deleteSubject(item: SubjectModel): void {
+    this.onDeleteSubject.emit(item);
   }
 
-  protected updateDewey(value: string, input: HTMLInputElement) { 
-    this.updateField('dewey_number', value, input);
-  }
-
-  protected updateCutter(value: string, input: HTMLInputElement) { 
-    this.updateField('cutter', value, input);
-  }
-
- 
-
-  protected onChangeImages(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files || input.files.length === 0) {
-      this.imageError.set('Debes seleccionar una imagen');
-      return;
-    }
-
-    const file = input.files[0];
-
-    // Validar que sea imagen
-    if (!file.type.startsWith('image/')) {
-      this.imageError.set('El archivo debe ser una imagen');
-      return;
-    }
-
-    this.imageError.set(null);
-
-    // Guardar en modelo
-    //this.bookModel.update(b => ({
-    //  ...b,
-    //  image: file
-    //}));
-
-    // Generar preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreview.set(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  }
-  */
   protected formSubmit(event: Event): void {
     event.preventDefault();
+
+    const data = this.formData();
+    const error = this.validateFormOnSubmit(data);
+    
+    if (error) {
+      this.errorMessage.set(error);
+      return;
+    }
+
+    const submitData: BookFormModel = { 
+      ...data,
+      id_book: data.id_book!,
+      title: data.title!,
+      summary: data.summary!,
+      created_at: data.created_at!,
+      updated_at: data.updated_at!,
+      genre_id: data.genre_id!,
+      authors: data.authors!,
+      subjects: data.subjects!
+    }
+
+    this.errorMessage.set(null)
+    this.onFormSubmit.emit(submitData);
+  }
+
+  private validateFormOnSubmit(data: Partial<BookFormModel>): string | null {
+    const title = data.title?.trim();
+    if (!title) return 'El título es requerido';
+    if (title.length < 2) return 'El título debe tener al menos 2 caracteres';
+    if (title.length > 100) return 'El título no debe superar los 100 caracteres';
+  
+    const summary = data.summary?.trim();
+    if (!summary) return 'El resumen es requerido';
+    if (summary.length < 10) return 'El resumen debe tener al menos 10 caracteres';
+  
+    if (!data.genre_id || data.genre_id === 0) return 'El género es requerido';
+  
+    if (!data.authors?.length) return 'El o los autores son requeridos';
+    if (!data.subjects?.length) return 'El o los descriptores son requeridos';
+  
+    return null; // ✅ sin errores
   }
 }

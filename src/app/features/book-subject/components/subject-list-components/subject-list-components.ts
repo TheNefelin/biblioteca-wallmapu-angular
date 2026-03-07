@@ -7,10 +7,10 @@ import { SubjectModel } from '@features/book-subject/models/subject-model';
   templateUrl: './subject-list-components.html',
 })
 export class SubjectListComponents {
-  readonly subjectList = input<SubjectModel[]>();
-  readonly delete = output<SubjectModel>();
+  readonly subjectList = input<SubjectModel[]>([]);
+  readonly onDelete = output<SubjectModel>();
 
-  protected onDelete(item: SubjectModel): void {
-    this.delete.emit(item);
+  protected delete(item: SubjectModel): void {
+    this.onDelete.emit(item);
   }
 }

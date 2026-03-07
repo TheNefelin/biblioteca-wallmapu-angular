@@ -108,7 +108,7 @@ export class BookListPage {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOKS.FORM]);
   }
   
-  onEdit(bookModel: BookDetailModel){
+  onEdit(bookModel: BookDetailModel) {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOKS.FORM], 
       { state : { bookModel: bookModel } }
     );

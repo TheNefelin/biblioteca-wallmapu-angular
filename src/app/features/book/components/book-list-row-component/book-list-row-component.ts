@@ -11,7 +11,7 @@ import { BookDetailModel } from '@features/book/models/book-detail-model';
   templateUrl: './book-list-row-component.html',
 })
 export class BookListRowComponent {
-  readonly bookModel = input.required<BookDetailModel>();
+  readonly bookDetail = input.required<BookDetailModel>();
   readonly delete = output<BookDetailModel>();
   readonly edit = output<BookDetailModel>();
 

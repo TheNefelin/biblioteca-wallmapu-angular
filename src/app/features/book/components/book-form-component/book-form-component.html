@@ -26,6 +26,9 @@
       </fieldset>
 
       <p class="pt-6 text-my-purple">
+        - ID: {{ formData().id_book }}
+      </p>
+      <p class="text-my-purple">
         {{ formData().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha de Creación
       </p>
       <p class="text-my-purple">
@@ -37,7 +40,7 @@
       <label class="label font-semibold">Descripción / Resumen / Reseña</label>
       <textarea 
         #summaryInput
-        class="textarea validator mt-2 w-full min-h-56" placeholder="Descripción/Resumen del libro" required
+        class="textarea validator mt-2 w-full min-h-72" placeholder="Descripción/Resumen del libro" required
         [value]="formData().summary"
         (input)="updateSummary($any($event.target).value, summaryInput)"
       ></textarea>

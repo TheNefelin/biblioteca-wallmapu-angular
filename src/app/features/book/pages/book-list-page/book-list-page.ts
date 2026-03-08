@@ -119,6 +119,7 @@ export class BookListPage {
   }
 
   confirmDelete() {
+    this.bookIdToDeletePayload.set(null);
     const selectedBookToDelete = this.selectedBookToDelete();
     if (!selectedBookToDelete) return;
     this.bookIdToDeletePayload.set(selectedBookToDelete.id_book);

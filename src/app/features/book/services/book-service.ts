@@ -27,7 +27,6 @@ export class BookService {
   }
 
   create(item: BookFormModel): Observable<ApiResponseModel<BookModel>> {
-    console.log(item)
     return this.apiResponseService.create<ApiResponseModel<BookModel>, BookFormModel>(
       this.endpoint, item
     );
@@ -39,8 +38,8 @@ export class BookService {
     );
   }
 
-  delete(id: number): Observable<ApiResponseModel<string>> {
-    return this.apiResponseService.delete<ApiResponseModel<string>>(
+  delete(id: number): Observable<ApiResponseModel<boolean>> {
+    return this.apiResponseService.delete<ApiResponseModel<boolean>>(
       this.endpoint, id
     );
   }

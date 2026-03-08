@@ -1,6 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BookDetailModel } from '@features/book/models/book-detail-model';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { BookFormComponent } from '@features/book/components/book-form-component/book-form-component';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
@@ -16,6 +15,8 @@ import { BookAuthorStepService } from '@features/book-author-step/services/book-
 import { BookAuthorStepModel } from '@features/book-author-step/models/book-author-step-model';
 import { BookSubjectStepService } from '@features/book-subject-step/services/book-subject-step-service';
 import { BookService } from '@features/book/services/book-service';
+import { EditionListComponents } from "@features/edition/components/edition-list-components/edition-list-components";
+import { EditionModel } from '@features/edition/models/edition-model';
 
 @Component({
   selector: 'app-book-form-page',
@@ -23,7 +24,8 @@ import { BookService } from '@features/book/services/book-service';
     JsonPipe,
     SectionHeaderComponent,
     BookFormComponent,
-    MessageErrorComponent
+    MessageErrorComponent,
+    EditionListComponents
 ],
   templateUrl: './book-form-page.html',
 })
@@ -31,7 +33,7 @@ export class BookFormPage {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly paramId = toSignal(
+  readonly routeId = toSignal(
     this.activatedRoute.paramMap.pipe(
       map(params => Number(params.get('id')) || 0)
     ),
@@ -40,6 +42,7 @@ export class BookFormPage {
 
   protected readonly authorModelList = signal<AuthorModel[]>([]);
   protected readonly subjectModelList = signal<SubjectModel[]>([]);
+  protected readonly editionModelList = signal<EditionModel[]>([]);
   protected readonly bookFormModel = signal<BookFormModel>({
     id_book: 0,
     title: '',
@@ -51,15 +54,16 @@ export class BookFormPage {
     subjects: []
   });
 
-  private readonly isEditMode = signal<boolean>(false);
-  protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar lLibro" : "Crear lLibro");
+  protected readonly isEditMode = signal<boolean>(false);
+  protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isLoading = computed<boolean>(() => this.bookGetRX.isLoading() || this.bookRX.isLoading() || this.deleteSubjectStepRX.isLoading() || this.deleteAuthorStepRX.isLoading());
 
   private readonly bookService = inject(BookService);
+  private readonly bookIdPayload = signal(this.routeId());
 
   private readonly bookGetRX = rxResource({
-    params: () => this.paramId(),
+    params: () => this.bookIdPayload(),
     stream: ({ params: idBook }) => {
       if (!idBook) {
         this.isEditMode.set(false);
@@ -91,7 +95,8 @@ export class BookFormPage {
           });
   
           this.authorModelList.set(book.authors);
-          this.subjectModelList.set(book.subjects) ;
+          this.subjectModelList.set(book.subjects);
+          this.editionModelList.set(book.editions);
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -119,6 +124,7 @@ export class BookFormPage {
           return response.result;
         }),
         tap((result) => {
+          this.bookIdPayload.set(result.id_book);
           this.bookPayload.set(null);
         }),
         catchError(err => {
@@ -143,11 +149,10 @@ export class BookFormPage {
           if (!res.isSuccess) throw new Error(res.message);
           return res.result;
         }),
-        tap(() => {
+        tap((res) => {
           this.authorModelList.update(subjects =>
             subjects.filter(s => s.id_author !== params.id_author)
           );
-        
           this.deleteAuthorStepPayload.set(null);
         }),
         catchError(err => {
@@ -256,5 +261,9 @@ export class BookFormPage {
 
   protected navigateGoBack(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOKS.ROOT]);
+  }
+
+  protected onCreateEdition(): void {
+    
   }
 }

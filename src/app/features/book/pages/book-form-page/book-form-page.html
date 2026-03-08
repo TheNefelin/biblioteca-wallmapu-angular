@@ -27,4 +27,18 @@
   (onFormSubmit)="formSubmit($event)"
 />
 
-<pre>{{bookFormModel() | json}}</pre>
+@if (isEditMode()) {
+  <div class="m-4 flex justify-end">
+    <button (click)="onCreateEdition()" class="btn max-w-48 bg-my-pink text-my-light">
+      Crear Ejemplar
+    </button>
+  </div>  
+}
+
+<app-edition-list-components 
+  [isLoading]="isLoading()"
+  [editionList]="editionModelList()"
+/>
+
+<pre>{{ bookFormModel() | json }}</pre>
+<pre>{{ editionModelList() | json}}</pre>

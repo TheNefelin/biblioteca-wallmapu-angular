@@ -1,0 +1,54 @@
+<ul class="list bg-base-100 rounded-box shadow-md m-4">
+  <li class="p-4 pb-2 opacity-60 tracking-wide">Ejemplares</li>
+
+  @if (isLoading()) {
+    <section class="mx-auto p-4">
+      <app-loading-component/>
+    </section>
+  } @else {
+  
+    @for (item of editionList(); track $index) {
+      <li class="list-row">
+        <div class="relative overflow-hidden size-20">
+          @if (item.cover_image) {
+            <img 
+              placeholder="/images/layout.webp"
+              [ngSrc]="item.cover_image"
+              [alt]="item.edition"
+              fill
+              class="object-cover rounded-box" 
+            /> 
+          }
+        </div>
+        
+        <div>
+          <div class="text-xs uppercase font-semibold opacity-60">
+            <span>{{ item.created_at | date:'yyyy-MM-dd' }}</span>
+            <span class="hidden md:inline"> - {{ item.created_at | date:'HH:mm:ss' }}</span>
+          </div>
+          <p class="text-lg font-bold text-my-purple">{{ item.edition }}</p>
+          <div class="text-my-purple">
+            <span class="font-bold">ISBN: </span>
+            <span>{{ item.isbn }}</span>
+          </div>
+          <div class="text-my-purple">
+            <span class="font-bold">Paginas: </span>
+            <span>{{ item.pages }}</span>
+          </div>
+        </div>
+      
+        <button
+          (click)="delete(item)"
+          class="btn bg-my-pink text-my-light">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
+        </button>
+      
+        <button
+          (click)="edit(item)" 
+          class="btn bg-my-green text-my-light">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z"/></svg>
+        </button>
+      </li>
+    }
+  }  
+</ul>

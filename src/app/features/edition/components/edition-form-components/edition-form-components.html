@@ -1,55 +1,63 @@
-<p>edition-form-components works!</p>
-
-<!--
 <div class="w-full max-w-7xl p-4 mx-auto">
   <form class="fieldset bg-my-light rounded-box border p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
     (submit)="formSubmit($event)">
-    
+  
     <fieldset class="fieldset flex flex-col">  
-      <div class="relative group cursor-pointer overflow-hidden rounded-md shadow-lg">
+      <div class="relative group overflow-hidden rounded-md shadow-lg">
         <figure class="aspect-7/10">
           <img 
-            [ngSrc]="imagePreview() ?? 'images/without_cover.webp'" 
-            [alt]="'Portada de libro'"
+            [ngSrc]="imagePreview().preview" 
+            [alt]="'Portada del libro'"
             fill
             priority
             class="w-full h-full object-cover"
           />
         </figure>
+
+        @if (editionModel()) {
+          <div class="absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div class="absolute top-4 right-4">
+              <button 
+                type="button"
+                class="bg-my-pink text-sm px-2 py-1 rounded hover:bg-my-pink/90 text-my-light"
+                (click)="deleteImage(editionModel()?.id_edition || 0)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        }
       </div>
 
-      <label class="label font-semibold">Cargar Portada del Libro</label>
+      @if (imagePreview().isNew) {
+        <label class="label font-semibold">Cargar Portada del Libro</label>
 
-      <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
-        <span class="font-bold text-">Elegir Imagen</span>
-        <input 
-          type="file" class="hidden" accept="image/*" 
-          (change)="onChangeImages($event)">
-      </label>
-      
-      <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-    </fieldset>
-       
+        <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
+          <span class="font-bold text-">Elegir Imagen</span>
+          <input 
+            type="file" class="hidden" accept="image/*" 
+            (change)="onChangeImages($event)">
+        </label>
+        
+        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>  
+      }
+     </fieldset>
+  
     <div>
-      <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Título</label>
-        <input
-          #titleInput 
-          type="text" class="input validator w-full" placeholder="Nombre del Libro" required 
-          [value]="formData().title"
-          (input)="updateTitle($any($event.target).value, titleInput)"
-        />
-        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-      </fieldset>
+      <div class="py-4 text-my-purple">
+        <p>ID Libro: {{ editionModel()?.book_id }} - ID Edición: {{ editionModel()?.editorial_id ?? 0 }}</p>
+        <p>{{ editionModel()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
+        <p>{{ editionModel()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
+      </div>
 
-      <fieldset class="fieldset flex flex-col">
-        <label class="label font-semibold">Descripción</label>
-        <textarea 
-          #descriptionInput
-          class="textarea validator mt-2 w-full min-h-56" placeholder="Descripción del libro" required
-          [value]="formData().description"
-          (input)="updateDescription($any($event.target).value, descriptionInput)"
-        ></textarea>
+      <fieldset class="fieldset">
+        <label class="label font-semibold mb-1">Edición: (1ra Edición; 2da Edición... 5ta Edición)</label>
+        <input
+          #titleEdition
+          type="text" class="input validator w-full" placeholder="Edición del Libro" required 
+          [value]="formData().edition"
+          (input)="updateEdition($any($event.target).value, titleEdition)"
+        />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
 
@@ -57,18 +65,18 @@
         <label class="label font-semibold mb-1">ISBN</label>
         <input
           #isbnInput
-          type="text" class="input validator w-full" placeholder="Código isbn" required
+          type="text" class="input validator w-full uppercase" placeholder="Código isbn" required
           [value]="formData().isbn"
           (input)="updateISBN($any($event.target).value, isbnInput)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
-
+  
       <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Año de publiccion</label>
+        <label class="label font-semibold mb-1">Año de publicación</label>
         <input
-          #yearInput 
-          type="text" class="input validator w-full max-w-48" placeholder="2077" required
+          #yearInput
+          type="text" class="input validator max-w-20" placeholder="Año" required
           [value]="formData().publication_year"
           (input)="updateYear($any($event.target).value, yearInput)"
         />
@@ -76,55 +84,32 @@
       </fieldset>
 
       <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Cantidad de páginas</label>
+        <label class="label font-semibold mb-1">Paginas</label>
         <input
-          #pagesInput 
-          type="text" class="input validator w-full max-w-48" placeholder="1234" required
+          #pagesInput
+          type="text" class="input validator max-w-20" placeholder="Paginas" required
           [value]="formData().pages"
           (input)="updatePages($any($event.target).value, pagesInput)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-      </fieldset>
-
-      <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Edición</label>
-        <input
-          #editionInput 
-          type="text" class="input validator w-full max-w-48" placeholder="1ra Edición" required
-          [value]="formData().edition"
-          (input)="updateEdition($any($event.target).value, editionInput)"
-        />
-        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-      </fieldset>
-      
-      <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Clasificación Dewey</label>
-        <input
-          #deweyInput 
-          type="text" class="input validator w-full max-w-48" placeholder="863.64" required
-          [value]="formData().dewey_number"
-          (input)="updateDewey($any($event.target).value, deweyInput)"
-        />
-        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-      </fieldset>
-
-      <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Tabla de Cortes</label>
-        <input
-          #cutterInput 
-          type="text" class="input validator w-full max-w-48" placeholder="E58" required
-          [value]="formData().cutter"
-          (input)="updateCutter($any($event.target).value, cutterInput)"
-        />
-        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>      
-  
+
       <fieldset class="fieldset">
         <label class="label font-semibold mb-1">Editorial</label>
-        <app-editorial-select-components />    
+        <app-editorial-select-components 
+          [selectedId]="formData().id_edition ?? 0"
+          (newSelectedId)="updateEditorial($event)"
+        />    
       </fieldset>
     </div>
 
+    @if (isLoading()) {
+      <app-loading-component/>
+    } @else {
+    <button class="btn btn-lg bg-my-purple hover:bg-my-purple/80 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
+      {{ formData().id_edition == 0 ? 'Crear Ejemplar' : 'Modificar Ejemplar' }}
+    </button>  
+    }
   </form>
 
   @if (errorMessage()) {
@@ -132,6 +117,5 @@
   }
 </div>
 
-<pre>{{ bookModel() | json }}</pre>
-
--->
+<pre>{{ editionModel() | json}}</pre>
+<pre>{{ formData() | json}}</pre>

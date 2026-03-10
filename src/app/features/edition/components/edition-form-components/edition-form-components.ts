@@ -1,34 +1,57 @@
-import { Component, input, output, signal } from '@angular/core';
+import { DatePipe, JsonPipe, NgOptimizedImage } from '@angular/common';
+import { Component, effect, input, output, signal } from '@angular/core';
+import { EditionModel } from '@features/edition/models/edition-model';
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
+import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { ImagePreviewVM } from '@features/edition/models/vm.image-preview';
 
 @Component({
   selector: 'app-edition-form-components',
-  imports: [],
+  imports: [
+    JsonPipe,
+    DatePipe,
+    NgOptimizedImage,
+    LoadingComponent,
+    EditorialSelectComponents,
+    MessageErrorComponent
+],
   templateUrl: './edition-form-components.html',
 })
 export class EditionFormComponents {
-  /*
-  readonly bookModel = input<BookModel | null>(null);
-  readonly onFormSubmit = output<BookModel>();
+  readonly isLoading = input<boolean>(false);
+  readonly editionModel = input<EditionModel | null>(null);
+  readonly onFormSubmit = output<EditionModel>();
 
-  readonly imageError = signal<string | null>(null);
-  imagePreview = signal<string | null>(null);
-  readonly errorMessage = signal<string | null>(null);
-
-  readonly formData = signal<Partial<BookModel>>({});
-
-  private readonly effect = effect(() => {
-    const book = this.bookModel();
-    if (book) {
-      this.formData.set(book);
-    }
+  protected readonly id_editorial = signal<number | null>(null);
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly imagePreview = signal<ImagePreviewVM>({
+    preview: 'images/without_cover.webp',
+    isNew: true
+  });
+  protected readonly formData = signal<Partial<EditionModel>>({
+    id_edition: 0,
+    edition: '',
+    isbn: '',
+    publication_year: 0,
+    pages: 0
   });
 
-  protected updateTitle(value: string, input: HTMLInputElement) {
-    this.updateField('title', value, input);
-  }
-
-  protected updateDescription(value: string, input: HTMLTextAreaElement) { 
-    this.updateField('description', value, input);
+  private readonly updateEffect = effect(() => {
+    const editorial = this.editionModel();
+    if (editorial) {
+      this.formData.set(editorial);
+      this.id_editorial.set(editorial.editorial_id)
+      this.imagePreview.update(e => ({ 
+        ...e, 
+        preview: editorial.cover_image,
+        isNew: false
+      }));
+    }
+  });
+  
+  protected updateEdition(value: string, input: HTMLInputElement) {
+    this.updateField('edition', value, input);
   }
 
   protected updateISBN(value: string, input: HTMLInputElement) { 
@@ -43,19 +66,11 @@ export class EditionFormComponents {
     this.updateField('pages', value, input);
   }
 
-  protected updateEdition(value: string, input: HTMLInputElement) { 
-    this.updateField('edition', value, input);
+  protected updateEditorial(id_editorial: number) {
+    this.formData.update(data => ({ ...data, editorial_id: id_editorial }));
   }
 
-  protected updateDewey(value: string, input: HTMLInputElement) { 
-    this.updateField('dewey_number', value, input);
-  }
-
-  protected updateCutter(value: string, input: HTMLInputElement) { 
-    this.updateField('cutter', value, input);
-  }
-
-  private updateField<K extends keyof BookModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof EditionModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -67,37 +82,22 @@ export class EditionFormComponents {
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof BookModel, value: string): string | null {
+  private sanitize(key: keyof EditionModel, value: string): string | null {
     switch (key){
-      case 'title':
-        if (value.length > 100) return null;
-        return value;
-      case 'description':
-        if (value.length > 256) return null;
+      case 'edition':
+        if (value.length > 50) return null;
         return value;
       case 'isbn':
-        if (!/^(?:\d{9}[\dX]|\d{13})$/.test(value)) return null;
+        if (value.length > 20) return null;
         return value;
       case 'publication_year':
-        if (!/^\d*$/.test(value)) return null; 
+        if (!/^[0-9.]*$/.test(value)) return null;  // solo números y puntos
         if (value.length > 4) return null;
         return value;
       case 'pages':
-        if (!/^\d*$/.test(value)) return null; 
-        if (value.length > 4) return null;
-        return value;
-      case 'edition':
-        if (!/^[a-zA-Z0-9\s°\-\.]*$/.test(value)) return null;
-        if (value.length > 50) return null;
-        return value;
-      case 'dewey_number':
         if (!/^[0-9.]*$/.test(value)) return null;  // solo números y puntos
-        if (value.length > 10) return null;
-        return value;
-      case 'cutter':
-        if (!/^[a-zA-Z0-9]*$/.test(value)) return null; // solo letras y números
-        if (value.length > 10) return null;
-        return value;            
+        if (value.length > 4) return null;
+        return value;          
       default:
         return value;
     }
@@ -107,7 +107,7 @@ export class EditionFormComponents {
     const input = event.target as HTMLInputElement;
 
     if (!input.files || input.files.length === 0) {
-      this.imageError.set('Debes seleccionar una imagen');
+      this.errorMessage.set('Debes seleccionar una imagen');
       return;
     }
 
@@ -115,28 +115,35 @@ export class EditionFormComponents {
 
     // Validar que sea imagen
     if (!file.type.startsWith('image/')) {
-      this.imageError.set('El archivo debe ser una imagen');
+      this.errorMessage.set('El archivo debe ser una imagen');
       return;
     }
 
-    this.imageError.set(null);
+    this.errorMessage.set(null);
 
-    // Guardar en modelo
-    //this.bookModel.update(b => ({
-    //  ...b,
-    //  image: file
-    //}));
-
-    // Generar preview
+    // Generar preview y guardar file
     const reader = new FileReader();
+
     reader.onload = () => {
-      this.imagePreview.set(reader.result as string);
+      this.imagePreview.update(e => ({
+        ...e,
+        file: file,
+        preview: reader.result as string,
+        isNew: true,
+      }));
     };
+
     reader.readAsDataURL(file);
   }
 
   protected formSubmit(event: Event): void {
     event.preventDefault();
+    event.stopPropagation();
+
+    //this.onFormSubmit.emit(submitData);
   }
-*/
+
+  protected deleteImage(id_edition: number): void {
+    console.log(id_edition)
+  }
 }

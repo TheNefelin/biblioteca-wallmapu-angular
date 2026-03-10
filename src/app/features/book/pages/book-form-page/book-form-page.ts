@@ -9,7 +9,6 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { BookFormModel } from '@features/book/models/book-form-model';
-import { JsonPipe } from '@angular/common';
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { BookAuthorStepService } from '@features/book-author-step/services/book-author-step-service';
 import { BookAuthorStepModel } from '@features/book-author-step/models/book-author-step-model';
@@ -21,7 +20,6 @@ import { EditionModel } from '@features/edition/models/edition-model';
 @Component({
   selector: 'app-book-form-page',
   imports: [
-    JsonPipe,
     SectionHeaderComponent,
     BookFormComponent,
     MessageErrorComponent,
@@ -264,6 +262,27 @@ export class BookFormPage {
   }
 
   protected onCreateEdition(): void {
-    
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], { 
+      state: {
+        title:  this.bookFormModel().title,
+        id_book: this.bookFormModel().id_book,
+        id_edition: 0,
+      } 
+    }); 
   }
+
+  protected editEdition(item: EditionModel): void {
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], { 
+      state: {
+        title:  this.bookFormModel().title,
+        id_book: this.bookFormModel().id_book,
+        id_edition: item.id_edition,
+      } 
+    }); 
+  }
+
+  protected deleteEdition(item: EditionModel): void {
+
+  }
+
 }

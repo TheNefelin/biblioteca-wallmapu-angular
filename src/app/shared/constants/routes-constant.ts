@@ -24,6 +24,9 @@ export const ROUTES_CONSTANTS = {
         ROOT: '/admin/books',
         FORM: `/admin/books/form`,
       },
+      EDITION: {
+        FORM: `/admin/edition/form`,
+      },
       NEWS: {
         ROOT: '/admin/news',
         FORM: '/admin/news/form',

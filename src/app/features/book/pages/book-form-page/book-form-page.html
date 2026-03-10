@@ -38,7 +38,7 @@
 <app-edition-list-components 
   [isLoading]="isLoading()"
   [editionList]="editionModelList()"
+  (onEdit)="editEdition($event)"
+  (onDelete)="deleteEdition($event)"
 />
 
-<pre>{{ bookFormModel() | json }}</pre>
-<pre>{{ editionModelList() | json}}</pre>

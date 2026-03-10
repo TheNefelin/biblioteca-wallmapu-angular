@@ -388,6 +388,7 @@ ng g interface features/edition/models/edition-model
 ng g c features/edition/pages/edition-form-page --skip-tests --style=none
 
 ng g s features/edition/services/edition-service --skip-tests
+ng g s features/edition/services/edition-image-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES HOME

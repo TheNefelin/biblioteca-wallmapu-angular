@@ -1,1 +1,10 @@
-<p>edition-form-page works!</p>
+<app-section-header-component
+  [title]="title()"
+  [actionText]="'Volver a Libro'"
+  (actionClicked)="navigateBack()"
+/>
+
+<app-edition-form-components 
+  [isLoading]="isLoading()"
+  [editionModel]="editionForm()"
+/>

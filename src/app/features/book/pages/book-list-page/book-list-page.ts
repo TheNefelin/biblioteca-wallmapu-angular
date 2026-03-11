@@ -77,12 +77,12 @@ export class BookListPage {
 
       return this.bookService.delete(payloadId).pipe(
         map(response => {
+          this.closeDeleteModal();
           if (!response.isSuccess) throw new Error(response.message);
           return response.result;
         }),
         tap(() => {
           this.refreshList()
-          this.closeDeleteModal();
           this.bookIdToDeletePayload.set(null);
           this.selectedBookToDelete.set(null);
         }),

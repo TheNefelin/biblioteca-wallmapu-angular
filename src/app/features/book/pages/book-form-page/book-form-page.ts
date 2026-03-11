@@ -16,6 +16,7 @@ import { BookSubjectStepService } from '@features/book-subject-step/services/boo
 import { BookService } from '@features/book/services/book-service';
 import { EditionListComponents } from "@features/edition/components/edition-list-components/edition-list-components";
 import { EditionModel } from '@features/edition/models/edition-model';
+import { EditionService } from '@features/edition/services/edition-service';
 
 @Component({
   selector: 'app-book-form-page',
@@ -55,7 +56,15 @@ export class BookFormPage {
   protected readonly isEditMode = signal<boolean>(false);
   protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isLoading = computed<boolean>(() => this.bookGetRX.isLoading() || this.bookRX.isLoading() || this.deleteSubjectStepRX.isLoading() || this.deleteAuthorStepRX.isLoading());
+  protected readonly isLoading = computed<boolean>(() => 
+    [
+      this.bookGetRX,
+      this.bookRX,
+      this.deleteSubjectStepRX,
+      this.deleteAuthorStepRX,
+      this.editionRX,
+    ].some(r => r.isLoading())
+  );
 
   private readonly bookService = inject(BookService);
   private readonly bookIdPayload = signal(this.routeId());
@@ -181,6 +190,37 @@ export class BookFormPage {
           );
         
           this.deleteSubjectStepPayload.set(null);
+        }),
+        catchError(err => {
+          const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
+          this.errorMessage.set(message);
+          return of(null);
+        })
+      );
+    }
+  });
+
+  private readonly editionService = inject(EditionService);
+  private readonly deleteEditionPayload = signal<number | null>(null);
+
+  private readonly editionRX = rxResource({
+    params: () => this.deleteEditionPayload(),
+    stream: ({ params: id_edition }) => {
+      if (!id_edition) return of(null);
+
+      const request$ = this.editionService;
+
+      return request$.delete(id_edition).pipe(
+        map(res => {
+          if (!res.isSuccess) throw new Error(res.message);
+          return res.result;
+        }),
+        tap(() => {
+          this.editionModelList.update(e =>
+            e.filter(s => s.id_edition !== id_edition)
+          );
+        
+          this.deleteEditionPayload.set(null);
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';

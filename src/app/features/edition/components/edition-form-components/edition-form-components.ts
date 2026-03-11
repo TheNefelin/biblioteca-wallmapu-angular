@@ -162,7 +162,7 @@ export class EditionFormComponents {
     if (data.isbn.length < 5)     return 'El ISBN debe tener al menos 5 caracteres';
     if (data.isbn.length > 20)    return 'El ISBN no debe superar los 50 caracteres';
     if (!data.publication_year)   return 'El año es requerido';
-    if (data.publication_year < 1500 || data.publication_year > new Date().getFullYear()) return 'El año debe ser valido';
+    if (data.publication_year < 1000 || data.publication_year > new Date().getFullYear()) return 'El año debe ser valido';
     if (!data.pages)              return 'Las paginas son requerido';
     if (data.pages < 24 || data.pages > 10000) return 'La cantidad de paginas debe ser valida';
     if (!data.editorial_id)       return 'La editorial es requerida';

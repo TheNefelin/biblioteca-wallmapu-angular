@@ -1,10 +1,9 @@
-import { DatePipe, JsonPipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, effect, input, output, signal } from '@angular/core';
-import { EditionModel } from '@features/edition/models/edition-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { EditionModelVM } from '@features/edition/models/vm.edition-model';
+import { EditionFormModel } from '@features/edition/models/edition-form-model';
 
 @Component({
   selector: 'app-edition-form-components',
@@ -19,18 +18,18 @@ import { EditionModelVM } from '@features/edition/models/vm.edition-model';
 })
 export class EditionFormComponents {
   readonly isLoading = input<boolean>(false);
-  readonly vmEditionModel = input.required<EditionModelVM>();
-  readonly onFormSubmit = output<EditionModelVM>();
+  readonly editionFormModel = input.required<EditionFormModel>();
+  readonly onFormSubmit = output<EditionFormModel>();
   readonly onDeleteImage = output<number>();
 
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly formData = signal<Partial<EditionModelVM>>({});
+  protected readonly formData = signal<Partial<EditionFormModel>>({});
 
   private readonly updateEffect = effect(() => {
-    const editorial = this.vmEditionModel();
-    if (editorial) {
+    const edition = this.editionFormModel();
+    if (edition) {
       this.formData.set({
-        ...editorial,
+        ...edition,
       });
     }
   });
@@ -55,7 +54,7 @@ export class EditionFormComponents {
     this.formData.update(data => ({ ...data, editorial_id: id_editorial }));
   }
 
-  private updateField<K extends keyof EditionModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof EditionFormModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -67,7 +66,7 @@ export class EditionFormComponents {
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof EditionModel, value: string): string | number  | null {
+  private sanitize(key: keyof EditionFormModel, value: string): string | number  | null {
     switch (key){
       case 'edition':
         if (value.length > 50) return null;
@@ -138,14 +137,14 @@ export class EditionFormComponents {
       return;
     }
 
-    const completeData = this.vmEditionModel();
+    const completeData = this.editionFormModel();
 
     if (!completeData) {
       this.errorMessage.set('No se encontró la edición original');
       return;
     }
 
-    const submitData: EditionModelVM = {
+    const submitData: EditionFormModel = {
       ...completeData,
       ...data
     }
@@ -154,7 +153,7 @@ export class EditionFormComponents {
     this.onFormSubmit.emit(submitData);
   }
 
-  private validateFormOnSubmit(data: Partial<EditionModel>): string | null {
+  private validateFormOnSubmit(data: Partial<EditionFormModel>): string | null {
     if (!data.edition?.trim())    return 'La edición es requerido';
     if (data.edition.length < 5)  return 'La edición debe tener al menos 2 caracteres';
     if (data.edition.length > 50) return 'La edición no debe superar los 50 caracteres';

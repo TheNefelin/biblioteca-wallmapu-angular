@@ -5,8 +5,8 @@ import { EditionCopyModel } from '@features/edition-copy/models/edition-copy-mod
 import { EditionCopyService } from '@features/edition-copy/services/edition-copy-service';
 import { catchError, map, of, tap } from 'rxjs';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { Router } from '@angular/router';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edition-copy-form-page',
@@ -17,13 +17,15 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
   templateUrl: './edition-copy-form-page.html',
 })
 export class EditionCopyFormPage {
-  private readonly state = history.state as {
-    book_name: string,
-    id_edition: number;
-    id_copy: number;
-  };
-
   private readonly router = inject(Router);
+
+  readonly state = history.state as {
+    book_title: string,
+    id_book: number,
+    id_edition: number,
+    id_copy: number,
+  }
+  
   protected readonly editionCopyForm = signal<EditionCopyModel>({
     id_copy: this.state.id_copy,
     barcode: '',
@@ -31,14 +33,14 @@ export class EditionCopyFormPage {
     copy_number: 0,
     created_at: '',
     updated_at: '',
-    edition_id: this.state.id_edition,
+    edition_id: 0,
     status: null,
   });
   protected readonly isEditMode = signal<boolean>(this.editionCopyForm().id_copy > 0)
   protected readonly book_edition_name = computed<string>(() => 
     this.isEditMode() 
-    ? `Modificar copia de: ${this.state.book_name}` 
-    : `Crear copia para: ${this.state.book_name}`
+    ? `Modificar copia de: ${ this.state.book_title }` 
+    : `Crear copia para: ${ this.state.book_title }`
   )
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isLoading = computed<boolean>(() =>
@@ -85,6 +87,12 @@ export class EditionCopyFormPage {
 
 
   protected navigateBack(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM, this.editionCopyForm().edition_id]);
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], {
+      state: {
+        book_title: this.state.book_title,
+        id_book: this.state.id_book,
+        id_edition: this.editionCopyForm().edition_id,
+      }
+    }); 
   }
 }

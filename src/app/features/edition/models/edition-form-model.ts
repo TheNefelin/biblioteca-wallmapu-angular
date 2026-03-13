@@ -7,4 +7,6 @@ export interface EditionFormModel {
   cover_image: string | null,
   book_id: number,
   editorial_id: number
+  created_at: string,
+  updated_at: string,
 }

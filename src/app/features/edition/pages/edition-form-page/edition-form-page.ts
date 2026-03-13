@@ -1,17 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
 import { EditionService } from '@features/edition/services/edition-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { catchError, map, of, tap } from 'rxjs';
 import { EditionFormComponents } from "@features/edition/components/edition-form-components/edition-form-components";
 import { EditionImageService } from '@features/edition/services/edition-image-service';
-import { EditionModelVM } from '@features/edition/models/vm.edition-model';
-import { EditionModel } from '@features/edition/models/edition-model';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { EditionCopyListComponents } from "@features/edition-copy/components/edition-copy-list-components/edition-copy-list-components";
 import { JsonPipe } from '@angular/common';
+import { EditionFormModel } from '@features/edition/models/edition-form-model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edition-form-page',
@@ -25,29 +24,32 @@ import { JsonPipe } from '@angular/common';
   templateUrl: './edition-form-page.html',
 })
 export class EditionFormPage {
-  private readonly state = history.state as {
-    book_name: string,
-    id_book: number;
-    id_edition: number;
-  };
-
   private readonly router = inject(Router);
-  protected readonly vmEditionForm = signal<EditionModelVM>({
+
+  private readonly state = history.state as {
+    book_title: string,
+    id_book: number,
+    id_edition: number,
+  }
+
+  protected readonly editionForm = signal<EditionFormModel>({
     id_edition: this.state.id_edition,
     edition: '',
     isbn: '',
     publication_year: 0,
     pages: 0,
     cover_image: null,
+    book_id: 0,
+    editorial_id: 0,
     created_at: '',
     updated_at: '',
-    book_id: this.state.id_book,
-    copies: [],
-    editorial_id: 0,
-    isNewImg: true
   });
-  protected readonly isEditMode = signal<boolean>(this.vmEditionForm().id_edition > 0)
-  protected readonly title = computed<string>(() => this.isEditMode() ? `Modificar ejemplar de: ${this.state.book_name}` : `Crear ejemplar para: ${this.state.book_name}`)
+  protected readonly isEditMode = signal<boolean>(this.editionForm().id_edition > 0)
+  protected readonly title = computed<string>(() => 
+    this.isEditMode() 
+    ? `Modificar ejemplar de: ${ this.state.book_title }` 
+    : `Crear ejemplar para: ${ this.state.book_title }`
+  )
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isLoading = computed<boolean>(() =>
     [
@@ -57,8 +59,9 @@ export class EditionFormPage {
       this.deleteEditionImageRX
     ].some(r => r.isLoading())
   );
+  
   private readonly editionService = inject(EditionService);
-  private readonly editionIdPayload = signal<number | null>(this.vmEditionForm().id_edition);
+  private readonly editionIdPayload = signal<number | null>(this.editionForm().id_edition);
 
   private readonly editionGetRX = rxResource({
     params: () => this.editionIdPayload(),
@@ -76,12 +79,16 @@ export class EditionFormPage {
             return;
           }
 
-          this.editionIdPayload.set(null);
-
-          this.vmEditionForm.update(e => ({ 
-            ...e, 
-            ...edition,
-            isNewImg: !edition.cover_image
+          this.editionForm.update(e => ({ 
+            ...e,
+            id_edition: edition.id_edition,
+            edition: edition.edition,
+            isbn: edition.isbn,
+            publication_year: edition.publication_year,
+            pages: edition.pages,
+            cover_image: edition.cover_image,
+            book_id: edition.book.id_book,
+            editorial_id: edition.editorial.id_editorial,
           })); 
           
           this.isEditMode.set(true);
@@ -95,7 +102,7 @@ export class EditionFormPage {
     }
   });
 
-  private readonly editionPayload = signal<EditionModel | null>(null);
+  private readonly editionPayload = signal<EditionFormModel | null>(null);
 
   private readonly editionRX = rxResource({
     params: () => this.editionPayload(),
@@ -141,7 +148,7 @@ export class EditionFormPage {
           if (!url) return;
 
           this.editionPayload.set({
-            ...this.vmEditionForm(),
+            ...this.editionForm(),
             cover_image: url
           });
         }),
@@ -169,14 +176,13 @@ export class EditionFormPage {
         tap(response => {
           this.deleteImagePayload.set(null);
 
-          this.vmEditionForm.update(e => ({
+          this.editionForm.update(e => ({
             ...e,
             cover_image: null,
-            isNewImg: true
           }));
 
           this.editionPayload.set({
-            ...this.vmEditionForm(),
+            ...this.editionForm(),
           });
         }),
         catchError(err => {
@@ -188,17 +194,17 @@ export class EditionFormPage {
     }
   });
 
-  protected formSubmit(form: EditionModelVM): void {
-    this.vmEditionForm.update(e => ({ 
+  protected formSubmit(form: EditionFormModel): void {
+    this.editionForm.update(e => ({ 
       ...e, 
       ...form
     }));
   
-    if (form.file) {
-      this.uploadImagePayload.set(form.file);
-    } else {
-      this.editionPayload.set(this.vmEditionForm());
-    }
+    //if (form.file) {
+    //  this.uploadImagePayload.set(form.file);
+    //} else {
+    //  this.editionPayload.set(this.editionForm());
+    //}
   }
 
   protected deleteImage(id_edition: number): void {
@@ -206,16 +212,17 @@ export class EditionFormPage {
   }
 
   protected onCeateCopy(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.COPY.FORM], { 
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.COPY.FORM], {
       state: {
-        book_name: this.state.book_name,
-        id_edition: this.vmEditionForm().id_edition,
-        id_copy: 0
-      } 
+        book_title: this.state.book_title,
+        id_book: this.editionForm().book_id,
+        id_edition: this.editionForm().id_edition,
+        id_copy: 0,
+      }
     }); 
   }
 
   protected navigateBack(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOKS.FORM, this.vmEditionForm().book_id]);
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOKS.FORM, this.editionForm().book_id]);
   }
 }

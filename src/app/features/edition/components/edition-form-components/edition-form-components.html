@@ -14,13 +14,13 @@
           />
         </figure>
 
-        @if (!formData().isNewImg) {
+        @if (!formData().cover_image) {
           <div class="absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div class="absolute top-4 right-4">
               <button 
                 type="button"
                 class="bg-my-pink text-sm px-2 py-1 rounded hover:bg-my-pink/90 text-my-light"
-                (click)="deleteImage(vmEditionModel().id_edition)"
+                (click)="deleteImage(editionFormModel().id_edition)"
               >
                 Eliminar
               </button>
@@ -29,7 +29,7 @@
         }
       </div>
 
-      @if (formData().isNewImg) {
+      @if (formData().cover_image) {
         <label class="label font-semibold">Cargar Portada del Libro</label>
 
         <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
@@ -45,10 +45,10 @@
   
     <div>
       <div class="py-4 text-my-purple">
-        <p>ID Libro: {{ vmEditionModel().book_id }}</p>
-        <p>ID Edición: {{ vmEditionModel().id_edition }}</p>
-        <p>{{ vmEditionModel().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
-        <p>{{ vmEditionModel().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
+        <p>ID Libro: {{ editionFormModel().book_id }}</p>
+        <p>ID Edición: {{ editionFormModel().id_edition }}</p>
+        <p>{{ editionFormModel().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
+        <p>{{ editionFormModel().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
       </div>
 
       <fieldset class="fieldset">

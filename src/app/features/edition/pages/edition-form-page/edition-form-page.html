@@ -6,7 +6,7 @@
 
 <app-edition-form-components 
   [isLoading]="isLoading()"
-  [vmEditionModel]="vmEditionForm()"
+  [editionFormModel]="editionForm()"
   (onDeleteImage)="deleteImage($event)"
   (onFormSubmit)="formSubmit($event)"
 />
@@ -32,4 +32,4 @@
   [editionCopyModel]="[]"
 />
 
-<pre>{{ vmEditionForm() | json }}</pre>
+<pre>{{ editionForm() | json }}</pre>

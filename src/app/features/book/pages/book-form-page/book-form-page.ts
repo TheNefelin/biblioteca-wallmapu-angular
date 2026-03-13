@@ -43,7 +43,7 @@ export class BookFormPage {
   protected readonly subjectModelList = signal<SubjectModel[]>([]);
   protected readonly editionModelList = signal<EditionModel[]>([]);
   protected readonly bookFormModel = signal<BookFormModel>({
-    id_book: 0,
+    id_book: this.routeId(),
     title: '',
     summary: '',
     created_at: '',
@@ -53,7 +53,7 @@ export class BookFormPage {
     subjects: []
   });
 
-  protected readonly isEditMode = signal<boolean>(false);
+  protected readonly isEditMode = signal<boolean>(this.bookFormModel().id_book > 0);
   protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isLoading = computed<boolean>(() => 
@@ -302,27 +302,25 @@ export class BookFormPage {
   }
 
   protected onCreateEdition(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], { 
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], {
       state: {
-        book_name:  this.bookFormModel().title,
         id_book: this.bookFormModel().id_book,
         id_edition: 0,
-      } 
+      }
     }); 
   }
 
   protected editEdition(item: EditionModel): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], { 
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], {
       state: {
-        book_name:  this.bookFormModel().title,
+        book_title: this.bookFormModel().title,
         id_book: this.bookFormModel().id_book,
         id_edition: item.id_edition,
-      } 
+      }
     }); 
   }
 
   protected deleteEdition(item: EditionModel): void {
 
   }
-
 }

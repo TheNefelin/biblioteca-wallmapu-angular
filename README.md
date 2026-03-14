@@ -390,6 +390,8 @@ ng g s features/edition/services/edition-image-service --skip-tests
 ng g c features/edition-copy/components/edition-copy-form-components --skip-tests --style=none
 ng g c features/edition-copy/components/edition-copy-list-components --skip-tests --style=none
 
+ng g interface features/edition-copy/models/edition-copy-detail-model
+ng g interface features/edition-copy/models/edition-copy-form-model
 ng g interface features/edition-copy/models/edition-copy-model
 
 ng g c features/edition-copy/pages/edition-copy-form-page --skip-tests --style=none

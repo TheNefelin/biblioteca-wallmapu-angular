@@ -29,7 +29,10 @@
 
 <app-edition-copy-list-components 
   [isLoading]="isLoading()"
-  [editionCopyModel]="[]"
+  [editionCopyModel]="editionDetailComputed()?.copies ?? []"
+  (onEdit)="onEditEdition($event)"
+  (onDelete)="onDeleteEdition($event)"
 />
 
 <pre>{{ editionForm() | json }}</pre>
+<pre>{{ editionDetailComputed() | json }}</pre>

@@ -4,7 +4,8 @@
   (actionClicked)="navigateBack()"
 />
 
-<app-edition-copy-form-components 
+<app-edition-copy-form-components
+  [isLoading]="isLoading()"
+  [editionCopyDetail]="editionCopyDetail()"
+  (onFormSubmit)="formSubmit($event)"
 />
-
-<pre>{{ editionCopyForm() | json }}</pre>

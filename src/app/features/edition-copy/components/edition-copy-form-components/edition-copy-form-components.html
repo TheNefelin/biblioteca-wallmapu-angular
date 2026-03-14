@@ -2,5 +2,59 @@
   <form class="fieldset bg-my-light rounded-box border p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
     (submit)="formSubmit($event)">
 
+    <div class="py-4 text-my-purple">
+      <p>ID Edición: {{ editionCopyDetail()?.edition_id }}</p>      
+      <p>ID Copia: {{ editionCopyDetail()?.id_copy }}</p>
+      <p>Código de Barra: {{ editionCopyDetail()?.barcode }}</p>
+      <p>{{ editionCopyDetail()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
+      <p>{{ editionCopyDetail()?.updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
+      <div class="py-4">
+        <app-user-status-select-components
+          [selectedId]="editionCopyDetail()?.status?.id_status ?? 1"
+          [disabled]="true"
+        />
+      </div>
+    </div>
+
+    <div>
+      <fieldset class="fieldset">
+        <label class="label font-semibold mb-1">Firma Topografica:</label>
+        <input
+          #topographyInput
+          type="text" class="input validator w-full uppercase" placeholder="NA 1.0" required 
+          [value]="formData().signature_topography"
+          (input)="updateTopography($any($event.target).value, topographyInput)"
+        />
+        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
+      </fieldset>
+  
+      <fieldset class="fieldset">
+        <label class="label font-semibold mb-1">Numero de Copia:</label>
+        <input
+          #copynumberInput
+          type="text" class="input validator w-full" placeholder="0" required 
+          [value]="formData().copy_number"
+          (input)="updateCopyNumber($any($event.target).value, copynumberInput)"
+        />
+        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
+      </fieldset>  
+    </div>
+  
+    @if (isLoading()) {
+      <app-loading-component/>
+    } @else {
+    <button class="btn btn-lg bg-my-purple hover:bg-my-purple/80 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
+      {{ formData().id_copy == 0 ? 'Crear Copia' : 'Modificar Copia' }}
+    </button>  
+    }
   </form>
+
+  @if (errorMessage()) {
+    <div class="py-4">
+      <app-message-error-component [message]="errorMessage()"/>
+    </div>
+  }
 </div>
+
+<pre>{{ editionCopyDetail() | json }}</pre>
+<pre>{{ formData() | json }}</pre>

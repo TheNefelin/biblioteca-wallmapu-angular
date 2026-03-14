@@ -1,5 +1,5 @@
 import { EditorialModel } from "@features/book-editorial/models/editorial-model"
-import { EditionCopyModel } from "@features/edition-copy/models/edition-copy-model"
+import { EditionCopyDetailModel } from "@features/edition-copy/models/edition-copy-detail-model"
 import { EditionBookModel } from "@features/edition/models/edition-book-model"
 
 export interface EditionDetailModel {
@@ -14,5 +14,5 @@ export interface EditionDetailModel {
   editorial_id: number,
   book: EditionBookModel,  
   editorial: EditorialModel,
-  copies: EditionCopyModel[],
+  copies: EditionCopyDetailModel[],
 }

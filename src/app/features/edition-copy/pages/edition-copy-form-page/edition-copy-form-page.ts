@@ -1,18 +1,18 @@
 import { JsonPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { EditionCopyModel } from '@features/edition-copy/models/edition-copy-model';
 import { EditionCopyService } from '@features/edition-copy/services/edition-copy-service';
 import { catchError, map, of, tap } from 'rxjs';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { Router } from '@angular/router';
 import { EditionCopyFormComponents } from "@features/edition-copy/components/edition-copy-form-components/edition-copy-form-components";
+import { EditionCopyDetailModel } from '@features/edition-copy/models/edition-copy-detail-model';
+import { EditionCopyFormModel } from '@features/edition-copy/models/edition-copy-form-model';
 
 @Component({
   selector: 'app-edition-copy-form-page',
   imports: [
-    JsonPipe,
     SectionHeaderComponent,
     EditionCopyFormComponents
 ],
@@ -28,17 +28,19 @@ export class EditionCopyFormPage {
     id_copy: number,
   }
   
-  protected readonly editionCopyForm = signal<EditionCopyModel>({
+  protected readonly editionCopyDetail = signal<EditionCopyDetailModel>({
     id_copy: this.state.id_copy,
+    edition_id: this.state.id_edition,
     barcode: '',
     signature_topography: '',
     copy_number: 0,
     created_at: '',
     updated_at: '',
-    edition_id: 0,
     status: null,
   });
-  protected readonly isEditMode = signal<boolean>(this.editionCopyForm().id_copy > 0)
+  protected readonly isEditMode = computed(
+    () => this.editionCopyDetail().id_copy > 0
+  );
   protected readonly book_edition_name = computed<string>(() => 
     this.isEditMode() 
     ? `Modificar copia de: ${ this.state.book_title }` 
@@ -48,11 +50,12 @@ export class EditionCopyFormPage {
   protected readonly isLoading = computed<boolean>(() =>
     [
       this.copyRX,
+      this.createCopyRX,
     ].some(r => r.isLoading())
   );
 
   private readonly editionCopyService = inject(EditionCopyService);
-  private readonly getEditionCopyPayload = signal<number | null>(this.editionCopyForm().id_copy);
+  private readonly getEditionCopyPayload = signal<number | null>(this.editionCopyDetail().id_copy);
 
   private readonly copyRX = rxResource({
     params: () => this.getEditionCopyPayload(),
@@ -65,18 +68,10 @@ export class EditionCopyFormPage {
           return response.result;
         }),
         tap(copy => {
-          if (!copy) {
-            this.isEditMode.set(false);
-            return;
-          }
-
-          this.editionCopyForm.update(e => ({ 
+          this.editionCopyDetail.update(e => ({ 
             ...e, 
             ...copy,
           })); 
-
-          this.getEditionCopyPayload.set(null);
-          this.isEditMode.set(true);
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -86,6 +81,38 @@ export class EditionCopyFormPage {
       );
     }
   });
+
+  private readonly newEditionCopyPayload = signal<EditionCopyFormModel | null>(null);
+
+  private readonly createCopyRX = rxResource({
+    params: () => this.newEditionCopyPayload(),
+    stream: ({ params }) => {
+      if (!params) return of(null);
+
+      return this.editionCopyService.create(params).pipe(
+        map(response => {
+          if (!response.isSuccess) throw new Error(response.message);
+          return response.result;
+        }),
+        tap(copy => {
+          this.getEditionCopyPayload.set(copy.id_copy);
+
+          this.newEditionCopyPayload.set(null);
+        }),
+        catchError(err => {
+          const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
+          this.errorMessage.set(message);
+          return of(null);
+        })
+      );
+    }
+  });
+
+  protected formSubmit(form: EditionCopyFormModel): void {
+    if (!form) return
+
+    this.newEditionCopyPayload.set(form);
+  }
 
   protected navigateBack(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], {

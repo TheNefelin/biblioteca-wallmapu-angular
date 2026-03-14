@@ -1,6 +1,6 @@
 import { EditionCopyStatusModel } from "@features/edition-copy-status/models/edition-copy-status-model";
 
-export interface EditionCopyModel {
+export interface EditionCopyDetailModel {
   id_copy: number,
   barcode: string,
   signature_topography: string,
@@ -8,5 +8,5 @@ export interface EditionCopyModel {
   created_at: string,
   updated_at: string,
   edition_id: number,
-  status_id: number
+  status: EditionCopyStatusModel | null
 }

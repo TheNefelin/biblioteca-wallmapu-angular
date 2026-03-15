@@ -25,21 +25,20 @@
             <span>{{ item.created_at | date:'yyyy-MM-dd' }}</span>
             <span class="hidden md:inline"> - {{ item.created_at | date:'HH:mm:ss' }}</span>
           </div>
+          <div class="text-xs uppercase font-semibold opacity-60">
+            <span>ID: {{ item.id_edition }}</span>
+          </div>
           <p class="text-lg font-bold text-my-purple">{{ item.edition }}</p>
           <div class="text-my-purple">
             <span class="font-bold">ISBN: </span>
             <span>{{ item.isbn }}</span>
           </div>
           <div class="text-my-purple">
-            <span class="font-bold">Paginas: </span>
-            <span>{{ item.pages }}</span>
-          </div>
-          <div class="text-my-purple">
             <span class="font-bold">Copias: </span>
             <span>{{ item.copies.length }}</span>
           </div>
         </div>
-      
+
         <button
           (click)="delete(item)"
           class="btn bg-my-pink text-my-light">

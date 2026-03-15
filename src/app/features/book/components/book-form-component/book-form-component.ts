@@ -168,9 +168,6 @@ export class BookFormComponent {
   
     if (!data.genre_id || data.genre_id === 0) return 'El género es requerido';
   
-    if (!data.authors?.length) return 'El o los autores son requeridos';
-    if (!data.subjects?.length) return 'El o los descriptores son requeridos';
-  
     return null; // ✅ sin errores
   }
 }

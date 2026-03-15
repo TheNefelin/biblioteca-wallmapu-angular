@@ -1,5 +1,7 @@
 <section class="p-4 max-w-7xl mx-auto">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+    <!--
     @if (isLoading()) {
       @for (item of [1,2,3]; track $index) {
         <div>
@@ -13,8 +15,9 @@
           </div>      
         </div>
       }
-    }
-
+    }    
+    -->
+    
     @for (newsWithImages of newsWithImagesList(); track newsWithImages.id_news) {
       <app-news-card-component 
         [newsWithImages]="newsWithImages"

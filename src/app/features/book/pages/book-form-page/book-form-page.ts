@@ -19,6 +19,7 @@ import { CreateBookModel, UpdateBookModel } from '@features/book/models/book-mod
 import { BookDetailModel } from '@features/book/models/book-detail-model';
 import { BookFormVM } from '@features/book/models/vm.book-form';
 import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
+import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
 
 @Component({
   selector: 'app-book-form-page',
@@ -26,7 +27,8 @@ import { EditionDetailModel } from '@features/edition/models/edition-detail-mode
     SectionHeaderComponent,
     BookFormComponent,
     MessageErrorComponent,
-    EditionListComponents
+    EditionListComponents,
+    ModalDeleteComponent
 ],
   templateUrl: './book-form-page.html',
 })
@@ -87,7 +89,6 @@ export class BookFormPage {
           return response.result;
         }),
         tap(book => {
-          console.log(book)
           if (!book) {
             this.isEditMode.set(false);
             return;
@@ -199,6 +200,7 @@ export class BookFormPage {
         }),
         tap(() => {
           this.getBookRX.reload();
+          this.selectedEditionToDelete.set(null);
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -224,6 +226,8 @@ export class BookFormPage {
   }
 
   protected formSubmit(form: BookFormVM): void {
+    this.errorMessage.set(null);
+    
     const basePayload = {
       ...form,
       author_ids: form.authors.map(e => e.id_author),
@@ -261,7 +265,25 @@ export class BookFormPage {
     }); 
   }
 
+  // onDelete --------------------------------------------------------
+  protected readonly openDeleteModal = signal<boolean>(false);
+  readonly selectedEditionToDelete = signal<EditionDetailModel | null>(null);
+  
   protected deleteEdition(item: EditionDetailModel): void {
-    console.log(item)
+    if (!item) return;
+    this.selectedEditionToDelete.set(item);
+    this.openDeleteModal.set(true);
   }
+
+  confirmDelete() {
+    const selectedBookToDelete = this.selectedEditionToDelete();
+    if (!selectedBookToDelete) return;
+    this.deleteEditionPayload.set(selectedBookToDelete.id_edition);
+    this.openDeleteModal.set(false);
+  } 
+
+  closeDeleteModal() {
+    this.openDeleteModal.set(false);
+  }
+  // -----------------------------------------------------------------
 }

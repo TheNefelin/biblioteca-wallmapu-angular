@@ -4,14 +4,6 @@
   (actionClicked)="navigateGoBack()"
 />
 
-@if (errorMessage()) {
-  <section class="p-4 pb-0">
-    <app-message-error-component 
-      [message]="errorMessage()"
-    />
-  </section>  
-}
-
 <app-book-form-component
   [actionText]="headerText()"
   [isLoading]="isLoading()"
@@ -20,6 +12,14 @@
   (onDeleteSubject)="deleteSubject($event)"
   (onFormSubmit)="formSubmit($event)"
 />
+
+@if (errorMessage()) {
+  <section class="p-4 pb-0">
+    <app-message-error-component 
+      [message]="errorMessage()"
+    />
+  </section>  
+}
 
 @if (isEditMode()) {
   <div class="m-4 flex justify-end">
@@ -34,4 +34,13 @@
   [editionDetailList]="bookDetailComputed()?.editions ?? []"
   (onEdit)="editEdition($event)"
   (onDelete)="deleteEdition($event)"
+/>
+
+<app-modal-delete-component
+  title="Eliminar Copia"
+  [isOpen]="openDeleteModal()"
+  [loading]="isLoading()"
+  [itemName]="bookFormVM().title + ' - ' + selectedEditionToDelete()?.edition"
+  (confirm)="confirmDelete()"
+  (cancel)="closeDeleteModal()"
 />

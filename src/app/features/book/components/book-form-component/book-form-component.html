@@ -19,7 +19,7 @@
         <div class="my-auto">
           <app-genre-select-components 
             [selectedId]="formData().genre_id"
-            (newSelectedId)="newSelectedGenreId($event)"
+            (newSelectedId)="updateGenre($event)"
           />
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -52,11 +52,11 @@
       <label class="label font-semibold">Seleccionar Autor/es</label>
       <div class="my-2">
         <app-author-select-components 
-          (onNewSelectedAuthor)="newSelectedAuthor($event)"
+          (onNewSelectedAuthor)="addAuthor($event)"
         />
       </div>
       <app-author-list-components
-        [authorList]="AuthorModelList()"
+        [authorList]="formData().authors"
         (onDelete)="deleteAuthor($event)"
       />
     </div>
@@ -66,11 +66,11 @@
       <label class="label font-semibold">Descriptor/es</label>
       <div class="my-2">
         <app-subject-select-components 
-          (onNewSelectedSubject)="newSelectedSubject($event)"
+          (onNewSelectedSubject)="addSubject($event)"
         />
       </div>
       <app-subject-list-components 
-        [subjectList]="subjectModelList()"
+        [subjectList]="formData().subjects"
         (onDelete)="deleteSubject($event)"
       />
     </div>

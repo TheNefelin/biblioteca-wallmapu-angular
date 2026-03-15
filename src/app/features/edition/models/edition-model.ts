@@ -10,3 +10,17 @@ export interface EditionModel {
   created_at: string,
   updated_at: string,
 }
+
+export interface CreateEditionModel {
+  edition: string,
+  isbn: string,
+  publication_year: number,
+  pages: number,
+  cover_image: string | null,
+  book_id: number,
+  editorial_id: number
+}
+
+export interface UpdateEditionModel extends CreateEditionModel {
+  id_edition: number,
+}

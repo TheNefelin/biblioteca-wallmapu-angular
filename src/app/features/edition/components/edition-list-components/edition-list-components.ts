@@ -1,6 +1,6 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { EditionModel } from '@features/edition/models/edition-model';
+import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
@@ -13,17 +13,17 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
   templateUrl: './edition-list-components.html',
 })
 export class EditionListComponents {
-  readonly editionList = input.required<EditionModel[]>();
+  readonly editionDetailList = input.required<EditionDetailModel[]>();
   readonly isLoading = input.required<boolean>();
   
-  readonly onEdit = output<EditionModel>();
-  readonly onDelete = output<EditionModel>();
+  readonly onEdit = output<EditionDetailModel>();
+  readonly onDelete = output<EditionDetailModel>();
 
-  protected edit(item: EditionModel): void {
+  protected edit(item: EditionDetailModel): void {
     this.onEdit.emit(item);
   }
 
-  protected delete(item: EditionModel): void {
+  protected delete(item: EditionDetailModel): void {
     this.onDelete.emit(item);
   }
 }

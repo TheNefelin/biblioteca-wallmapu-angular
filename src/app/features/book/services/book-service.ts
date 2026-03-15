@@ -3,8 +3,7 @@ import { ApiResponseModel } from '@core/models/api-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { Observable } from 'rxjs';
 import { BookDetailModel } from '@features/book/models/book-detail-model';
-import { BookFormModel } from '@features/book/models/book-form-model';
-import { BookModel } from '@features/book/models/book-model';
+import { BookModel, CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
 import { PaginationModel } from '@core/models/pagination-model';
 
 @Injectable({
@@ -26,14 +25,14 @@ export class BookService {
     );
   }
 
-  create(item: BookFormModel): Observable<ApiResponseModel<BookModel>> {
-    return this.apiResponseService.create<ApiResponseModel<BookModel>, BookFormModel>(
+  create(item: CreateBookModel): Observable<ApiResponseModel<BookModel>> {
+    return this.apiResponseService.create<ApiResponseModel<BookModel>, CreateBookModel>(
       this.endpoint, item
     );
   }  
 
-  update(id: number, item: BookFormModel): Observable<ApiResponseModel<BookModel>> {
-    return this.apiResponseService.update<ApiResponseModel<BookModel>, BookFormModel>(
+  update(id: number, item: UpdateBookModel): Observable<ApiResponseModel<BookModel>> {
+    return this.apiResponseService.update<ApiResponseModel<BookModel>, UpdateBookModel>(
       this.endpoint, id, item
     );
   }

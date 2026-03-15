@@ -375,10 +375,8 @@ ng g s features/division-region/services/region-service --skip-tests
 ng g c features/edition/components/edition-form-components --skip-tests --style=none
 ng g c features/edition/components/edition-list-components --skip-tests --style=none
 
-ng g interface features/edition/models/edition-book-model
 ng g interface features/edition/models/edition-detail-model
 ng g interface features/edition/models/edition-model
-ng g interface features/edition/models/edition-form-model
 
 ng g c features/edition/pages/edition-form-page --skip-tests --style=none
 

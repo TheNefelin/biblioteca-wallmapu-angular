@@ -6,11 +6,10 @@ import { AuthorSelectComponents } from "@features/book-author/components/author-
 import { SubjectSelectComponents } from "@features/book-subject/components/subject-select-components/subject-select-components";
 import { AuthorListComponents } from "@features/book-author/components/author-list-components/author-list-components";
 import { SubjectListComponents } from "@features/book-subject/components/subject-list-components/subject-list-components";
-import { BookDetailModel } from '@features/book/models/book-detail-model';
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { BookFormModel } from '@features/book/models/book-form-model';
 import { AuthorModel } from '@features/book-author/models/author-model';
+import { BookFormVM } from '@features/book/models/vm.book-form';
 
 @Component({
   selector: 'app-book-form-component',
@@ -29,27 +28,17 @@ import { AuthorModel } from '@features/book-author/models/author-model';
 export class BookFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly actionText = input.required<string>();
-  readonly bookFormModel = input<BookFormModel | null>(null);
-  readonly AuthorModelList = input<AuthorModel[]>([])
-  readonly subjectModelList = input<SubjectModel[]>([])
-  //------------------------------------------------
-  readonly onNewSelectedGenreId = output<number>();
-  //------------------------------------------------
-  readonly onNewSelectedAuthor = output<AuthorModel>();
+  readonly bookFormVM = input<BookFormVM | null>(null);
   readonly onDeleteAuthor = output<AuthorModel>();
-  //------------------------------------------------
-  readonly onNewSelectedSubject = output<SubjectModel>();
   readonly onDeleteSubject = output<SubjectModel>();
-  //------------------------------------------------
-  readonly onFormChange = output<Partial<BookFormModel>>();
-  readonly onFormSubmit = output<BookFormModel>();
-  //------------------------------------------------
+  readonly onFormSubmit = output<BookFormVM>();
 
   readonly errorMessage = signal<string | null>(null);
-  readonly formData = signal<Partial<BookFormModel>>({});
+  readonly formData = signal<Partial<BookFormVM>>({});
 
-  private readonly effect = effect(() => {
-    const book = this.bookFormModel();
+  private readonly updateEffect = effect(() => {
+    const book = this.bookFormVM();
+
     if (book) {
       this.formData.set(book);
     }
@@ -63,7 +52,35 @@ export class BookFormComponent {
     this.updateField('summary', value, input);
   }
 
-  private updateField<K extends keyof BookFormModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  protected updateGenre(id_genre: number) {
+    this.formData.update(data => ({ ...data, genre_id: id_genre,  }));
+  }
+
+  protected addAuthor(item: AuthorModel) {
+    this.formData.update(data => {
+      const exists = data.authors?.some(a => a.id_author === item.id_author);
+      if (exists) return data;
+    
+      return {
+        ...data,
+        authors: [...data.authors || [], item]
+      };
+    });
+  }
+
+  protected addSubject(item: SubjectModel) {
+    this.formData.update(data => {
+      const exists = data.subjects?.some(a => a.id_subject === item.id_subject);
+      if (exists) return data;
+    
+      return {
+        ...data,
+        subjects: [...data.subjects || [], item]
+      };
+    });
+  }
+
+  private updateField<K extends keyof BookFormVM>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -72,18 +89,14 @@ export class BookFormComponent {
     } 
 
     this.formData.update(data => {
-      const updated = { ...data, [key]: sanitized };
-  
-      // 🔥 notificar al padre
-      this.onFormChange.emit(updated);
-  
+      const updated = { ...data, [key]: sanitized };  
       return updated;
     });
 
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof BookDetailModel, value: string): string | null {
+  private sanitize(key: keyof BookFormVM, value: string): string | null {
     switch (key){
       case 'title':
         if (value.length > 100) return null;
@@ -91,26 +104,34 @@ export class BookFormComponent {
       default:
         return value;
     }
-  }
-  
-  protected newSelectedGenreId(genre_id: number) {
-    this.onNewSelectedGenreId.emit(genre_id);
-  }
-
-  protected newSelectedAuthor(item: AuthorModel) {
-    this.onNewSelectedAuthor.emit(item)
-  }
+  }  
 
   protected deleteAuthor(item: AuthorModel): void {
-    this.onDeleteAuthor.emit(item);
-  }
-
-  protected newSelectedSubject(item: SubjectModel) {
-    this.onNewSelectedSubject.emit(item)
+    //if (item.id_author > 0) {
+    //  this.onDeleteAuthor.emit(item);
+    //  return;
+    //}
+    
+    this.formData.update(data => {
+      return {
+        ...data,
+        authors: data.authors?.filter(s => s.id_author !== item.id_author) || []
+      };
+    });
   }
 
   protected deleteSubject(item: SubjectModel): void {
-    this.onDeleteSubject.emit(item);
+    //if (item.id_subject > 0) {
+    //  this.onDeleteSubject.emit(item);
+    //  return;
+    //}
+
+    this.formData.update(data => {
+      return {
+        ...data,
+        subjects: data.subjects?.filter(s => s.id_subject !== item.id_subject) || []
+      };
+    });
   }
 
   protected formSubmit(event: Event): void {
@@ -124,23 +145,18 @@ export class BookFormComponent {
       return;
     }
 
-    const submitData: BookFormModel = { 
+    const baseData = this.bookFormVM();
+
+    const submitData: BookFormVM = { 
+      ...baseData,
       ...data,
-      id_book: data.id_book!,
-      title: data.title!,
-      summary: data.summary!,
-      created_at: data.created_at!,
-      updated_at: data.updated_at!,
-      genre_id: data.genre_id!,
-      authors: data.authors!,
-      subjects: data.subjects!
-    }
+    } as BookFormVM
 
     this.errorMessage.set(null)
     this.onFormSubmit.emit(submitData);
   }
 
-  private validateFormOnSubmit(data: Partial<BookFormModel>): string | null {
+  private validateFormOnSubmit(data: Partial<BookFormVM>): string | null {
     const title = data.title?.trim();
     if (!title) return 'El título es requerido';
     if (title.length < 2) return 'El título debe tener al menos 2 caracteres';

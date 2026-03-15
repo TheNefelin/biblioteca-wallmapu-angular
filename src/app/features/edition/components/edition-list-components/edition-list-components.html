@@ -7,7 +7,7 @@
     </section>
   } @else {
   
-    @for (item of editionList(); track $index) {
+    @for (item of editionDetailList(); track $index) {
       <li class="list-row">
         <div class="relative overflow-hidden min-w-20 aspect-7/10">
           <img 
@@ -33,6 +33,10 @@
           <div class="text-my-purple">
             <span class="font-bold">Paginas: </span>
             <span>{{ item.pages }}</span>
+          </div>
+          <div class="text-my-purple">
+            <span class="font-bold">Copias: </span>
+            <span>{{ item.copies.length }}</span>
           </div>
         </div>
       

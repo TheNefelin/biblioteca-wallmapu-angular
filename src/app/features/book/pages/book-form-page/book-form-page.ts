@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { BookFormComponent } from '@features/book/components/book-form-component/book-form-component';
@@ -8,15 +8,17 @@ import { BookSubjectStepModel } from '@features/book-subject-step/models/book-su
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { BookFormModel } from '@features/book/models/book-form-model';
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { BookAuthorStepService } from '@features/book-author-step/services/book-author-step-service';
 import { BookAuthorStepModel } from '@features/book-author-step/models/book-author-step-model';
 import { BookSubjectStepService } from '@features/book-subject-step/services/book-subject-step-service';
 import { BookService } from '@features/book/services/book-service';
 import { EditionListComponents } from "@features/edition/components/edition-list-components/edition-list-components";
-import { EditionModel } from '@features/edition/models/edition-model';
 import { EditionService } from '@features/edition/services/edition-service';
+import { CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
+import { BookDetailModel } from '@features/book/models/book-detail-model';
+import { BookFormVM } from '@features/book/models/vm.book-form';
+import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
 
 @Component({
   selector: 'app-book-form-page',
@@ -39,27 +41,28 @@ export class BookFormPage {
     { initialValue: 0 }
   );
 
-  protected readonly authorModelList = signal<AuthorModel[]>([]);
-  protected readonly subjectModelList = signal<SubjectModel[]>([]);
-  protected readonly editionModelList = signal<EditionModel[]>([]);
-  protected readonly bookFormModel = signal<BookFormModel>({
-    id_book: this.routeId(),
-    title: '',
-    summary: '',
-    created_at: '',
-    updated_at: '',
-    genre_id: 0,
-    authors: [],
-    subjects: []
+  protected readonly bookFormVM = computed<BookFormVM>(() => {
+    const book = this.bookDetailComputed();
+
+    return {
+      id_book: book?.id_book ?? this.routeId(),
+      title: book?.title ?? '',
+      summary: book?.summary ?? '',
+      genre_id: book?.genre.id_genre ?? 0,
+      authors: book?.authors ?? [],
+      subjects: book?.subjects ?? [],
+      created_at: book?.created_at ?? '',
+      updated_at: book?.updated_at ?? ''
+    }
   });
 
-  protected readonly isEditMode = signal<boolean>(this.bookFormModel().id_book > 0);
+  protected readonly isEditMode = signal<boolean>(this.routeId() > 0);
   protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isLoading = computed<boolean>(() => 
     [
-      this.bookGetRX,
-      this.bookRX,
+      this.getBookRX,
+      this.addBookRX,
       this.deleteSubjectStepRX,
       this.deleteAuthorStepRX,
       this.editionRX,
@@ -67,10 +70,11 @@ export class BookFormPage {
   );
 
   private readonly bookService = inject(BookService);
-  private readonly bookIdPayload = signal(this.routeId());
+  protected readonly bookDetailComputed = computed<BookDetailModel | null>(() => this.getBookRX.value() ?? null);
+  private readonly getBookPayload = signal(this.routeId());
 
-  private readonly bookGetRX = rxResource({
-    params: () => this.bookIdPayload(),
+  private readonly getBookRX = rxResource({
+    params: () => this.getBookPayload(),
     stream: ({ params: idBook }) => {
       if (!idBook) {
         this.isEditMode.set(false);
@@ -83,27 +87,13 @@ export class BookFormPage {
           return response.result;
         }),
         tap(book => {
+          console.log(book)
           if (!book) {
             this.isEditMode.set(false);
             return;
           }
 
           this.isEditMode.set(true);
-          
-          this.bookFormModel.set({
-            id_book: book.id_book,
-            title: book.title,
-            summary: book.summary,
-            created_at: book.created_at,
-            updated_at: book.updated_at,
-            genre_id: book.genre.id_genre,
-            authors: book.authors.map(a => a.id_author),
-            subjects: book.subjects.map(s => s.id_subject)
-          });
-  
-          this.authorModelList.set(book.authors);
-          this.subjectModelList.set(book.subjects);
-          this.editionModelList.set(book.editions);
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -114,14 +104,14 @@ export class BookFormPage {
     }
   });
 
-  private readonly bookPayload = signal<BookFormModel | null>(null);
+  private readonly addBookPayload = signal<CreateBookModel | UpdateBookModel | null>(null);
 
-  private readonly bookRX = rxResource({
-    params: () => this.bookPayload(),
+  private readonly addBookRX = rxResource({
+    params: () => this.addBookPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
 
-      const request$ = this.isEditMode()
+      const request$ = 'id_book' in params && params.id_book > 0
         ? this.bookService.update(params.id_book, params)
         : this.bookService.create(params);
 
@@ -130,9 +120,8 @@ export class BookFormPage {
           if (!response.isSuccess) throw new Error(response.message);
           return response.result;
         }),
-        tap((result) => {
-          this.bookIdPayload.set(result.id_book);
-          this.bookPayload.set(null);
+        tap((res) => {
+          this.getBookRX.reload();
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -157,10 +146,7 @@ export class BookFormPage {
           return res.result;
         }),
         tap((res) => {
-          this.authorModelList.update(subjects =>
-            subjects.filter(s => s.id_author !== params.id_author)
-          );
-          this.deleteAuthorStepPayload.set(null);
+          this.getBookRX.reload();
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -185,11 +171,7 @@ export class BookFormPage {
           return res.result;
         }),
         tap(() => {
-          this.subjectModelList.update(subjects =>
-            subjects.filter(s => s.id_subject !== params.id_subject)
-          );
-        
-          this.deleteSubjectStepPayload.set(null);
+          this.getBookRX.reload();
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -216,11 +198,7 @@ export class BookFormPage {
           return res.result;
         }),
         tap(() => {
-          this.editionModelList.update(e =>
-            e.filter(s => s.id_edition !== id_edition)
-          );
-        
-          this.deleteEditionPayload.set(null);
+          this.getBookRX.reload();
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -231,70 +209,33 @@ export class BookFormPage {
     }
   });
 
-  private readonly updateEffect = effect(() => {
-    this.bookFormModel.update(form => ({
-      ...form,
-      authors: this.authorModelList().map(a => a.id_author),
-      subjects: this.subjectModelList().map(s => s.id_subject)
-    }));
-  });
-  
-  protected newSelectedGenreId(genre_id: number) {
-    this.bookFormModel.update(book => ({
-      ...book,
-      genre_id: genre_id
-    }));
-  }
-
-  protected newSelectedAuthor(item: AuthorModel) {
-    if (!item) return;
-
-    this.authorModelList.update(list => {
-      const exists = list.some(a => a.id_author === item.id_author);
-      if (exists) return list;
-  
-      return [...list, item];
-    });
-  }
-
   protected deleteAuthor(item: AuthorModel) {
     this.deleteAuthorStepPayload.set({
-      id_book: this.bookFormModel().id_book,
+      id_book: this.bookFormVM().id_book,
       id_author: item.id_author
-    });
-  }
-
-  protected newSelectedSubject(item: SubjectModel) {
-    if (!item) return;
-
-    this.subjectModelList.update(list => {
-      const exists = list.some(a => a.id_subject === item.id_subject);
-      if (exists) return list;
-  
-      return [...list, item];
     });
   }
 
   protected deleteSubject(item: SubjectModel) {
     this.deleteSubjectStepPayload.set({
-      id_book: this.bookFormModel().id_book,
+      id_book: this.bookFormVM().id_book,
       id_subject: item.id_subject
     });
   }
 
-  protected formChange(data: Partial<BookFormModel>) {
-    this.bookFormModel.update(book => ({
-      ...book,
-      ...data
-    }));
-  }
+  protected formSubmit(form: BookFormVM): void {
+    const basePayload = {
+      ...form,
+      author_ids: form.authors.map(e => e.id_author),
+      subject_ids: form.subjects.map(e => e.id_subject),
+    }
 
-  protected formSubmit(item: BookFormModel): void {
-    this.bookPayload.set({
-      ...item,
-      authors: this.authorModelList().map(a => a.id_author),
-      subjects: this.subjectModelList().map(s => s.id_subject)
-    });
+    const payload: CreateBookModel | UpdateBookModel =
+    basePayload.id_book === 0
+      ? (basePayload as CreateBookModel)
+      : (basePayload as UpdateBookModel);
+
+    this.addBookPayload.set(payload);
   }
 
   protected navigateGoBack(): void {
@@ -304,23 +245,23 @@ export class BookFormPage {
   protected onCreateEdition(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], {
       state: {
-        id_book: this.bookFormModel().id_book,
+        id_book: this.bookFormVM().id_book,
         id_edition: 0,
       }
     }); 
   }
 
-  protected editEdition(item: EditionModel): void {
+  protected editEdition(item: EditionDetailModel): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM], {
       state: {
-        book_title: this.bookFormModel().title,
-        id_book: this.bookFormModel().id_book,
+        book_title: this.bookFormVM().title,
+        id_book: this.bookFormVM().id_book,
         id_edition: item.id_edition,
       }
     }); 
   }
 
-  protected deleteEdition(item: EditionModel): void {
-
+  protected deleteEdition(item: EditionDetailModel): void {
+    console.log(item)
   }
 }

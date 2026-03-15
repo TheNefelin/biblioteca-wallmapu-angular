@@ -10,13 +10,16 @@
     @for (item of editionCopyModel(); track $index) {
       <li class="list-row">
         <div class="relative overflow-hidden size-20">
+        <!--
           <img 
             placeholder="/images/layout.webp"
             [ngSrc]="'images/layout.webp'"
             [alt]="'Sin Imagen'"
             fill
             class="object-cover rounded-box" 
-          /> 
+          />           
+        -->
+          <span>{{ item.signature_topography }}</span>
         </div>
         
         <div>
@@ -24,11 +27,13 @@
             <span>{{ item.created_at | date:'yyyy-MM-dd' }}</span>
             <span class="hidden md:inline"> - {{ item.created_at | date:'HH:mm:ss' }}</span>
           </div>
-          <p class="text-lg font-bold text-my-purple">{{ item.barcode }}</p>
+          <p class="font-bold text-my-purple">{{ item.barcode }}</p>
+          <!--
           <div class="text-my-purple">
             <span class="font-bold">Firma Topografica: </span>
             <span>{{ item.signature_topography }}</span>
-          </div>
+          </div>          
+          -->
           <div class="text-my-purple">
             <span class="font-bold">Estado: </span>
             <span>{{ item.status?.name }}</span>

@@ -6,7 +6,7 @@
 
 <app-edition-form-components 
   [isLoading]="isLoading()"
-  [editionFormModel]="editionForm()"
+  [editionFormVM]="editionFormVMComputed()"
   (onDeleteImage)="deleteImage($event)"
   (onFormSubmit)="formSubmit($event)"
 />
@@ -29,10 +29,16 @@
 
 <app-edition-copy-list-components 
   [isLoading]="isLoading()"
-  [editionCopyModel]="editionDetailComputed()?.copies ?? []"
+  [editionCopyModel]="editionFormVMComputed().copies"
   (onEdit)="onEditEdition($event)"
-  (onDelete)="onDeleteEdition($event)"
+  (onDelete)="onDeleteEditionCopy($event)"
 />
 
-<pre>{{ editionForm() | json }}</pre>
-<pre>{{ editionDetailComputed() | json }}</pre>
+<app-modal-delete-component
+  title="Eliminar Copia"
+  [isOpen]="openDeleteModal()"
+  [loading]="isLoading()"
+  [itemName]="selectedEditionCopyDetailToDelete()?.signature_topography"
+  (confirm)="confirmDelete()"
+  (cancel)="closeDeleteModal()"
+/>

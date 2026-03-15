@@ -1,7 +1,6 @@
-import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { EditionCopyDetailModel } from '@features/edition-copy/models/edition-copy-detail-model';
-import { EditionCopyModel } from '@features/edition-copy/models/edition-copy-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
@@ -9,7 +8,6 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
   imports: 
   [
     DatePipe,
-    NgOptimizedImage,
     LoadingComponent
   ],
   templateUrl: './edition-copy-list-components.html',

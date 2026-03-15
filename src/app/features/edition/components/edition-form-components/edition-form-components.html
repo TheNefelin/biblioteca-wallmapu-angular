@@ -20,7 +20,7 @@
               <button 
                 type="button"
                 class="bg-my-pink text-sm px-2 py-1 rounded hover:bg-my-pink/90 text-my-light"
-                (click)="deleteImage(editionFormModel().id_edition)"
+                (click)="deleteImage(editionFormVM()?.id_edition ?? 0)"
               >
                 Eliminar
               </button>
@@ -45,10 +45,10 @@
   
     <div>
       <div class="py-4 text-my-purple">
-        <p>ID Libro: {{ editionFormModel().book_id }}</p>
-        <p>ID Edición: {{ editionFormModel().id_edition }}</p>
-        <p>{{ editionFormModel().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
-        <p>{{ editionFormModel().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
+        <p>ID Libro: {{ editionFormVM()?.book_id }}</p>
+        <p>ID Edición: {{ editionFormVM()?.id_edition }}</p>
+        <p>{{ editionFormVM()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
+        <p>{{ editionFormVM()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
       </div>
 
       <fieldset class="fieldset">

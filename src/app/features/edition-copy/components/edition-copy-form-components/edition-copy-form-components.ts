@@ -9,7 +9,6 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
 @Component({
   selector: 'app-edition-copy-form-components',
   imports: [
-    JsonPipe,
     DatePipe,
     UserStatusSelectComponents,
     LoadingComponent,

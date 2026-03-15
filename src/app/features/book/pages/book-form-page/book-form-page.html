@@ -13,17 +13,11 @@
 }
 
 <app-book-form-component
-  [actionText]="headerText()" 
+  [actionText]="headerText()"
   [isLoading]="isLoading()"
-  [bookFormModel]="bookFormModel()"
-  [subjectModelList]="subjectModelList()"
-  [AuthorModelList]="authorModelList()"
-  (onNewSelectedGenreId)="newSelectedGenreId($event)"
-  (onNewSelectedAuthor)="newSelectedAuthor($event)"
+  [bookFormVM]="bookFormVM()"
   (onDeleteAuthor)="deleteAuthor($event)"
-  (onNewSelectedSubject)="newSelectedSubject($event)"
   (onDeleteSubject)="deleteSubject($event)"
-  (onFormChange)="formChange($event)"
   (onFormSubmit)="formSubmit($event)"
 />
 
@@ -37,8 +31,7 @@
 
 <app-edition-list-components 
   [isLoading]="isLoading()"
-  [editionList]="editionModelList()"
+  [editionDetailList]="bookDetailComputed()?.editions ?? []"
   (onEdit)="editEdition($event)"
   (onDelete)="deleteEdition($event)"
 />
-

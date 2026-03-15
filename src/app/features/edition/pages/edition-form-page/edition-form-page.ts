@@ -8,20 +8,21 @@ import { EditionFormComponents } from "@features/edition/components/edition-form
 import { EditionImageService } from '@features/edition/services/edition-image-service';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { EditionCopyListComponents } from "@features/edition-copy/components/edition-copy-list-components/edition-copy-list-components";
-import { JsonPipe } from '@angular/common';
-import { EditionFormModel } from '@features/edition/models/edition-form-model';
 import { Router } from '@angular/router';
-import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
 import { EditionCopyDetailModel } from '@features/edition-copy/models/edition-copy-detail-model';
+import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
+import { EditionCopyService } from '@features/edition-copy/services/edition-copy-service';
+import { CreateEditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
+import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
 
 @Component({
   selector: 'app-edition-form-page',
   imports: [
-    JsonPipe,
     SectionHeaderComponent,
     EditionFormComponents,
     MessageErrorComponent,
-    EditionCopyListComponents
+    EditionCopyListComponents,
+    ModalDeleteComponent
 ],
   templateUrl: './edition-form-page.html',
 })
@@ -34,21 +35,7 @@ export class EditionFormPage {
     id_edition: number,
   }
 
-  protected readonly editionForm = signal<EditionFormModel>({
-    id_edition: this.state.id_edition,
-    edition: '',
-    isbn: '',
-    publication_year: 0,
-    pages: 0,
-    cover_image: null,
-    book_id: 0,
-    editorial_id: 0,
-    created_at: '',
-    updated_at: '',
-    file: null,
-    isNewImg: true
-  });
-  protected readonly isEditMode = signal<boolean>(this.editionForm().id_edition > 0)
+  protected readonly isEditMode = computed<boolean>(() => !!this.editionIdPayload())
   protected readonly title = computed<string>(() => 
     this.isEditMode() 
     ? `Modificar ejemplar de: ${ this.state.book_title }` 
@@ -57,18 +44,37 @@ export class EditionFormPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly isLoading = computed<boolean>(() =>
     [
-      this.editionGetRX,
+      this.getEditionRX,
+      this.addEditionRX,
       this.uploadEditionImageRX,
-      this.editionRX,
-      this.deleteEditionImageRX
+      this.deleteEditionImageRX,
+      this.deleteEditionCopyRX,
     ].some(r => r.isLoading())
   );
   
   private readonly editionService = inject(EditionService);
-  protected readonly editionDetailComputed = computed<EditionDetailModel | null>(() => this.editionGetRX.value() ?? null);
-  private readonly editionIdPayload = signal<number | null>(this.editionForm().id_edition);
+  protected readonly editionFormVMComputed = computed<EditionFormVM>(() => {
+    const edition = this.getEditionRX.value();
 
-  private readonly editionGetRX = rxResource({
+    return {
+      id_edition: edition?.id_edition ?? this.state.id_edition,
+      edition: edition?.edition ?? '',
+      isbn: edition?.isbn ?? '',
+      publication_year: edition?.publication_year ?? 0,
+      pages: edition?.pages ?? 0,
+      cover_image: edition?.cover_image ?? null,
+      book_id: edition?.book?.id_book ?? this.state.id_book,
+      editorial_id: edition?.editorial?.id_editorial ?? 0,
+      created_at: edition?.created_at ?? '',
+      updated_at: edition?.updated_at ?? '',
+      file: null,
+      isNewImg: !edition?.cover_image,
+      copies: edition?.copies ?? []
+    };
+  });
+  private readonly editionIdPayload = signal<number | null>(this.state.id_edition);
+
+  private readonly getEditionRX = rxResource({
     params: () => this.editionIdPayload(),
     stream: ({ params: id_edition }) => {
       if (!id_edition || id_edition == 0) return of(null);
@@ -77,27 +83,6 @@ export class EditionFormPage {
         map(response => {
           if (!response.isSuccess) throw new Error(response.message);
           return response.result;
-        }),
-        tap(edition => {
-          if (!edition) {
-            this.isEditMode.set(false);
-            return;
-          }
-
-          this.editionForm.update(e => ({ 
-            ...e,
-            id_edition: edition.id_edition,
-            edition: edition.edition,
-            isbn: edition.isbn,
-            publication_year: edition.publication_year,
-            pages: edition.pages,
-            cover_image: edition.cover_image,
-            book_id: edition.book.id_book,
-            editorial_id: edition.editorial.id_editorial,
-            isNewImg: !edition.cover_image?.trim()
-          })); 
-          
-          this.isEditMode.set(true);
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -108,16 +93,17 @@ export class EditionFormPage {
     }
   });
 
-  private readonly editionPayload = signal<EditionFormModel | null>(null);
+  private readonly addBaseEditionPayload = signal<CreateEditionModel | UpdateEditionModel | null>(null);
+  private readonly addEditionPayload = signal<CreateEditionModel | UpdateEditionModel | null>(null);
 
-  private readonly editionRX = rxResource({
-    params: () => this.editionPayload(),
+  private readonly addEditionRX = rxResource({
+    params: () => this.addEditionPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
 
-      const request$ = params.id_edition == 0 
-      ? this.editionService.create(params)
-      : this.editionService.update(params.id_edition, params) 
+      const request$ = 'id_edition' in params && params.id_edition > 0
+      ? this.editionService.update(params.id_edition, params)
+      : this.editionService.create(params) 
 
       return request$.pipe(
         map(response => {
@@ -125,7 +111,6 @@ export class EditionFormPage {
           return response.result;
         }),
         tap(edition => {
-          this.editionPayload.set(null);
           this.editionIdPayload.set(edition.id_edition); 
         }),
         catchError(err => {
@@ -151,10 +136,11 @@ export class EditionFormPage {
           return response.result;
         }),
         tap(url => {
-          if (!url) return;
-
-          this.editionPayload.set({
-            ...this.editionForm(),
+          const base = this.addBaseEditionPayload();
+          if (!base) return;
+  
+          this.addEditionPayload.set({
+            ...base,
             cover_image: url
           });
         }),
@@ -179,17 +165,8 @@ export class EditionFormPage {
           if (!response.isSuccess) throw new Error(response.message);
           return response.result;
         }),
-        tap(response => {
-          this.deleteImagePayload.set(null);
-
-          this.editionForm.update(e => ({
-            ...e,
-            cover_image: null,
-          }));
-
-          this.editionPayload.set({
-            ...this.editionForm(),
-          });
+        tap(() => {
+          this.getEditionRX.reload();
         }),
         catchError(err => {
           const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
@@ -200,17 +177,47 @@ export class EditionFormPage {
     }
   });
 
-  protected formSubmit(form: EditionFormModel): void {
-    this.editionForm.update(e => ({ 
-      ...e, 
-      ...form
-    }));
-  
-    //if (form.file) {
-    //  this.uploadImagePayload.set(form.file);
-    //} else {
-    //  this.editionPayload.set(this.editionForm());
-    //}
+  private readonly editionCopyService = inject(EditionCopyService);
+  private readonly deleteEditionCopyPayload = signal<number | null>(null);
+
+  private readonly deleteEditionCopyRX = rxResource({
+    params: () => this.deleteEditionCopyPayload(),
+    stream: ({ params: id_copy }) => {
+      if (!id_copy) return of(null);
+
+      return this.editionCopyService.delete(id_copy).pipe(
+        map(response => {
+          if (!response.isSuccess) throw new Error(response.message);
+          return response.result;
+        }),
+        tap(() => {
+          this.openDeleteModal.set(false);
+          this.getEditionRX.reload();
+        }),
+        catchError(err => {
+          const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
+          this.errorMessage.set(message);
+          return of(null);
+        })
+      );
+    }
+  });
+
+  protected formSubmit(form: EditionFormVM): void {
+    const payload: CreateEditionModel | UpdateEditionModel =
+    form.id_edition === 0
+      ? (form as CreateEditionModel)
+      : (form as UpdateEditionModel);
+
+    this.addBaseEditionPayload.set(payload);
+
+    if (form.file) {
+      // subir imagen primero
+      this.uploadImagePayload.set(form.file);
+    } else {
+      // guardar directamente
+      this.addEditionPayload.set(payload);
+    }
   }
 
   protected deleteImage(id_edition: number): void {
@@ -222,7 +229,7 @@ export class EditionFormPage {
       state: {
         book_title: this.state.book_title,
         id_book: this.state.id_book,
-        id_edition: this.editionForm().id_edition,
+        id_edition: this.editionFormVMComputed()?.id_edition,
         id_copy: 0,
       }
     }); 
@@ -239,10 +246,27 @@ export class EditionFormPage {
     }); 
   }
 
-  protected onDeleteEdition(item: EditionCopyDetailModel): void {
-
+  // onDelete --------------------------------------------------------
+  protected readonly openDeleteModal = signal<boolean>(false);
+  readonly selectedEditionCopyDetailToDelete = signal<EditionCopyDetailModel | null>(null);
+  
+  protected onDeleteEditionCopy(item: EditionCopyDetailModel): void {
+    if (!item) return;
+    this.selectedEditionCopyDetailToDelete.set(item);
+    this.openDeleteModal.set(true);
   }
 
+  confirmDelete() {
+    const selectedBookToDelete = this.selectedEditionCopyDetailToDelete();
+    if (!selectedBookToDelete) return;
+    this.deleteEditionCopyPayload.set(selectedBookToDelete.id_copy);
+  } 
+
+  closeDeleteModal() {
+    this.openDeleteModal.set(false);
+  }
+  // -----------------------------------------------------------------
+  
   protected navigateBack(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOKS.FORM, this.state.id_book]);
   }

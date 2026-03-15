@@ -8,6 +8,6 @@ import { NewsWithImagesModel } from '@features/news/models/news-with-images-mode
   templateUrl: './news-card-list-component.html',
 })
 export class NewsCardListComponent {
-  readonly isLoading = input<boolean | null>(true);
+  readonly isLoading = input<boolean | null>(false);
   readonly newsWithImagesList = input.required<NewsWithImagesModel[]>();
 }

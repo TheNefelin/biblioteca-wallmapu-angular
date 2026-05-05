@@ -2,20 +2,16 @@
   [title]="'Perfil'"
 />
 
-@if(errorMessage()) {
-  <section class="p-4">
-    <app-message-error-component 
-      [message]="errorMessage()"
-    />
-  </section>  
-}
+<section class="p-4 grid grid-cols-1 gap-4">
+  @if(errorMessage()) {
+    <app-message-error-component [message]="errorMessage()" />
+  }
+  
+  <app-user-profile-components
+    [editRole]="authUser().editRole"
+    [picture]="authUser().picture"
+    [userDetailModel]="userDetailComputed()"
+  />
 
-<section class="p-4">
-  <div class="max-w-4xl mx-auto">
-    <app-user-profile-components
-      [editRole]="authUser().editRole"
-      [picture]="authUser().picture"
-      [userDetailModel]="userDetailComputed()"
-    />
-  </div>
+  <app-notification-list-components />
 </section>

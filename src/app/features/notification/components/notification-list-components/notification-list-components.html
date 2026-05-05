@@ -1,1 +1,68 @@
-<p>notification-list-components works!</p>
+<ul class="list bg-base-100 rounded-box shadow-md">
+  
+  <header class="p-6 pb-2 flex gap-4 justify-between flex-wrap">
+    <div>
+      <h2 class="font-bold text-my-purple text-lg">
+        Bandeja de Mensajes
+      </h2>
+      <p class="text-sm text-my-dark/50">
+        Lista completa de todos tus mensajes
+      </p>
+    </div>
+
+    <div class="flex gap-2 items-center">
+      <app-button-notification-component [textBtn]="'Marcar todo como leído'" />
+      <app-button-refresh-component />
+    </div>
+  </header>
+  
+  @if (isLoading()) {
+    <div class="p-4 flex justify-center">
+      <app-loading-component />
+    </div>
+  } @else {
+
+    @for (item of paginationAndNotificationList()?.data; track item.id_notification) {
+      <li class="list-row">
+        <div>
+          @if (item.is_read) {
+            <div class="fill-my-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="default" d="m21.55 8.17l-9-6c-.34-.22-.77-.22-1.11 0l-8.99 6c-.28.19-.45.5-.45.83v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-.33-.17-.65-.45-.83M12 4.2L19.2 9L12 13.8L4.8 9z"/>
+              </svg>
+            </div>
+          } @else {
+            <div class="fill-my-pink">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="default" d="M20 4H4c-1.1 0-2 .9-2 2v.25l10 7.5l10-7.5V6c0-1.1-.9-2-2-2"/>
+                <path fill="default" d="M12 16c-.21 0-.42-.07-.6-.2L2 8.75V18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8.75l-9.4 7.05c-.18.13-.39.2-.6.2"/>
+              </svg>
+            </div>
+          }
+        </div>
+  
+        <div>
+          <div>{{ item.created_at | date:'yyyy-MM-dd' }}</div>
+          <div class="text-xs uppercase font-semibold opacity-60">{{ item.title }}</div>
+          <p>{{ item.message }}</p>
+        </div>
+  
+        @if (!item.is_read) {
+          <div class="tooltip tooltip-left tooltip-warning font-bold" data-tip="Marcar como leído">
+            <button class="btn btn-square btn-ghost">
+              <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
+            </button>
+          </div>
+        }
+      </li>
+    }
+
+  }
+
+  <app-pagination-component 
+    [currentPage]="1"
+    [totalPages]="1"
+  />
+</ul>
+
+<pre>{{ paginationAndNotificationList() | json }}</pre>

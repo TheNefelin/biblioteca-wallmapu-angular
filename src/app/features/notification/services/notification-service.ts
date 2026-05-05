@@ -24,4 +24,14 @@ export class NotificationService {
     );
   }
 
+  getAllPaginationByUser(params: PaginationRequestModel<null>): Observable<ApiResponseModel<PaginationResponseModel<NotificationModel[]>>> {
+    let path = `?page=${params.page}&limit=${params.limit}`
+    
+    if (params.search && params.search.trim() != '')
+      path = `${path}&search=${params.search}`
+   
+    return this.apiResponseService.getAll<ApiResponseModel<PaginationResponseModel<NotificationModel[]>>>(
+      `${this.endpoint}/user/pagination${path}`
+    );
+  }
 }

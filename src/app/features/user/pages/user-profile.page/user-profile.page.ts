@@ -9,6 +9,7 @@ import { UserProfileComponents } from "@features/user/components/user-profile-co
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { UserDetailModel } from '@features/user/models/user-detail-model';
 import { Role } from '@shared/constants/roles-enum';
+import { NotificationListComponents } from "@features/notification/components/notification-list-components/notification-list-components";
 
 @Component({
   selector: 'app-user-profile.page',
@@ -16,7 +17,8 @@ import { Role } from '@shared/constants/roles-enum';
     CommonModule,
     SectionHeaderComponent,
     UserProfileComponents,
-    MessageErrorComponent
+    MessageErrorComponent,
+    NotificationListComponents
 ],
   templateUrl: './user-profile.page.html',
 })
@@ -25,11 +27,10 @@ export class UserProfilePage {
   private readonly authStore = inject(AuthStore);
   readonly authUser = computed(() => ({
     userId: this.authStore.user()?.id_user,
-    editRole: this.authStore.user()?.role || Role.Reader,
-    picture: this.authStore.user()?.picture || 'images/book.png',
+    editRole: this.authStore.user()?.role ?? Role.Reader,
+    picture: this.authStore.user()?.picture ?? 'images/book.png',
   }));
 
-  // SERVICIO DE FEATURE
   private readonly userService = inject(UserService);
 
   private readonly dataResourceRX = rxResource({
@@ -40,7 +41,6 @@ export class UserProfilePage {
       return this.userService.getById(id).pipe(
         map(response => {
           if (!response.isSuccess) throw new Error(response.message);
-  
           return response.data;
         }),
         catchError(err => {

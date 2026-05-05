@@ -88,7 +88,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component: InDevelopmentPage,
+        loadChildren: () => import('@features/dashboard/user.routes').then(m => m.DASHBOARD_ROUTES),
       },
       {
         path: 'reservation',

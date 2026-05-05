@@ -6,12 +6,12 @@ export interface CreateNotificationModel {
 }
 
 
-export interface UpdateNotificationModel {
+export interface UpdateNotificationModel extends CreateNotificationModel {
   id_notification: number;
   is_read: boolean;
 }
 
 
-export interface NotificationModel {
+export interface NotificationModel extends UpdateNotificationModel {
   created_at: string;
 }

@@ -1,1 +1,7 @@
-<p>user-dashboard-page works!</p>
+<section class="p-4 grid grid-cols-1 gap-4">
+  <app-user-stats-components/>
+  <app-notification-list-components 
+    [isLoading]="isLoading()"
+    [paginationAndNotificationList]="computedPaginationAndNotificationList()"
+  />  
+</section>

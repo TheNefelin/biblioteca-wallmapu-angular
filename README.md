@@ -506,6 +506,7 @@ ng g s features/news-gallery/services/news-gallery-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES NOTIFICATION
+ng g c features/notification/components/notification-form-components --skip-tests --style=none
 ng g c features/notification/components/notification-list-components --skip-tests --style=none
 
 ng g interface features/notification/models/notification-model
@@ -538,6 +539,7 @@ ng g s features/reservation-status/services/reservation-status-service --skip-te
 # ---------------------------------------------------------------------------------
 # FEATURES STATS
 ng g c features/stats/components/admin-stats-components --skip-tests --style=none
+ng g c features/stats/components/user-stats-components --skip-tests --style=none
 
 ng g interface features/stats/models/stat-model
 
@@ -600,6 +602,7 @@ ng g c shared/components/button-create-component --skip-tests --style=none
 ng g c shared/components/button-delete-component --skip-tests --style=none
 ng g c shared/components/button-edit-component --skip-tests --style=none
 ng g c shared/components/button-goback-component --skip-tests --style=none
+ng g c shared/components/button-notification-component --skip-tests --style=none
 ng g c shared/components/button-refresh-component --skip-tests --style=none
 ng g c shared/components/button-search-component --skip-tests --style=none
 ng g c shared/components/header-component --skip-tests --style=none

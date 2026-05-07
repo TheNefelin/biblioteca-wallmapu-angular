@@ -4,11 +4,12 @@ import { NotificationFormComponents } from "@features/notification/components/no
 import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { NotificationDetailModel } from '@features/notification/models/notification-model';
+import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, map, of } from 'rxjs';
+import { catchError, EMPTY, finalize, map, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { NotificationService } from '@features/notification/services/notification-service';
+import { extractErrorMessage } from '@core/utils/error-handler';
 
 @Component({
   selector: 'app-notification-page',
@@ -21,21 +22,26 @@ import { NotificationService } from '@features/notification/services/notificatio
   templateUrl: './notification-page.html',
 })
 export class NotificationPage {
+  protected readonly isReadFilter = signal<boolean>(true);
+  protected readonly cleanFormTrigger = signal<number>(0);
   protected readonly successMessage = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly currentPage = signal<number>(1);
   private readonly limit = signal<number>(10);
   private readonly search = signal<string>('');
   
+  protected readonly isLoadingCreateNotfication = signal<boolean>(false);
   protected readonly isLoading = computed<boolean>(() => this.getNotificationRX.isLoading())
 
   private readonly notificationService = inject(NotificationService);
-  private readonly getNotificationPayload = computed<PaginationRequestModel<null>>(() => {
+  private readonly getNotificationPayload = computed<PaginationRequestModel<NotificationFilterModel>>(() => {
     return {
       page: this.currentPage(),
       limit: this.limit(),
       search: this.search(),
-      filter: null
+      filter: {
+        is_read: this.isReadFilter()
+      }
     }
   });
   protected readonly computedPaginationAndNotificationList = computed<PaginationResponseModel<NotificationDetailModel[]> | null>(() => this.getNotificationRX.value() ?? null);
@@ -57,10 +63,37 @@ export class NotificationPage {
     },
   });
 
-  protected onReloadNotification(): void {
-    this.getNotificationRX.reload();
+  protected onFormSubmit(item: CreateNotificationByEmailModel): void {
+    this.isLoadingCreateNotfication.set(true);
+
+    this.notificationService.create(item)
+      .pipe(
+        map(response => {
+          if (!response.isSuccess) throw new Error(response.message);
+
+          this.successMessage.set(response.message)
+          this.cleanFormTrigger.update(e => e + 1);
+        }),
+        catchError(err => {
+          this.handleError(err);
+          return EMPTY;
+        }),
+        finalize(() => this.isLoadingCreateNotfication.set(false))
+      )
+      .subscribe(() => {
+        this.getNotificationRX.reload();
+      });
   }
 
+  protected onFilterNotRead(is_read: boolean): void {
+    this.isReadFilter.set(is_read);
+  }
+
+  protected onReloadNotification(): void {
+    this.getNotificationRX.reload();
+    this.successMessage.set(null);
+    this.errorMessage.set(null);
+  }
 
   protected nextPage(): void {
     const totalPages = this.computedPaginationAndNotificationList()?.pages ?? 1
@@ -77,10 +110,7 @@ export class NotificationPage {
   }
 
   private handleError(err: unknown): void {
-    const message = err instanceof Error 
-      ? err.message 
-      : (err as any)?.error?.detail || (err as any)?.error?.message || 'Unexpected error';
-    this.errorMessage.set(message);
+    this.errorMessage.set(extractErrorMessage(err));
     this.successMessage.set(null);
   }
 }

@@ -1,26 +1,33 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { ButtonNotificationComponent } from "@shared/components/button-notification-component/button-notification-component";
 import { CreateNotificationByEmailModel } from '@features/notification/models/notification-model';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { JsonPipe } from '@angular/common';
+import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
 
 @Component({
   selector: 'app-notification-form-components',
   imports: [
-    JsonPipe,
     LoadingComponent,
     ButtonNotificationComponent,
     MessageErrorComponent,
+    ButtonClearComponent,
   ],
   templateUrl: './notification-form-components.html',
 })
 export class NotificationFormComponents {
-  protected readonly isLoading = input<boolean>(false);
+  readonly cleanFormTrigger = input<number>(0);
+  readonly isLoading = input<boolean>(false);
   protected readonly onFormSubmit = output<CreateNotificationByEmailModel>();
 
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly formData = signal<Partial<CreateNotificationByEmailModel>>({ is_priority: false });
+
+  protected readonly clearFormEffect = effect(() => {
+    this.cleanFormTrigger();
+
+    this.clearForm();
+  })
 
   protected updatePriority(value: boolean) {
     this.formData.update(data => ({ ...data, is_priority: value }));
@@ -68,22 +75,25 @@ export class NotificationFormComponents {
 
   protected formSubmit(event: Event): void {
     event.preventDefault();
-
+  
     const data = this.formData();
-
+    
     this.errorMessage.set(null);
     const error = this.validateFormOnSubmit(data);
-
+    
     if (error) {
       this.errorMessage.set(error);
       return;
     }
-
+    
+    // Construcción explícita (type-safe, sin as)
     const submitData: CreateNotificationByEmailModel = {
-      ...data
-    } as CreateNotificationByEmailModel;
-
-    console.log(submitData)
+      email: data.email!,
+      title: data.title!,
+      message: data.message!,
+      is_priority: data.is_priority ?? false
+    };
+    
     this.onFormSubmit.emit(submitData);
   }
 
@@ -106,5 +116,10 @@ export class NotificationFormComponents {
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  protected clearForm(): void {
+    this.formData.set({ is_priority: false });
+    this.errorMessage.set(null);
   }
 }

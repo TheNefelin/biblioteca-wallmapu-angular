@@ -4,10 +4,11 @@ import { NotificationListComponents } from "@features/notification/components/no
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { NotificationDetailModel } from '@features/notification/models/notification-model';
+import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { catchError, EMPTY, finalize, map, of } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { NotificationTestComponents } from "@features/notification/components/notification-test-components/notification-test-components";
 
 @Component({
   selector: 'app-user-dashboard-page',
@@ -15,10 +16,12 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
     UserStatsComponents,
     NotificationListComponents,
     MessageErrorComponent,
+    NotificationTestComponents
 ],
   templateUrl: './user-dashboard-page.html',
 })
 export class UserDashboardPage {
+  protected readonly isReadFilter = signal<boolean>(true);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly currentPage = signal<number>(1);
   private readonly limit = signal<number>(10);
@@ -29,12 +32,14 @@ export class UserDashboardPage {
   protected readonly isLoading = computed<boolean>(() => this.getNotificationRX.isLoading() || this.isLoadingMarkAsRead() || this.isLoadingMarkAllAsRead());
 
   private readonly notificationService = inject(NotificationService);
-  private readonly getNotificationPayload = computed<PaginationRequestModel<null>>(() => {
+  private readonly getNotificationPayload = computed<PaginationRequestModel<NotificationFilterModel>>(() => {
     return {
       page: this.currentPage(),
       limit: this.limit(),
       search: this.search(),
-      filter: null
+      filter: {
+        is_read: this.isReadFilter()
+      }
     }
   });
   protected readonly computedPaginationAndNotificationList = computed<PaginationResponseModel<NotificationDetailModel[]> | null>(() => this.getNotificationRX.value() ?? null);
@@ -88,10 +93,13 @@ export class UserDashboardPage {
       });
   }
 
+  protected onFilterNotRead(is_read: boolean): void {
+    this.isReadFilter.set(is_read);
+  }
+
   protected onReloadNotification(): void {
     this.getNotificationRX.reload();
   }
-
 
   protected nextPage(): void {
     const totalPages = this.computedPaginationAndNotificationList()?.pages ?? 1

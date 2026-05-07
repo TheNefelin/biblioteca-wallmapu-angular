@@ -51,8 +51,8 @@ export class ReservationService {
     );
   }  
 
-  create(item: CreateReservationModel): Observable<ApiResponseModel<any>> {
-    return this.apiResponseService.create<ApiResponseModel<any>, CreateReservationModel>(
+  create(item: CreateReservationModel): Observable<ApiResponseModel<ReservationModel>> {
+    return this.apiResponseService.create<ApiResponseModel<ReservationModel>, CreateReservationModel>(
       this.endpoint, item
     );
   }

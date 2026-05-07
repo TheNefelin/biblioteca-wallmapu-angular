@@ -27,6 +27,7 @@ export class NotificationListComponents {
   protected readonly onReload = output<void>();
   protected readonly onMarkAsRead = output<NotificationDetailModel>();
   protected readonly onMarkAllAsRead = output<void>();
+  protected readonly onFilterNotRead = output<boolean>();
   protected readonly onNextPage = output<void>();
   protected readonly onPrevPage = output<void>();
   
@@ -38,4 +39,9 @@ export class NotificationListComponents {
       this.totalPages.set(data.pages);
     }
   });
+
+  protected handleCheckboxChange(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.onFilterNotRead.emit(!checked);
+  }
 }

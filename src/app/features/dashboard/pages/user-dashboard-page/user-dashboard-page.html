@@ -5,6 +5,8 @@
     <app-message-error-component [message]="errorMessage()"/>
   }
 
+  <app-notification-test-components/>
+
   <app-notification-list-components 
     [isLoading]="isLoading()"
     [isUser]="true"
@@ -14,5 +16,6 @@
     (onMarkAllAsRead)="onMarkAllAsRead()"
     (onNextPage)="nextPage()"
     (onPrevPage)="prevPage()"
+    (onFilterNotRead)="onFilterNotRead($event)"
   />  
 </section>

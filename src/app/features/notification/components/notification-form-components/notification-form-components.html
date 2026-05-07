@@ -1,9 +1,14 @@
 <section class="list bg-my-light rounded-box shadow-md h-full">
 
-  <div class="p-4">
-    <h3 class="card-title text-xl text-my-purple">Crear Notificación</h3>
-    <p class="text-sm text-base-content/60">Puedes enviar notificaciones y correo a usarios resgistrados</p>
-  </div>
+  <header class="p-4 flex gap-4 justify-between">
+    <div>
+      <h3 class="card-title text-xl text-my-purple">Crear Notificación</h3>
+      <p class="text-sm text-base-content/60">Puedes enviar notificaciones y correo</p>
+      <p class="text-sm text-base-content/60">a usarios resgistrados</p>
+    </div>
+
+    <app-button-clear-component (onClick)="clearForm()"/>
+  </header>
     
   <form (submit)="formSubmit($event)" class="p-4 grid grid-cols-1 gap-2">
     <fieldset class="fieldset">
@@ -66,7 +71,4 @@
       }
     </div>
   </form>
-
-
-  <pre>{{ formData() | json}}</pre>
 </section>

@@ -24,6 +24,7 @@ import { ButtonCreateComponent } from "@shared/components/button-create-componen
 import { ButtonGobackComponent } from "@shared/components/button-goback-component/button-goback-component";
 import { ButtonSearchComponent } from "@shared/components/button-search-component/button-search-component";
 import { ButtonNotificationComponent } from "@shared/components/button-notification-component/button-notification-component";
+import { NotificationTestComponents } from "@features/notification/components/notification-test-components/notification-test-components";
 
 @Component({
   selector: 'app-stat.page',
@@ -48,7 +49,8 @@ import { ButtonNotificationComponent } from "@shared/components/button-notificat
     ButtonCreateComponent,
     ButtonGobackComponent,
     ButtonSearchComponent,
-    ButtonNotificationComponent
+    ButtonNotificationComponent,
+    NotificationTestComponents
 ],
   templateUrl: './stat.page.html',
 })

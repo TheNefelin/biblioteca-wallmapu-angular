@@ -1,7 +1,11 @@
 
 <section class="p-4 grid grid-cols-1 gap-4 max-w-7xl mx-auto">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <app-notification-form-components/>
+    <app-notification-form-components
+      [cleanFormTrigger]="cleanFormTrigger()"
+      [isLoading]="isLoadingCreateNotfication()"
+      (onFormSubmit)="onFormSubmit($event)"
+    />
   </div>
   
   @if (successMessage()) {
@@ -18,5 +22,6 @@
     (onReload)="onReloadNotification()"
     (onNextPage)="nextPage()"
     (onPrevPage)="prevPage()"
+    (onFilterNotRead)="onFilterNotRead($event)"
   />
 </section>

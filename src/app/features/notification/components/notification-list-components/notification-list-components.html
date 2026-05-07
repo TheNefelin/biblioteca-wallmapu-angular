@@ -10,7 +10,15 @@
       </p>
     </div>
 
-    <div class="flex gap-2 items-center">
+    <div class="flex gap-2 flex-col sm:flex-row items-baseline sm:items-center">
+      <label class="label">
+        <input 
+          #isReadInput
+          type="checkbox" class="checkbox" 
+          (change)="handleCheckboxChange($event)"
+        />
+        Filtrar No Leido
+      </label>  
       @if (isUser()) {
         <app-button-notification-component (onClick)="onMarkAllAsRead.emit()" [textBtn]="'Marcar todo como leído'" />
       }

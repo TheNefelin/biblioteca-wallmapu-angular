@@ -12,5 +12,15 @@
     [userDetailModel]="userDetailComputed()"
   />
 
-  <app-notification-list-components />
+  <app-notification-list-components 
+    [isLoading]="isLoading()"
+    [isUser]="true"
+    [paginationAndNotificationList]="computedPaginationAndNotificationList()"
+    (onReload)="onReloadNotification()"
+    (onMarkAsRead)="onMarkAsRead($event)"
+    (onMarkAllAsRead)="onMarkAllAsRead()"
+    (onNextPage)="nextPage()"
+    (onPrevPage)="prevPage()"
+    (onFilterNotRead)="onFilterNotRead($event)"
+  />
 </section>

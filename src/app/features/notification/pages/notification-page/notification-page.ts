@@ -1,35 +1,37 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { UserStatsComponents } from "@features/stats/components/user-stats-components/user-stats-components";
 import { NotificationListComponents } from "@features/notification/components/notification-list-components/notification-list-components";
-import { rxResource } from '@angular/core/rxjs-interop';
-import { NotificationService } from '@features/notification/services/notification-service';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { catchError, EMPTY, finalize, map, of } from 'rxjs';
+import { NotificationFormComponents } from "@features/notification/components/notification-form-components/notification-form-components";
+import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { NotificationTestComponents } from "@features/notification/components/notification-test-components/notification-test-components";
+import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { catchError, EMPTY, finalize, map, of } from 'rxjs';
+import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { NotificationService } from '@features/notification/services/notification-service';
+import { extractErrorMessage } from '@core/utils/error-handler';
 
 @Component({
-  selector: 'app-user-dashboard-page',
+  selector: 'app-notification-page',
   imports: [
-    UserStatsComponents,
-    NotificationListComponents,
-    MessageErrorComponent,
-    NotificationTestComponents
-],
-  templateUrl: './user-dashboard-page.html',
+    NotificationListComponents, 
+    NotificationFormComponents, 
+    MessageSuccessComponent, 
+    MessageErrorComponent
+  ],
+  templateUrl: './notification-page.html',
 })
-export class UserDashboardPage {
+export class NotificationPage {
   protected readonly isReadFilter = signal<boolean>(true);
+  protected readonly cleanFormTrigger = signal<number>(0);
+  protected readonly successMessage = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly currentPage = signal<number>(1);
   private readonly limit = signal<number>(10);
   private readonly search = signal<string>('');
   
-  protected readonly isLoadingMarkAsRead = signal(false);
-  protected readonly isLoadingMarkAllAsRead = signal(false);
-  protected readonly isLoading = computed<boolean>(() => this.getNotificationRX.isLoading() || this.isLoadingMarkAsRead() || this.isLoadingMarkAllAsRead());
+  protected readonly isLoadingCreateNotfication = signal<boolean>(false);
+  protected readonly isLoading = computed<boolean>(() => this.getNotificationRX.isLoading())
 
   private readonly notificationService = inject(NotificationService);
   private readonly getNotificationPayload = computed<PaginationRequestModel<NotificationFilterModel>>(() => {
@@ -48,7 +50,7 @@ export class UserDashboardPage {
     params: () => this.getNotificationPayload(),
     stream: ({ params }) => { 
 
-      return this.notificationService.getAllPaginationByUser(params).pipe(
+      return this.notificationService.getAllPagination(params).pipe(
         map(response => {
           if (!response.isSuccess) throw new Error(response.message);
           return response.data;
@@ -61,32 +63,22 @@ export class UserDashboardPage {
     },
   });
 
-  protected onMarkAsRead(item: NotificationDetailModel): void {
-    this.isLoadingMarkAsRead.set(true);
+  protected onFormSubmit(item: CreateNotificationByEmailModel): void {
+    this.isLoadingCreateNotfication.set(true);
 
-    this.notificationService.markAsReadByUser(item.id_notification)
+    this.notificationService.create(item)
       .pipe(
+        map(response => {
+          if (!response.isSuccess) throw new Error(response.message);
+
+          this.successMessage.set(response.message)
+          this.cleanFormTrigger.update(e => e + 1);
+        }),
         catchError(err => {
           this.handleError(err);
           return EMPTY;
         }),
-        finalize(() => this.isLoadingMarkAsRead.set(false))
-      )
-      .subscribe(() => {
-        this.getNotificationRX.reload();
-      });
-  }
-
-  protected onMarkAllAsRead(): void {
-    this.isLoadingMarkAllAsRead.set(true);
-
-    this.notificationService.markAllAsReadByUser()
-      .pipe(
-        catchError(err => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        finalize(() => this.isLoadingMarkAllAsRead.set(false))
+        finalize(() => this.isLoadingCreateNotfication.set(false))
       )
       .subscribe(() => {
         this.getNotificationRX.reload();
@@ -99,6 +91,8 @@ export class UserDashboardPage {
 
   protected onReloadNotification(): void {
     this.getNotificationRX.reload();
+    this.successMessage.set(null);
+    this.errorMessage.set(null);
   }
 
   protected nextPage(): void {
@@ -116,9 +110,7 @@ export class UserDashboardPage {
   }
 
   private handleError(err: unknown): void {
-    const message = err instanceof Error 
-      ? err.message 
-      : (err as any)?.error?.detail || (err as any)?.error?.message || 'Unexpected error';
-    this.errorMessage.set(message);
+    this.errorMessage.set(extractErrorMessage(err));
+    this.successMessage.set(null);
   }
 }

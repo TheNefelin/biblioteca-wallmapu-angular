@@ -375,6 +375,7 @@ ng g s features/copy/services/copy-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES COPY STATUS
+ng g c features/copy-status/components/copy-status-component --skip-tests --style=none
 ng g c features/copy-status/components/copy-status-select-components --skip-tests --style=none
 
 ng g interface features/copy-status/models/copy-status-model
@@ -464,6 +465,7 @@ ng g s features/loan-policies/services/loan-policies-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES LOANS STATUS
+ng g c features/loan-status/components/loan-status-component --skip-tests --style=none
 ng g c features/loan-status/components/loan-status-select-component --skip-tests --style=none
 
 ng g interface features/loan-status/models/loan-status-model
@@ -504,9 +506,12 @@ ng g s features/news-gallery/services/news-gallery-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES NOTIFICATION
+ng g c features/notification/components/notification-form-components --skip-tests --style=none
 ng g c features/notification/components/notification-list-components --skip-tests --style=none
 
 ng g interface features/notification/models/notification-model
+
+ng g c features/notification/pages/notification-page --skip-tests --style=none
 
 ng g s features/notification/services/notification-service --skip-tests
 
@@ -526,6 +531,7 @@ ng g s features/reservation/services/reservation-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES RESERVATION STATUS
+ng g c features/reservation-status/components/reservation-status-component --skip-tests --style=none
 ng g c features/reservation-status/components/reservation-status-select-components --skip-tests --style=none
 
 ng g interface features/reservation-status/models/reservation-status-model
@@ -535,6 +541,7 @@ ng g s features/reservation-status/services/reservation-status-service --skip-te
 # ---------------------------------------------------------------------------------
 # FEATURES STATS
 ng g c features/stats/components/admin-stats-components --skip-tests --style=none
+ng g c features/stats/components/user-stats-components --skip-tests --style=none
 
 ng g interface features/stats/models/stat-model
 
@@ -597,6 +604,7 @@ ng g c shared/components/button-create-component --skip-tests --style=none
 ng g c shared/components/button-delete-component --skip-tests --style=none
 ng g c shared/components/button-edit-component --skip-tests --style=none
 ng g c shared/components/button-goback-component --skip-tests --style=none
+ng g c shared/components/button-notification-component --skip-tests --style=none
 ng g c shared/components/button-refresh-component --skip-tests --style=none
 ng g c shared/components/button-search-component --skip-tests --style=none
 ng g c shared/components/header-component --skip-tests --style=none

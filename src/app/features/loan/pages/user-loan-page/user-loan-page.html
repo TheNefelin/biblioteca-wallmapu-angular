@@ -6,9 +6,7 @@
   </div>
 
   @if (errorMessage()) {
-    <div class="pb-0">
-      <app-message-error-component [message]="errorMessage()" />
-    </div>
+    <app-message-error-component [message]="errorMessage()" />
   }
 
   <app-loan-list-component 

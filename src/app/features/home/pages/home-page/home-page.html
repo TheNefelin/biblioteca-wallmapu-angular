@@ -19,17 +19,20 @@
   [newsWithImagesList]="restNewsWithImages()"
 />
 
-<app-edition-search-component
-  [textTitle]="'La lectura nos abre las puertas del mundo'"
-  [textDescription]="'Revisa nuestro catálogo de libros y elige el que quieras leer.'"
-  [searchPlaceholder]="'Buscar Título, Descripción, ISBN...'"
-  [textBtn]="'Buscar'"
-  (onSearchChange)="searchText($event)"
-  (onAuthorIdSelected)="onAuthorIdSelected($event)"
-  (onEditorialIdSelected)="onEditorialIdSelected($event)"
-  (onGenreIdSelected)="onGenreIdSelected($event)"
-  (onBtnSearchClick)="onBtnSearchClick()"
-/>
+<div class="max-w-7xl mx-auto">
+  <app-edition-search-component
+    [textTitle]="'La lectura nos abre las puertas del mundo'"
+    [textDescription]="'Revisa nuestro catálogo de libros y elige el que quieras leer.'"
+    [searchPlaceholder]="'Buscar Título, Descripción, ISBN...'"
+    [textBtn]="'Buscar'"
+    (onSearchChange)="searchText($event)"
+    (onAuthorIdSelected)="onAuthorIdSelected($event)"
+    (onEditorialIdSelected)="onEditorialIdSelected($event)"
+    (onGenreIdSelected)="onGenreIdSelected($event)"
+    (onBtnSearchClick)="onBtnSearchClick()"
+  />
+</div>
+
 
 <app-edition-card-list-component
   [isLoading]="isLoading()"

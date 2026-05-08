@@ -1,0 +1,74 @@
+<section class="list bg-my-light rounded-box shadow-md h-full">
+
+  <header class="p-4 flex gap-4 justify-between">
+    <div>
+      <h3 class="card-title text-xl text-my-purple">Crear Notificación</h3>
+      <p class="text-sm text-base-content/60">Puedes enviar notificaciones y correo</p>
+      <p class="text-sm text-base-content/60">a usarios resgistrados</p>
+    </div>
+
+    <app-button-clear-component (onClick)="clearForm()"/>
+  </header>
+    
+  <form (submit)="formSubmit($event)" class="p-4 grid grid-cols-1 gap-2">
+    <fieldset class="fieldset">
+      <label class="label">
+        <input 
+          #isPriorityInput
+          [disabled]="isLoading()" type="checkbox" class="checkbox" 
+          [checked]="formData().is_priority ?? false"
+          (change)="updatePriority($any($event.target).checked)"
+        />
+        Marcar mensaje como prioridad alta
+      </label>  
+    </fieldset>
+
+    <fieldset class="fieldset">
+      <label class="label font-semibold">Correo:</label>
+      <input
+        #emailInput
+        [disabled]="isLoading()" type="text" class="input w-full" placeholder="correo@dominio.cl"
+        [value]="formData().email ?? ''"
+        (input)="updateEmail($any($event.target).value, emailInput)"
+      />
+    </fieldset>
+
+    <fieldset class="fieldset">
+      <label class="label font-semibold">Título</label>
+      <input
+        #titleInput
+        [disabled]="isLoading()" type="text" class="input w-full" placeholder="título..."
+        [value]="formData().title ?? ''"
+        (input)="updateTitle($any($event.target).value, titleInput)"
+      />
+    </fieldset>
+
+    <fieldset class="fieldset">
+      <label class="label font-semibold">Mensaje</label>
+      <textarea
+        #messageInput
+        [disabled]="isLoading()" class="textarea min-h-40 w-full" placeholder="mensaje..." 
+        [value]="formData().message ?? ''"
+        (input)="updateMessage($any($event.target).value, messageInput)"
+      ></textarea>
+    </fieldset>
+
+    @if (errorMessage()) {
+      <app-message-error-component [message]="errorMessage()"/>
+    }
+    
+    <div class="flex justify-end">
+      @if (isLoading()) {
+        <div class="p-4 flex justify-center items-center h-full">
+          <app-loading-component/>
+        </div>
+      } @else {
+        <app-button-notification-component
+          type="submit"
+          [isOpen]="false"
+          [textBtn]="'Enviar Notificación'"
+        />
+      }
+    </div>
+  </form>
+</section>

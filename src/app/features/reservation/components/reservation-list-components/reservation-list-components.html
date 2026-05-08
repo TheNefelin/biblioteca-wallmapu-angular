@@ -40,11 +40,11 @@
             <th>Fecha Reserva</th>
             <th>Expira</th>
             <th>Estado</th>
-            <th class="whitespace-nowrap">Acciones</th>
+            <th>Acciones</th>
           </tr>
         </thead>
 
-        <tbody class="[&>tr>td]:align-middle">
+        <tbody>
           @for(item of paginationAndReservationList()?.data; track item.id_reservation) {
             <tr (click)="selectReservation(item)" class="hover:bg-my-purple/10 text-my-purple">
               <td>{{ item.id_reservation }}</td>
@@ -70,9 +70,7 @@
 
               <td class="whitespace-nowrap p-1">
                 @if (item.reservation_status_id === 1) {
-                  <app-button-delete-component 
-                    (onClick)="onCancelReservation.emit(item.id_reservation)"
-                  />
+                  <app-button-delete-component (onClick)="onCancelReservation.emit(item.id_reservation)" />
                 }
               </td>
             </tr>

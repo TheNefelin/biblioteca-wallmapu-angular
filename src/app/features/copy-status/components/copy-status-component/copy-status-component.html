@@ -1,0 +1,33 @@
+<div class="overflow-x-auto rounded-box border border-my-light bg-my-light">
+  <div class="p-4">
+    <h3 class="card-title text-xl text-my-purple">Estados de las Copias</h3>
+    <p class="text-sm text-base-content/60">Lista de estados para los Ejemplares</p>
+  </div>
+  
+  @if (isLoading()) 
+  {
+    <div class="flex justify-center p-4">
+      <app-loading-component/>
+    </div>
+  } @else {
+    <table class="table">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th></th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        @for (item of computedCopyStatusList(); track item.id_status) {
+          <tr>
+            <th>{{ item.id_status }}</th>
+            <td>{{ item.name }}</td>
+          </tr>
+        }
+  
+      </tbody>
+    </table>
+  }
+</div>

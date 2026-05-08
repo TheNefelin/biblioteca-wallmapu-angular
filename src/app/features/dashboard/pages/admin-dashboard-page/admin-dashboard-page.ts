@@ -7,6 +7,9 @@ import { catchError, map, of } from 'rxjs';
 import { LoanService } from '@features/loan/services/loan-service';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
 import { LoanPolicyComponent } from "@features/loan-policies/components/loan-policy-component/loan-policy-component";
+import { LoanStatusComponent } from "@features/loan-status/components/loan-status-component/loan-status-component";
+import { ReservationStatusComponent } from "@features/reservation-status/components/reservation-status-component/reservation-status-component";
+import { CopyStatusComponent } from "@features/copy-status/components/copy-status-component/copy-status-component";
 
 @Component({
   selector: 'app-admin-dashboard-page',
@@ -14,8 +17,11 @@ import { LoanPolicyComponent } from "@features/loan-policies/components/loan-pol
     SectionHeaderComponent,
     AdminStatsComponents,
     LoanOverdueListComponent,
-    LoanPolicyComponent
-  ],
+    LoanPolicyComponent,
+    LoanStatusComponent,
+    ReservationStatusComponent,
+    CopyStatusComponent
+],
   templateUrl: './admin-dashboard-page.html',
 })
 export class AdminDashboardPage {

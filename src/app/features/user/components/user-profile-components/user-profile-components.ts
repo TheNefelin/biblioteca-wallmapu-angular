@@ -4,13 +4,15 @@ import { Router } from '@angular/router';
 import { UserDetailModel } from '@features/user/models/user-detail-model';
 import { Role } from '@shared/constants/roles-enum';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
+import { UserStatsComponents } from "@features/stats/components/user-stats-components/user-stats-components";
 
 @Component({
   selector: 'app-user-profile-components',
   imports: [
     CommonModule,
     NgOptimizedImage,
-  ],
+    UserStatsComponents
+],
   templateUrl: './user-profile-components.html',
 })
 export class UserProfileComponents {

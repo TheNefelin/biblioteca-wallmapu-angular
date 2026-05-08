@@ -12,6 +12,15 @@ export const NAVIGATION_ADMIN: NavigationModel[] = [
     tooltip: 'Panel'
   },
   {
+    label: 'Notificaciones',
+    route: ROUTES_CONSTANTS.PROTECTED.ADMIN.NOTIFICATION,
+    iconPaths: [
+      'M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
+      'm3 7l9 6l9-6'
+    ],
+    tooltip: 'Notificaciones',
+  },
+  {
     label: 'Reservas',
     route: ROUTES_CONSTANTS.PROTECTED.ADMIN.RESERVATION.ROOT,
     iconPaths: [

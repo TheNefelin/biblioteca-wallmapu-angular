@@ -27,6 +27,7 @@ export const ROUTES_CONSTANTS = {
     },
     ADMIN: {
       DASHBOARD: '/admin/dashboard',
+      NOTIFICATION: '/admin/notification',
       RESERVATION: {
         ROOT: '/admin/reservation',
       },

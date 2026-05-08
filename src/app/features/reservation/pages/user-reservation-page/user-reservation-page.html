@@ -8,34 +8,29 @@
     
     <app-loan-policy-component/>
   </div>
-</section>
 
-
-@if (successMessage()) {
-  <div class="p-4 pb-0">
+  @if (successMessage()) {
     <app-message-success-component [message]="successMessage()" />
-  </div>
-}
-
-@if (errorMessage()) {
-  <div class="p-4 pb-0">
+  }
+  
+  @if (errorMessage()) {
     <app-message-error-component [message]="errorMessage()" />
+  }
+  
+  <div>
+    <app-reservation-list-components
+      [isLoading]="isLoading()"
+      [paginationAndReservationList]="computedPaginationAndReservationList()"
+      [selectStatusId]="selectStatusId()"
+      (onSelectedReservation)="onSelectedReservation($event)"
+      (onSelectedIdStatus)="onFilterByIdStatus($event)"
+      (onCancelReservation)="onCancelReservation($event)"
+      (onReload)="reloadReservation()"
+      (onNextPage)="nextPage()"
+      (onPrevPage)="prevPage()"
+    />
   </div>
-}
-
-<div class="p-4">
-  <app-reservation-list-components
-    [isLoading]="isLoading()"
-    [paginationAndReservationList]="computedPaginationAndReservationList()"
-    [selectStatusId]="selectStatusId()"
-    (onSelectedReservation)="onSelectedReservation($event)"
-    (onSelectedIdStatus)="onFilterByIdStatus($event)"
-    (onCancelReservation)="onCancelReservation($event)"
-    (onReload)="reloadReservation()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"
-  />
-</div>
+</section>
 
 <app-modal-action-component
   [textTitle]="'Cancelar Reserva'"

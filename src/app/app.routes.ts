@@ -31,6 +31,10 @@ export const routes: Routes = [
         loadChildren: () => import('@features/dashboard/admin.routes').then(m => m.DASHBOARD_ROUTES),
       },
       {
+        path: 'notification',
+        loadChildren: () => import('@features/notification/notification.routes').then(m => m.NOTIFICATION_ROUTES),
+      },
+      {
         path: 'reservation',
         loadChildren: () => import('@features/reservation/admin.reservation.routes').then(m => m.RESERVATION_ROUTES),
       },
@@ -88,7 +92,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component: InDevelopmentPage,
+        loadChildren: () => import('@features/dashboard/user.routes').then(m => m.DASHBOARD_ROUTES),
       },
       {
         path: 'reservation',

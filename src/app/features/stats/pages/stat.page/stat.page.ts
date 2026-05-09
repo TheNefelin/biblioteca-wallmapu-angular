@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { StatModel } from '@features/stats/models/stat-model';
+import { AdminStatsModel } from '@features/stats/models/stat-model';
 import { StatService } from '@features/stats/services/stat-service';
-import { catchError, map, of, throwError } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { UserRoleSelectComponents } from "@features/user-role/components/user-role-select-components/user-role-select-components";
 import { UserStatusSelectComponents } from "@features/user-status/components/user-status-select-components/user-status-select-components";
 import { CommuneSelectComponents } from "@features/division-commune/components/commune-select-components/commune-select-components";
@@ -62,7 +62,7 @@ export class StatPage {
     stream: () => {
       this.backendError.set(null)
 
-      return this.statService.getAll().pipe(
+      return this.statService.getAdminStats().pipe(
         map(res => {
           if (!res.isSuccess) throw new Error(res.message || 'Unexpected error');
           return res.data;
@@ -83,6 +83,6 @@ export class StatPage {
 
   protected readonly isLoading = computed(() => this.statsRX.isLoading());
   protected readonly errorMessage = computed(() => this.backendError() ?? null);
-  readonly statsComputedList = computed<StatModel | null>(() => this.statsRX.value() ?? null);
+  readonly statsComputedList = computed<AdminStatsModel | null>(() => this.statsRX.value() ?? null);
 
 }

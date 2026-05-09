@@ -1,131 +1,144 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { UserFormComponents } from "@features/user/components/user-form-components/user-form-components";
-import { UserUpdateModel } from '@features/user/models/user-update-model';
 import { UserService } from '@features/user/services/user-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { rxResource } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { Role } from '@shared/constants/roles-enum';
-import { UserModel } from '@features/user/models/user-model';
-import { UserDetailModel } from '@features/user/models/user-detail-model';
-import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
+import { UpdateUserByAdminModel, UpdateUserModel, UserModel } from '@features/user/models/user-model';
+import { AuthStore } from '@features/auth/services/auth-store';
+import { AuthUser } from '@features/auth/models/auth-user';
+import { extractErrorMessage } from '@core/utils/error-handler';
+import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
 
 @Component({
   selector: 'app-user-form.page',
   imports: [
     SectionHeaderComponent,
     UserFormComponents,
-    MessageErrorComponent
-],
+    MessageErrorComponent,
+    MessageSuccessComponent
+  ],
   templateUrl: './user-form.page.html',
 })
 export class UserFormPage {
-  // ─── NAVEGACIÓN ───────────────────────────────────────────────────────────────
-  private readonly state = history.state as {
-    editRole: Role;
-    picture: string;
-    userDetailModel: UserDetailModel ;
-    navigateBack: string;
-  };
+  private location = inject(Location);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
-  readonly editRole = signal<Role>(this.state.editRole);
-  readonly picture = signal<string>(this.state.picture);
-  readonly navigateGoBack = signal<string>(this.state.navigateBack);
-  readonly userModel = signal<UserModel | null>(
-    this.state.userDetailModel
-    ? {
-        id_user: this.state.userDetailModel.id_user,
-        email: this.state.userDetailModel.email,
-        name: this.state.userDetailModel.name,
-        lastname: this.state.userDetailModel.lastname,
-        rut: this.state.userDetailModel.rut,
-        address: this.state.userDetailModel.address,
-        phone: this.state.userDetailModel.phone,
-        created_at: this.state.userDetailModel.created_at,
-        updated_at: this.state.userDetailModel.updated_at,
-        commune_id: this.state.userDetailModel.commune_id,
-        user_role_id: this.state.userDetailModel.user_role_id,
-        user_status_id: this.state.userDetailModel.user_status_id,
-      }
-    : null
+  readonly userId = toSignal(
+    this.activatedRoute.paramMap.pipe(
+      map(params => String(params.get('id')) || null)
+    ),
+    { initialValue: null }
   );
 
-  // ─── SERVICIOS ────────────────────────────────────────────────────────────────
+  protected readonly successMessage = signal<string | null>(null);
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly isLoading = computed<boolean>(() => 
+    [
+      this.getUserRX,
+      this.updateRX,
+    ].some((e) => e.isLoading())
+  );
+
+  private readonly authStore = inject(AuthStore);
+  protected readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
+  protected readonly isUser = signal<boolean>(this.authUser()?.role == Role.Reader)
+  protected userPicture = computed<string | null>(() => {
+    if (this.authUser()?.id_user == this.userId())
+      return this.authUser()?.picture ?? null
+
+    return null
+  });
+
   private readonly userService = inject(UserService);
-  private readonly router = inject(Router);
+  private readonly getUserPayload = computed<string | null>(() => {
+    if (this.authUser()?.role == Role.Admin)
+      return this.userId();
 
-  // ─── TRIGGER MUTACIÓN ─────────────────────────────────────────────────────────
-  private readonly submitPayload = signal<{ 
-    id: string; 
-    userUpdateModel: UserUpdateModel; 
-  } | null>(null);
+    return this.authUser()?.id_user ??  null
+  });
+  private readonly submitPayload = signal<UpdateUserModel | UpdateUserByAdminModel | null>(null);
+  protected readonly computedUser = computed<UserModel | null>(() => this.getUserRX.value() ?? null);
 
-  // ─── RX RESOURCE ──────────────────────────────────────────────────────────────
-  private readonly updateRX = rxResource({
-    params: () => this.submitPayload(),
-    stream: ({ params: payload }) => {
-      if (!payload) return of(null);
-
-      const request$ =
-      this.editRole() === Role.Admin
-        ? this.userService.update_admin(payload.id, payload.userUpdateModel)
-        : this.userService.update_user(payload.id, payload.userUpdateModel);
-
-      return request$.pipe(
+  private readonly getUserRX = rxResource({
+    params: () => this.getUserPayload(),
+    stream: ({ params: id_user }) => {
+      if (!id_user) return of(null);
+  
+      return this.userService.getById(id_user).pipe(
         map(response => {
           if (!response.isSuccess) throw new Error(response.message);
           return response.data;
         }),
         catchError(err => {
+          this.handleError(err);
           return of(null);
         })
       );
     },
   });
 
-  // ─── ESTADO DERIVADO ──────────────────────────────────────────────────────────
-  readonly isLoading = this.updateRX.isLoading;
-  readonly errorMessage = computed(() => this.updateRX.error()?.message ?? null);
-
-  // ─── EFECTO NAVEGACIÓN ────────────────────────────────────────────────────────
-  private readonly onUpdateSuccess = effect(() => {
-    const payload = this.submitPayload();
-
-    if (!payload) return;                    // 👈 nunca navegar si no hubo submit
-    if (this.updateRX.isLoading()) return;   // 👈 evitar mientras carga
-    if (this.updateRX.error()) return;       // 👈 no navegar si hay error
+  private readonly updateRX = rxResource({
+    params: () => this.submitPayload(),
+    stream: ({ params: payload }) => {
+      if (!payload) return of(null);
   
-    const value = this.updateRX.value();
-  
-    if (value) {
-      this.router.navigateByUrl(this.navigateGoBack());
-    }
+      const request$ = 
+      'user_role_id' in payload && payload.user_role_id > 0 && 'user_status_id' in payload && payload.user_role_id > 0
+      ? this.userService.update_admin(payload.id_user, payload)
+      : this.userService.update_user(payload.id_user, payload);
+    
+        return request$.pipe(
+        map(response => {
+          if (!response.isSuccess) throw new Error(response.message);
+          this.successMessage.set(response.message);
+          return response.data;
+        }),
+        catchError(err => {
+          console.log(err)
+          this.handleError(err);
+          return of(null);
+        })
+      );
+    },
   });
 
-  // ─── SUBMIT ───────────────────────────────────────────────────────────────────
-  protected onUserFormSubmit(model: UserModel): void {
-    if (!model.id_user) return;
-
-    this.submitPayload.set({
-      id: model.id_user,
-      userUpdateModel: {
-        name: model.name,
-        lastname: model.lastname,
-        rut: model.rut,
-        address: model.address,
-        phone: model.phone,
-        commune_id: model.commune_id,
-        user_role_id: model.user_role_id,
-        user_status_id: model.user_status_id
+  protected onFormSubmit(form: UserModel): void {
+    const payload: UpdateUserModel | UpdateUserByAdminModel = this.authUser()?.role == Role.Admin
+    ? {
+        id_user: form.id_user,
+        name: form.name,
+        lastname: form.lastname,
+        rut: form.rut,
+        address: form.address,
+        phone: form.phone,
+        commune_id: form.commune_id,
+        user_role_id: form.user_role_id,
+        user_status_id: form.user_status_id,
       }
-    });
+    : {
+        id_user: form.id_user,
+        name: form.name,
+        lastname: form.lastname,
+        rut: form.rut,
+        address: form.address,
+        phone: form.phone,
+        commune_id: form.commune_id,
+      };
+
+      this.submitPayload.set(payload);
   }
 
-  protected actionClicked() {
-    this.editRole() === Role.Admin
-    ? this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.PROFILE.ROOT])
-    : this.router.navigate([ROUTES_CONSTANTS.PROTECTED.USER.PROFILE.ROOT])
+  protected navigateBack(): void {
+    this.location.back();
+  }
+
+  private handleError(err: unknown): void {
+    this.errorMessage.set(extractErrorMessage(err));
+    this.successMessage.set(null);
   }
 }

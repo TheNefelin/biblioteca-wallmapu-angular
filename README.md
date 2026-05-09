@@ -553,7 +553,6 @@ ng g s features/stats/services/stat-service --skip-tests
 # FEATURES USER
 ng g c features/user/components/user-form-components --skip-tests --style=none
 ng g c features/user/components/user-list-components --skip-tests --style=none
-ng g c features/user/components/user-list-row-component --skip-tests --style=none
 ng g c features/user/components/user-profile-components --skip-tests --style=none
 
 ng g interface features/user/models/user-detail-model

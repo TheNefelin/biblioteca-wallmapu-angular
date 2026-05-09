@@ -12,7 +12,7 @@ export const PROFILE_ROUTES: Routes = [
     data: { roles: [Role.Admin, Role.Reader] }
   },
   { 
-    path: 'form', 
+    path: 'form/:id', 
     component: UserFormPage,
     canActivate: [authGuard],
     data: { roles: [Role.Admin, Role.Reader] } 

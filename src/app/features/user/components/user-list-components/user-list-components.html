@@ -7,10 +7,22 @@
     </section>
   } @else {
     @for (userDetailModel of userDetailModelList(); track userDetailModel.id_user) {
-      <app-user-list-row-component 
-        [editRole]="editRole()"
-        [userDetailModel]="userDetailModel"
-      />
+      <li class="list-row">
+        <div>
+          <img [ngSrc]="'images/book.png'" class="size-10 rounded-box" alt="usuario" width="40" height="40" />
+        </div>
+        <div>
+          <div>{{ userDetailModel.email }}</div>
+          <div class="text-xs uppercase font-semibold opacity-60">
+            {{ `(${userDetailModel.user_role_name})` }} {{ userDetailModel.name }} {{ userDetailModel.lastname }}
+          </div>
+          <div class="text-my-pink">
+            {{ userDetailModel.user_status_name }}
+          </div>
+        </div>
+      
+        <app-button-edit-component (onClick)="onEdit(userDetailModel)"/>
+      </li>
     }
   }
 </ul>

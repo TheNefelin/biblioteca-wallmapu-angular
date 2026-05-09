@@ -7,9 +7,9 @@ import { catchError, map, of } from 'rxjs';
 import { UserListComponents } from "@features/user/components/user-list-components/user-list-components";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
-import { UserDetailModel } from '@features/user/models/user-detail-model';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { Role } from '@shared/constants/roles-enum';
+import { UserDetailModel } from '@features/user/models/user-model';
 
 @Component({
   selector: 'app-user-list.page',

@@ -22,7 +22,7 @@
       
       <section class="flex gap-4 flex-wrap">
         <img 
-          [ngSrc]="picture() || 'images/book.png'" 
+          [ngSrc]="userPicture()  || 'images/book.png'" 
           [alt]="userModel()?.name ?? 'User image'" 
           width="100" height="100" class="rounded-full" priority
         />
@@ -42,7 +42,7 @@
           <input value="Rol:" type="text" class="text-my-purple text-sm w-14 text-center" disabled />
           <app-user-role-select-components
             [selectedId]="userModel()?.user_role_id || 3"
-            [disabled]="editRol() === Role.Reader"
+            [disabled]="isUser()"
             (newSelectedId)="onRoleChange($event)"
           />
         </div>
@@ -51,7 +51,7 @@
           <input value="Estado:" type="text" class="text-my-purple text-sm w-14 text-center" disabled />
           <app-user-status-select-components 
             [selectedId]="userModel()?.user_status_id || 1"
-            [disabled]="editRol() === Role.Reader"
+            [disabled]="isUser()"
             (newSelectedId)="onStatusChange($event)"
           />
         </div>
@@ -127,7 +127,7 @@
         <label class="label font-semibold mb-1">Comuna</label>
         <!-- COMPONENTE FEATURE COMMUNE-->
         <app-commune-select-components
-          [selectedId]="userModel()?.commune_id || 0" 
+          [selectedId]="formData().commune_id || 0" 
           (newSelectedId)="updateCommune($event)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -137,10 +137,13 @@
         <app-message-error-component [message]="errorMessage()"/>
       }
 
-      <!-- Botón de envío -->
-      <button class="btn bg-my-purple hover:bg-my-purple/50 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
-        Modificar
-      </button>
+      @if (isLoading()) {
+        <app-loading-component/>
+      } @else {
+        <button class="btn bg-my-purple hover:bg-my-purple/50 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
+          Modificar
+        </button>
+      }
     </form>
   </div>
 }

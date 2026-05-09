@@ -22,7 +22,7 @@ export const ROUTES_CONSTANTS = {
       },
       PROFILE: {
         ROOT: '/user/profile',
-        FORM: '/user/profile/form',
+        FORM: (userId: string) => `/user/profile/form/${userId}`,
       },
     },
     ADMIN: {
@@ -59,11 +59,11 @@ export const ROUTES_CONSTANTS = {
       },
       USERS: {
         ROOT: '/admin/users',
-        FORM: '/admin/users/form',
+        FORM: (userId: string) => `/admin/users/form/${userId}`,
       },
       PROFILE: {
         ROOT: '/admin/profile',
-        FORM: '/admin/profile/form',
+        FORM: (userId: string) => `/admin/profile/form/${userId}`,
       },
       SETTINGS: {
         ROOT: '/admin/settings'

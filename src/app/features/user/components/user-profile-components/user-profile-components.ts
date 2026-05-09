@@ -1,48 +1,39 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserDetailModel } from '@features/user/models/user-detail-model';
-import { Role } from '@shared/constants/roles-enum';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { UserStatsComponents } from "@features/stats/components/user-stats-components/user-stats-components";
+import { UserDetailModel } from '@features/user/models/user-model';
+import { AuthUser } from '@features/auth/models/auth-user';
+import { Role } from '@shared/constants/roles-enum';
+import { ButtonEditComponent } from "@shared/components/button-edit-component/button-edit-component";
 
 @Component({
   selector: 'app-user-profile-components',
   imports: [
     CommonModule,
     NgOptimizedImage,
-    UserStatsComponents
+    UserStatsComponents,
+    ButtonEditComponent
 ],
   templateUrl: './user-profile-components.html',
 })
 export class UserProfileComponents {
-  ROUTES_CONSTANTS=ROUTES_CONSTANTS
   private router = inject(Router);
-
-  readonly editRole = input.required<Role>();
-  readonly picture = input.required<string>()
+  
+  readonly authUser = input<AuthUser | null>(null);
   readonly userDetailModel = input<UserDetailModel | null>(null);
 
-  protected onEdit(userDetailModel: UserDetailModel | null): void {
-    if (userDetailModel) {
-      const isAdmin = this.editRole() === Role.Admin;
+  protected onEdit(): void {
+    const id_user = this.userDetailModel()?.id_user
+    const isAdmin = this.authUser()?.role == Role.Admin;
 
+    if (id_user) {
       const formRoute = isAdmin
-      ? ROUTES_CONSTANTS.PROTECTED.ADMIN.PROFILE.FORM
-      : ROUTES_CONSTANTS.PROTECTED.USER.PROFILE.FORM;
+      ? ROUTES_CONSTANTS.PROTECTED.ADMIN.PROFILE.FORM(id_user)
+      : ROUTES_CONSTANTS.PROTECTED.USER.PROFILE.FORM(id_user);
 
-      const backRoute = isAdmin
-      ? ROUTES_CONSTANTS.PROTECTED.ADMIN.PROFILE.ROOT
-      : ROUTES_CONSTANTS.PROTECTED.USER.PROFILE.ROOT;
-
-      this.router.navigate([formRoute], {
-        state: {
-          editRole: this.editRole(),
-          picture: this.picture(),
-          userDetailModel: userDetailModel,
-          navigateBack: backRoute,
-        },
-      });
+      this.router.navigate([formRoute]);
     }
   }
 }

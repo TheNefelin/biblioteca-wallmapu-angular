@@ -1,9 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserModel } from '@features/user/models/user-model';
+import { UpdateUserByAdminModel, UpdateUserModel, UserDetailModel, UserModel } from '@features/user/models/user-model';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { UserUpdateModel } from '@features/user/models/user-update-model';
-import { UserDetailModel } from '@features/user/models/user-detail-model';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
@@ -32,14 +30,14 @@ export class UserService {
     );
   }
 
-  update_user(id_user: string, item: UserUpdateModel): Observable<ApiResponseModel<UserModel>> {
-    return this.apiResponseService.update<ApiResponseModel<UserModel>, UserUpdateModel>(
+  update_user(id_user: string, item: UpdateUserModel): Observable<ApiResponseModel<UserModel>> {
+    return this.apiResponseService.update<ApiResponseModel<UserModel>, UpdateUserModel>(
       this.endpoint, id_user, item
     );
   }
 
-  update_admin(id_user: string, item: UserUpdateModel): Observable<ApiResponseModel<UserModel>> {
-    return this.apiResponseService.update<ApiResponseModel<UserModel>, UserUpdateModel>(
+  update_admin(id_user: string, item: UpdateUserByAdminModel): Observable<ApiResponseModel<UserModel>> {
+    return this.apiResponseService.update<ApiResponseModel<UserModel>, UpdateUserByAdminModel>(
       `${this.endpoint}/admin`, id_user, item
     );
   }

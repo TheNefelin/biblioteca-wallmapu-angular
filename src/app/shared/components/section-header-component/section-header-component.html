@@ -1,6 +1,6 @@
 <div class="bg-my-light py-10 px-4">
   
-  <div class="mx-auto max-w-7xl flex justify-between gap-4 items-end">
+  <div class="mx-auto max-w-7xl flex justify-between gap-4 flex-wrap items-end">
     <div>
       <h2 class="text-3xl font-bold text-my-purple tracking-tight">{{ title() }}</h2>
       <p class="text-my-dark mt-2">{{ description() }}</p>
@@ -8,6 +8,7 @@
 
     @if (actionText()) {
       <app-button-goback-component 
+        class="ml-auto"
         [textBtn]="actionText() ?? ''"
         (onClick)="actionClicked.emit()"
       />

@@ -1,34 +1,33 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe, JsonPipe, NgOptimizedImage } from '@angular/common';
 import { UserStatusSelectComponents } from "@features/user-status/components/user-status-select-components/user-status-select-components";
 import { UserRoleSelectComponents } from "@features/user-role/components/user-role-select-components/user-role-select-components";
-import { Role } from '@shared/constants/roles-enum';
 import { UserModel } from '@features/user/models/user-model';
 import { CommuneSelectComponents } from '@features/division-commune/components/commune-select-components/commune-select-components';
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   selector: 'app-user-form-components',
   imports: [
-    NgOptimizedImage,
     DatePipe,
+    NgOptimizedImage,
     MessageErrorComponent,
     CommuneSelectComponents,
     UserStatusSelectComponents,
-    UserRoleSelectComponents
+    UserRoleSelectComponents,
+    LoadingComponent
 ],
   templateUrl: './user-form-components.html',
 })
 export class UserFormComponents {
-  readonly editRol = input<Role>(Role.Reader);
-  readonly picture = input<string>();
+  readonly isLoading = input<boolean>(false);
+  readonly isUser = input<boolean>(true);
+  readonly userPicture = input<string | null>(null);
   readonly userModel = input<UserModel | null>(null);
   readonly formSubmit = output<UserModel>();
 
-  readonly Role = Role;
   readonly errorMessage = signal<string | null>(null);
-
-  /* -- Form data ----------------------------------------- */
   readonly formData = signal<Partial<UserModel>>({});
 
   private readonly syncFormEffect = effect(() => {
@@ -36,13 +35,11 @@ export class UserFormComponents {
     if (!user) return; 
 
     this.formData.set({
-      name: user.name ?? '',
-      lastname: user.lastname ?? '',
-      rut: user.rut ?? '',
-      address: user.address ?? '',
-      phone: user.phone ?? '',
-      commune_id: user.commune_id ?? 0,
+      ...user
     });
+
+    console.log(user)
+    console.log(this.formData)
   });
 
   /* -- Form Updates -------------------------------------- */
@@ -62,6 +59,7 @@ export class UserFormComponents {
     this.updateField('address', value, input); 
   }
   protected updateCommune(id: number | null) {
+    console.log(id)
     this.formData.update(data => ({ ...data, commune_id: id ?? 0 }));
   }
 

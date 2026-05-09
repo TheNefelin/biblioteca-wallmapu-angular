@@ -1,9 +1,15 @@
 
 <app-section-header-component 
   [title]="'Modificar Perfil'"
-  [actionText]="'Volver a Perfil'"
-  (actionClicked)="actionClicked()"
+  [actionText]="'Volver'"
+  (actionClicked)="navigateBack()"
 />
+
+@if (successMessage()) {
+  <section class="p-4">
+    <app-message-success-component [message]="successMessage()"/>
+  </section>
+}
 
 @if (errorMessage()) {
   <section class="p-4">
@@ -11,7 +17,7 @@
   </section>
 }
 
-@if (!userModel()) {
+@if (!computedUser()) {
   <div class="flex max-w-4xl flex-col gap-4 mx-auto">
     <div class="flex items-center gap-4">
       <div class="skeleton h-28 w-28 shrink-0 rounded-full m-4 bg-my-light/50"></div>
@@ -29,10 +35,11 @@
   <section class="p-4">
     <div class="max-w-4xl mx-auto">
       <app-user-form-components 
-        [editRol]="editRole()"
-        [picture]="picture()"
-        [userModel]="userModel()"
-        (formSubmit)="onUserFormSubmit($event)"
+        [isLoading]="isLoading()"
+        [isUser]="isUser()"
+        [userPicture]="userPicture()"
+        [userModel]="computedUser()"
+        (formSubmit)="onFormSubmit($event)"
       />
     </div>
   </section>

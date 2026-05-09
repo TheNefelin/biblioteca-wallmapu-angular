@@ -10,7 +10,7 @@
   <div class="w-full">
 
     <!-- Card principal -->
-    <div class="card bg-base-100 shadow-xl text-my-dark">
+    <div class="card bg-my-light shadow-xl text-my-dark">
       
       <!-- Cover -->
       <figure class="h-48 relative">
@@ -29,7 +29,7 @@
           <div class="avatar">
             <div class="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-4">
               <img 
-                [ngSrc]="picture()" 
+                [ngSrc]="authUser()?.picture ?? 'image/book.png'" 
                 [alt]="userDetailModel()?.name"
                 width="128"
                 height="128"
@@ -39,11 +39,11 @@
         </div>
   
         <!-- Info principal -->
-        <div class="mt-16">
-          <section class="grid grid-cols-2 items-end">
+        <div class="mt-12">
+          <section class="py-4 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
             <div>
               <p class="text-base-content/70">
-                {{ userDetailModel()?.user_role?.role }}
+                {{ userDetailModel()?.user_role_name }}
               </p>
               <h2 class="card-title text-2xl text-my-purple">
                 {{ userDetailModel()?.name }} {{ userDetailModel()?.lastname }}
@@ -58,17 +58,16 @@
                 {{ userDetailModel()?.address }}
               </p>
               <p class="text-my-pink">
-                {{ userDetailModel()?.user_status?.name }}
+                {{ userDetailModel()?.user_status_name }}
               </p>
             </div>
   
             <!-- Acciones -->
             <div class="card-actions justify-end">
-              <button 
-                (click)="onEdit(userDetailModel())" 
-                class="btn bg-my-green hover:bg-my-green/80 text-my-light">
-                Modificar Perfil
-              </button>
+              <app-button-edit-component 
+                [textBtn]="'Modificar Perfil'"
+                (onClick)="onEdit()"
+              />
             </div>
           </section>      
                     

@@ -8,7 +8,7 @@ type AuthorModel = { id_author: number; name: string };
 type GenreModel = { id_genre: number; name: string };
 type SubjectModel = { id_subject: number; name: string };
 type EditorialModel = { id_editorial: number; name: string };
-type CommuneModel = { id_commune: number; commune: string };
+type CommuneModel = { id_commune: number; name: string };
 
 export function toSelectItem(item: ModelWithIdAndName): SelectItem;
 export function toSelectItem(item: AuthorModel): SelectItem;
@@ -21,7 +21,7 @@ export function toSelectItem(item: ModelWithIdAndName | AuthorModel | GenreModel
   if ('id_genre' in item) return { id: item.id_genre, name: item.name };
   if ('id_subject' in item) return { id: item.id_subject, name: item.name };
   if ('id_editorial' in item) return { id: item.id_editorial, name: item.name };
-  if ('id_commune' in item) return { id: item.id_commune, name: item.commune };
+  if ('id_commune' in item) return { id: item.id_commune, name: item.name };
   return { id: item.id, name: item.name };
 }
 

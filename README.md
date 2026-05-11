@@ -506,6 +506,7 @@ ng g s features/news-gallery/services/news-gallery-service --skip-tests
 
 # ---------------------------------------------------------------------------------
 # FEATURES NOTIFICATION
+ng g c features/notification/components/notification-bell-components --skip-tests --style=none
 ng g c features/notification/components/notification-form-components --skip-tests --style=none
 ng g c features/notification/components/notification-list-components --skip-tests --style=none
 

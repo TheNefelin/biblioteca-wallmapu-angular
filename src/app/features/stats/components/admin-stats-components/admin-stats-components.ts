@@ -1,11 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, output } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AdminStatsModel } from '@features/stats/models/stat-model';
 import { StatService } from '@features/stats/services/stat-service';
 import { catchError, map, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-stats-components',
@@ -15,10 +13,15 @@ import { Router } from '@angular/router';
   templateUrl: './admin-stats-components.html',
 })
 export class AdminStatsComponents {  
-  private router = inject(Router);
   private readonly statService = inject(StatService);
   protected readonly isLoading = computed(() => this.statRX.isLoading());
   protected readonly computedStats = computed<AdminStatsModel | null>(() => this.statRX.value() ?? null);
+
+  readonly navigateToReservations = output<void>();
+  readonly navigateToLoans = output<void>();
+  readonly navigateToBooks = output<void>();
+  readonly navigateToUsers = output<void>();
+  readonly navigateToNews = output<void>();
 
   private readonly statRX = rxResource({
     stream: () => {    
@@ -35,22 +38,22 @@ export class AdminStatsComponents {
   });
 
   protected onNavigateToReservations(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.RESERVATION.ROOT]);
+    this.navigateToReservations.emit();
   }
 
   protected onNavigateToLoans(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.LOAN.ROOT]);
+    this.navigateToLoans.emit();
   }
 
   protected onNavigateToBooks(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.ROOT]);
+    this.navigateToBooks.emit();
   }
 
   protected onNavigateToUsers(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.USERS.ROOT]);
+    this.navigateToUsers.emit();
   }
 
   protected onNavigateToNews(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.NEWS.ROOT]);
+    this.navigateToNews.emit();
   }
 }

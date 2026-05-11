@@ -8,13 +8,19 @@
 } @else if (isAuthenticated()) {
   <!-- Usuario logueado - Avatar con dropdown -->
   <div class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-      <div class="ring-primary ring-offset-base-100 w-10 rounded-full ring-2 ring-offset-2 bg-my-light">
-        <img 
-          [src]="user()?.picture" 
-          [alt]="user()?.name" 
-          class="rounded-full" 
-          onerror="this.src='images/book.png'"/>
+    <div class="indicator">
+      @if (unreadCount() > 0) {
+        <span class="indicator-item badge indicator-bottom indicator-start badge-secondary">{{ unreadCount() }}</span>
+      }
+
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="ring-primary ring-offset-base-100 w-10 rounded-full ring-2 ring-offset-2 bg-my-light">
+          <img 
+            [src]="user()?.picture" 
+            [alt]="user()?.name" 
+            class="rounded-full" 
+            onerror="this.src='images/book.png'"/>
+        </div>
       </div>
     </div>
     
@@ -25,6 +31,16 @@
       <li><a routerLink="/" class="text-sm">⚙️ Inicio</a></li>
       <li><a [routerLink]="navigateTo()" class="text-sm">⚙️ Panel</a></li>
       <li><hr class="my-1"></li>
+
+      @if (unreadCount() > 0) {
+        <li>
+          <a [routerLink]="navigateToProfile()" class="text-sm">
+            <app-notification-bell-components [textUnreadCount]="unreadCount()"/>
+          </a>
+        </li>
+        <li><hr class="my-1"></li>
+      }
+
       <li>
         <button 
           (click)="logout()" 

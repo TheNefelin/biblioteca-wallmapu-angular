@@ -8,7 +8,6 @@ import { NotificationDetailModel, NotificationFilterModel } from '@features/noti
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { catchError, EMPTY, finalize, map, of } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { NotificationTestComponents } from "@features/notification/components/notification-test-components/notification-test-components";
 
 @Component({
   selector: 'app-user-dashboard-page',
@@ -16,8 +15,7 @@ import { NotificationTestComponents } from "@features/notification/components/no
     UserStatsComponents,
     NotificationListComponents,
     MessageErrorComponent,
-    NotificationTestComponents
-],
+  ],
   templateUrl: './user-dashboard-page.html',
 })
 export class UserDashboardPage {

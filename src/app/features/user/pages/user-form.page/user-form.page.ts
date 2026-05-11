@@ -46,7 +46,7 @@ export class UserFormPage {
 
   private readonly authStore = inject(AuthStore);
   protected readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
-  protected readonly isUser = signal<boolean>(this.authUser()?.role == Role.Reader)
+  protected readonly isUser = computed<boolean>(() => this.authUser()?.role == Role.Reader)
   protected userPicture = computed<string | null>(() => {
     if (this.authUser()?.id_user == this.userId())
       return this.authUser()?.picture ?? null
@@ -88,7 +88,7 @@ export class UserFormPage {
       if (!payload) return of(null);
   
       const request$ = 
-      'user_role_id' in payload && payload.user_role_id > 0 && 'user_status_id' in payload && payload.user_role_id > 0
+      'user_role_id' in payload && payload.user_role_id > 0 && 'user_status_id' in payload && payload.user_status_id > 0
       ? this.userService.update_admin(payload.id_user, payload)
       : this.userService.update_user(payload.id_user, payload);
     
@@ -99,7 +99,6 @@ export class UserFormPage {
           return response.data;
         }),
         catchError(err => {
-          console.log(err)
           this.handleError(err);
           return of(null);
         })

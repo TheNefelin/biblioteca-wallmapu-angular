@@ -6,11 +6,16 @@
   @if(errorMessage()) {
     <app-message-error-component [message]="errorMessage()" />
   }
-  
+
   <app-user-profile-components
     [authUser]="authUser()"
     [userDetailModel]="userDetailComputed()"
+    (onEditProfile)="onNavigateToEdit()"
   />
+
+  <div class="text-my-purple flex justify-end pt-4">
+    <app-notification-bell-components [textUnreadCount]="unreadCount()" />
+  </div>
 
   <app-notification-list-components 
     [isLoading]="isLoading()"

@@ -10,11 +10,16 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
 import { NotificationListComponents } from "@features/notification/components/notification-list-components/notification-list-components";
 import { UserDetailModel } from '@features/user/models/user-model';
 import { AuthUser } from '@features/auth/models/auth-user';
+import { Role } from '@shared/constants/roles-enum';
 import { extractErrorMessage } from '@core/utils/error-handler';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { NotificationBadgeState } from '@features/notification/services/notification-badge-state.service';
+import { NotificationBellComponents } from "@features/notification/components/notification-bell-components/notification-bell-components";
+import { Router } from '@angular/router';
+import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 
 @Component({
   selector: 'app-user-profile.page',
@@ -23,12 +28,17 @@ import { PaginationResponseModel } from '@core/models/pagination-response-model'
     SectionHeaderComponent,
     UserProfileComponents,
     MessageErrorComponent,
-    NotificationListComponents
+    NotificationListComponents,
+    NotificationBellComponents
 ],
   templateUrl: './user-profile.page.html',
 })
 export class UserProfilePage {
+  private readonly badgeState = inject(NotificationBadgeState);
+  readonly unreadCount = this.badgeState.unreadCount;
+  
   private readonly authStore = inject(AuthStore);
+  private readonly router = inject(Router);
   readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
 
   protected readonly errorMessage = signal<string | null>(null);
@@ -180,6 +190,19 @@ export class UserProfilePage {
     }
   }
   
+  protected onNavigateToEdit(): void {
+    const id_user = this.userDetailComputed()?.id_user;
+    const isAdmin = this.authUser()?.role == Role.Admin;
+
+    if (id_user) {
+      const formRoute = isAdmin
+        ? ROUTES_CONSTANTS.PROTECTED.ADMIN.PROFILE.FORM(id_user)
+        : ROUTES_CONSTANTS.PROTECTED.USER.PROFILE.FORM(id_user);
+
+      this.router.navigate([formRoute]);
+    }
+  }
+
   private handleError(err: unknown): void {
     this.errorMessage.set(extractErrorMessage(err));
   }

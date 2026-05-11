@@ -10,6 +10,8 @@ import { PaginationComponent } from "@shared/components/pagination-component/pag
 import { AuthStore } from '@features/auth/services/auth-store';
 import { Role } from '@shared/constants/roles-enum';
 import { UserDetailModel } from '@features/user/models/user-model';
+import { Router } from '@angular/router';
+import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 
 @Component({
   selector: 'app-user-list.page',
@@ -25,6 +27,7 @@ export class UserListPage {
   // SERVICIO DE FEATURE
   private readonly authStore = inject(AuthStore);
   private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
   
   readonly editRole = signal<Role>(this.authStore.user()?.role || Role.Reader);
 
@@ -84,5 +87,9 @@ export class UserListPage {
     if (this.currentPage() > 1){
       this.currentPage.update(e => e - 1);
     }
+  }
+
+  protected onNavigateToEdit(user: UserDetailModel): void {
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.USERS.FORM(user.id_user)]);
   }
 }

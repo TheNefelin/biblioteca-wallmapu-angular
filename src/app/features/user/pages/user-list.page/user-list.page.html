@@ -20,6 +20,7 @@
         [editRole]="editRole()"
         [isLoading]="isLoading()"
         [userDetailModelList]="userDetailListComputed()"
+        (onEditUser)="onNavigateToEdit($event)"
       />
     </section>
   </div>

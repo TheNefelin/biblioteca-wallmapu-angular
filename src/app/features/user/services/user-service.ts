@@ -20,13 +20,13 @@ export class UserService {
       path = `${path}&search=${params.search}`
   
     return this.apiResponseService.getAll<ApiResponseModel<PaginationResponseModel<UserDetailModel[]>>>(
-      `${this.endpoint}/detailed${path}`
+      `${this.endpoint}/pagination${path}`
     );
   }
 
   getById(id: string): Observable<ApiResponseModel<UserDetailModel | null>> {
     return this.apiResponseService.getById<ApiResponseModel<UserDetailModel | null>>(
-      `${this.endpoint}/detailed`, id
+      `${this.endpoint}`, id
     );
   }
 

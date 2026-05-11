@@ -18,3 +18,9 @@ export interface StatModel {
   subjects: number;
   books: number;
 }
+
+export interface UserStatsModel {
+  total_borrowed: number;
+  active_loans: number;
+  overdue_loans: number;
+}

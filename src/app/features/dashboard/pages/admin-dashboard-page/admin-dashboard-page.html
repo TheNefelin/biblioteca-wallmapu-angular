@@ -2,7 +2,13 @@
 
 <div class= "p-4 grid gap-4">
   <section class="mx-auto">
-    <app-admin-stats-components/>
+    <app-admin-stats-components
+      (navigateToReservations)="onNavigateToReservations()"
+      (navigateToLoans)="onNavigateToLoans()"
+      (navigateToBooks)="onNavigateToBooks()"
+      (navigateToUsers)="onNavigateToUsers()"
+      (navigateToNews)="onNavigateToNews()"
+    />
   </section>
 
   <section class="grid grid-cols-1 md:grid-cols-2 gap-4">  

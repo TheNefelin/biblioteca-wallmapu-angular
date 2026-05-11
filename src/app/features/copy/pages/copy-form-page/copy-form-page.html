@@ -45,50 +45,11 @@
   />
 </section>
 
-<section class="bg-my-light rounded-md m-4">
-  <div class="overflow-x-auto">
-    <table class="table">
-      <!-- head -->
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Copia</th>
-          <th>Firma</th>
-          <th>Estado</th>
-          <th>Creación / Modificación</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of computedCopyList(); track item.id_copy) {
-          <tr (click)="selectCopy(item.id_copy)" class="hover:bg-my-dark/10 cursor-pointer">
-            <td>{{ item.id_copy }}</td>
-            <td>{{ item.copy_number }}</td>
-            <td>{{ item.signature_topography }}</td>
-            @if (item.status.id_status === 1) {
-              <td>
-                <span class="bg-my-purple text-my-light p-2">{{ item.status.name }}</span>
-              </td>
-            } @else {
-              <td>
-                <span class="bg-my-pink text-my-light p-2">{{ item.status.name }}</span>
-              </td>
-            }
-            <td>
-              <span>{{ item.created_at | date:'yyyy-MM-dd HH:mm:ss' }}</span>
-              <br />
-              <span>{{ item.updated_at | date:'yyyy-MM-dd HH:mm:ss' }}</span>
-            </td>
-            <!--
-            <th>
-              <button class="btn btn-ghost btn-xs">details</button>
-            </th>
-            -->
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</section>
+<app-copy-list-components
+  [isLoading]="isLoading()"
+  [copyList]="computedCopyList()"
+  (onSelectCopy)="selectCopy($event)"
+/>
 
 <section class="p-4 grid gap-4">
   @if(successMessage()){

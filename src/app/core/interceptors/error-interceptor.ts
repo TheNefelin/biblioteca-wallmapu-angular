@@ -12,7 +12,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       const statusCode = error.status;
       const message = error.error?.message || error.message || 'Error inesperado';
-
+console.log(message)
       if (!modalService.isOpen()) {
         if (statusCode === 401) {
           modalService.openError(401, 'Tu sesión ha expirado.', () => authStore.logout());

@@ -1,6 +1,3 @@
-import { CopyStatusModel } from "@features/copy-status/models/copy-status-model";
-import { EditionWithEditorialModel } from "@features/edition/models/edition-model";
-
 export interface CreateCopyModel {
   signature_topography: string;
   edition_id: number;
@@ -13,27 +10,26 @@ export interface UpdateCopyModel extends CreateCopyModel {
 }
 
 export interface CopyModel extends UpdateCopyModel {
+  barcode: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface CopyWithStatusModel {
+export interface CopyDetailModel {
   id_copy: number;
+  barcode: string;
   signature_topography: string;
+  copy_number: number;
+  created_at: string;
+  updated_at: string;
+  status_id: number;
+  status_name: string;
   edition_id: number;
-  copy_number: number;
-  barcode: string;
-  created_at: string;
-  updated_at: string;
-  status: CopyStatusModel
-}
-
-export interface CopyAvailabilityModel {
-  id_copy: number;
-  signature_topography: string;
-  copy_number: number;
-  barcode: string;
-  edition: EditionWithEditorialModel;
-  status: CopyStatusModel;
+  edition_name: string;
+  edition_isbn: string;
+  edition_cover_image: string;
+  editorial_id: number;
+  editorial_name: string;
+  is_availability: boolean;
   availability_status: string;
 }

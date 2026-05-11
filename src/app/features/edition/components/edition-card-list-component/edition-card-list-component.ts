@@ -21,6 +21,6 @@ export class EditionCardListComponent {
   readonly editionDetailList = input<EditionDetailModel[]>([]);
 
   protected navigateToEditionDetail(item: EditionDetailModel): void {
-    this.router.navigate([ROUTES_CONSTANTS.HOME.BOOK.EDITION(item.book.id_book, item.id_edition)]);
+    this.router.navigate([ROUTES_CONSTANTS.HOME.RESERVATION.ROOT(item.book.id_book, item.id_edition)]);
   }
 }

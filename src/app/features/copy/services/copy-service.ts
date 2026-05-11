@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { Observable } from 'rxjs';
-import { CopyAvailabilityModel, CopyWithStatusModel, CreateCopyModel, UpdateCopyModel } from '@features/copy/models/copy-model';
+import { CopyDetailModel, CopyModel, CreateCopyModel, UpdateCopyModel } from '@features/copy/models/copy-model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,38 +11,26 @@ export class CopyService {
   private apiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'copy';
 
-  getAll(): Observable<ApiResponseModel<CopyWithStatusModel[]>> {
-    return this.apiResponseService.getAll<ApiResponseModel<CopyWithStatusModel[]>>(
-      this.endpoint
+  getAllByEditionId(id_edition: number): Observable<ApiResponseModel<CopyDetailModel[]>> {
+    return this.apiResponseService.getById<ApiResponseModel<CopyDetailModel[]>>(
+      `${this.endpoint}/detail/edition`, id_edition
     );
   }
 
-  getById(id: number): Observable<ApiResponseModel<CopyWithStatusModel | null>> {
-    return this.apiResponseService.getById<ApiResponseModel<CopyWithStatusModel | null>>(
-      this.endpoint, id
-    );
-  }
-
-  getAllByEditionId(id: number): Observable<ApiResponseModel<CopyWithStatusModel[]>> {
-    return this.apiResponseService.getById<ApiResponseModel<CopyWithStatusModel[]>>(
-      `${this.endpoint}/edition`, id
-    );
-  }
-
-  getAllByBookId(id: number): Observable<ApiResponseModel<CopyAvailabilityModel[]>> {
-    return this.apiResponseService.getById<ApiResponseModel<CopyAvailabilityModel[]>>(
-      `${this.endpoint}/book`, `${id}/available`
+  getAllByBookId(id_book: number): Observable<ApiResponseModel<CopyDetailModel[]>> {
+    return this.apiResponseService.getById<ApiResponseModel<CopyDetailModel[]>>(
+      `${this.endpoint}/detail/book`, id_book
     );
   }  
 
-  create(item: CreateCopyModel): Observable<ApiResponseModel<CopyWithStatusModel>> {
-    return this.apiResponseService.create<ApiResponseModel<CopyWithStatusModel>, CreateCopyModel>(
+  create(item: CreateCopyModel): Observable<ApiResponseModel<CopyModel>> {
+    return this.apiResponseService.create<ApiResponseModel<CopyModel>, CreateCopyModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateCopyModel): Observable<ApiResponseModel<CopyWithStatusModel>> {
-    return this.apiResponseService.update<ApiResponseModel<CopyWithStatusModel>, UpdateCopyModel>(
+  update(id: number, item: UpdateCopyModel): Observable<ApiResponseModel<CopyModel>> {
+    return this.apiResponseService.update<ApiResponseModel<CopyModel>, UpdateCopyModel>(
       this.endpoint, id, item
     );
   }

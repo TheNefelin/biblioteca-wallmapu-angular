@@ -12,11 +12,11 @@ import { ModalDeleteComponent } from "@shared/components/modal-delete-component/
 import { CreateEditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
 import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
 import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { CopyListComponents } from "@features/copy/components/copy-list-components/copy-list-components";
 import { CopyService } from '@features/copy/services/copy-service';
-import { CopyWithStatusModel } from '@features/copy/models/copy-model';
+import { CopyDetailModel } from '@features/copy/models/copy-model';
 import { BookService } from '@features/book/services/book-service';
 import { BookModel } from '@features/book/models/book-model';
+import { CopyListForEditionComponents } from "@features/copy/components/copy-list-for-edition-components/copy-list-for-edition-components";
 
 @Component({
   selector: 'app-edition-form-page',
@@ -26,8 +26,8 @@ import { BookModel } from '@features/book/models/book-model';
     MessageErrorComponent,
     ModalDeleteComponent,
     MessageSuccessComponent,
-    CopyListComponents
-],
+    CopyListForEditionComponents
+  ],
   templateUrl: './edition-form-page.html',
 })
 export class EditionFormPage {
@@ -63,7 +63,7 @@ export class EditionFormPage {
   private readonly copyService = inject(CopyService)
   private readonly getCopyPayload = signal<number | null>(this.editionId());
   private readonly deleteCopyPayload = signal<number | null>(null);
-  protected readonly computedCopyList = computed<CopyWithStatusModel[]>(() => this.getCopyRX.value() ?? [])
+  protected readonly computedCopyList = computed<CopyDetailModel[]>(() => this.getCopyRX.value() ?? [])
 
   private readonly editionImageService = inject(EditionImageService);
   private readonly uploadImagePayload = signal<File | null>(null);
@@ -101,7 +101,7 @@ export class EditionFormPage {
       updated_at: edition?.updated_at ?? '',
       file: null,
       isNewImg: !edition?.cover_image,
-      copies: edition?.copies ?? []
+      copies: [] //edition?.copies ?? []
     };
   });
 
@@ -295,7 +295,7 @@ export class EditionFormPage {
     );
   }
 
-  protected onEditEdition(item: CopyWithStatusModel): void {
+  protected onEditEdition(item: CopyDetailModel): void {
     this.router.navigate(
       [
         ROUTES_CONSTANTS.PROTECTED.ADMIN.COPY.FORM(this.bookId(), item.edition_id)
@@ -308,9 +308,9 @@ export class EditionFormPage {
 
   // onDelete --------------------------------------------------------
   protected readonly openDeleteModal = signal<boolean>(false);
-  readonly selectedCopyToDelete = signal<CopyWithStatusModel | null>(null);
+  readonly selectedCopyToDelete = signal<CopyDetailModel | null>(null);
   
-  protected onDeleteCopy(item: CopyWithStatusModel): void {
+  protected onDeleteCopy(item: CopyDetailModel): void {
     if (!item) return;
     this.selectedCopyToDelete.set(item);
     this.openDeleteModal.set(true);

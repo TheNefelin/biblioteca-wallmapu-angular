@@ -49,7 +49,13 @@ export class NotificationBadgeState {
 
     this.websocket.onclose = () => {
       if (this.shouldReconnect) {
-        setTimeout(() => this.setupWebSocket(this.getToken()), 3000);
+        setTimeout(() => {
+          if (!this.getToken()) {
+            this.disconnect();
+          } else {
+            this.setupWebSocket(this.getToken());
+          }
+        }, 3000);
       }
     };
 
@@ -75,6 +81,11 @@ export class NotificationBadgeState {
   }
 
   loadUnreadCount(): void {
+    if (!this.getToken()) {
+      this.disconnect();
+      return;
+    }
+
     this.notificationService.getUnreadCount()
       .pipe(catchError(() => of({ isSuccess: true, data: 0 } as any)))
       .subscribe(response => {

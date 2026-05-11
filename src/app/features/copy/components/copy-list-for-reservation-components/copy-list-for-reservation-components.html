@@ -1,0 +1,77 @@
+<section class="max-w-7xl mx-auto">
+  <div class="overflow-x-auto bg-my-light rounded-md shadow-2xl m-4">
+
+    @if (isLoading()) {
+      <div class="p-4 flex justify-center">
+        <app-loading-component/>
+      </div>
+    } @else {
+     
+      <table class="table">
+        <!-- head -->
+        <thead>
+          <tr>
+            <th>Copias</th>
+            <th>Estado</th>
+            <th>Editorial / Edicion</th>
+            <th>ISBN</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (copy of copyDetailList(); track copy.id_copy) {
+            <tr 
+              (click)="onSelectedCopy.emit(copy)"
+              class="hover:bg-my-dark/10 cursor-pointer">
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar">
+                    <div class="aspect-7/10 h-20">
+                      <img
+                        [ngSrc]="copy?.edition_cover_image ?? 'images/without_cover.webp'"
+                        [alt]="copy?.edition_name"
+                        fill
+                        priority />
+                    </div>
+                  </div>
+                  <div>
+                    <div class="font-bold">Copia n°: {{ copy?.copy_number }}</div>
+                    <div class="text-sm opacity-50">{{ copy?.signature_topography }}</div>
+                    <div class="text-sm opacity-50">ID: {{ copy?.id_copy }}</div>
+                  </div>
+                </div>
+              </td>
+  
+              <td>
+                @if (copy?.availability_status?.toLocaleLowerCase() === 'disponible') {
+                  <span class="badge bg-my-green text-my-light p-4 h-auto">{{ copy?.availability_status }}</span>
+                } @else {
+                  <span class="badge bg-my-pink text-my-light p-4 h-auto">{{ copy?.availability_status }}</span>
+                }
+              </td>
+  
+              <td>
+                <span>{{ copy?.editorial_name }}</span>
+                <br />
+                <span>{{ copy?.edition_name }}</span>
+              </td>
+  
+              <td>
+                <span class="badge badge-ghost p-4 h-auto">{{ copy?.edition_isbn }}</span>
+              </td>  
+            </tr>
+          }
+        </tbody>
+  
+        <tfoot>
+          <tr>
+            <th>Copias</th>
+            <th>Editorial</th>
+            <th>Edicion</th>
+            <th>ISBN</th>
+          </tr>
+        </tfoot>
+      </table>
+
+    }
+  </div>
+</section>

@@ -18,6 +18,10 @@ export const routes: Routes = [
         path: '',
         loadChildren: () => import('@features/home/home.routes').then(m => m.HOME_ROUTES),
       },
+      {
+        path: 'reservation',
+        loadChildren: () => import('@features/reservation/reservation.routes').then(m => m.RESERVATION_ROUTES),
+      }
     ]
   },
   {

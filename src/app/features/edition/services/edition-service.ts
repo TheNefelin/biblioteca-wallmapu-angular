@@ -37,6 +37,12 @@ export class EditionService {
     );
   }
 
+  getAllByBook(id_book: number): Observable<ApiResponseModel<EditionModel[]>> {
+    return this.apiResponseService.getById<ApiResponseModel<EditionModel[]>>(
+      `${this.endpoint}/book`, id_book
+    );
+  }
+
   getByIdDetail(id: number): Observable<ApiResponseModel<EditionDetailModel | null>> {
     return this.apiResponseService.getById<ApiResponseModel<EditionDetailModel | null>>(
       this.endpoint, `${id}/detail`

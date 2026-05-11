@@ -10,12 +10,14 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, of, tap } from 'rxjs';
 import { CopyService } from '@features/copy/services/copy-service';
-import { CopyModel, CopyWithStatusModel, CreateCopyModel, UpdateCopyModel } from '@features/copy/models/copy-model';
+import { CopyDetailModel, CopyModel, CreateCopyModel, UpdateCopyModel } from '@features/copy/models/copy-model';
 import { BookService } from '@features/book/services/book-service';
 import { EditionService } from '@features/edition/services/edition-service';
 import { BookModel } from '@features/book/models/book-model';
 import { EditionModel } from '@features/edition/models/edition-model';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { extractErrorMessage } from '@core/utils/error-handler';
+import { CopyListComponents } from "@features/copy/components/copy-list-components/copy-list-components";
 
 @Component({
   selector: 'app-copy-form-page',
@@ -26,7 +28,8 @@ import { DatePipe, NgOptimizedImage } from '@angular/common';
     CopyFormComponents,
     MessageSuccessComponent,
     MessageErrorComponent,
-],
+    CopyListComponents
+  ],
   templateUrl: './copy-form-page.html',
 })
 export class CopyFormPage {
@@ -69,21 +72,16 @@ export class CopyFormPage {
   private readonly getCopyByEditionPayload = signal<number | null>(this.editionId());
   private readonly getCopyPayload = signal<number | null>(this.copyId());
   private readonly saveCopyPayload = signal<CreateCopyModel | UpdateCopyModel | null>(null);
-  protected readonly computedCopyList = computed<CopyWithStatusModel[]>(() => this.getCopyByEditionRX.value() ?? []);
+  protected readonly computedCopyList = computed<CopyDetailModel[]>(() => this.getCopyByEditionRX.value() ?? []);
   protected readonly selectedCopy = computed<CopyModel | null>(() => {
     const id = this.copyId();
     const list = this.computedCopyList();
-  
     if (id <= 0 || !list.length) return null;
   
     const item = list.find(e => e.id_copy === id);
-  
     if (!item) return null;
   
-    return {
-      ...item,
-      status_id: item.status.id_status
-    };
+    return { ...item } as CopyModel;
   });
 
   private readonly validateSelectedCopyEffect = effect(() => {
@@ -228,10 +226,7 @@ export class CopyFormPage {
   }
 
   private handleError(err: unknown): void {
-    const message = err instanceof Error 
-      ? err.message 
-      : (err as any)?.error?.detail || (err as any)?.error?.message || 'Unexpected error';
+    this.errorMessage.set(extractErrorMessage(err));
     this.successMessage.set(null);
-    this.errorMessage.set(message);
   }
 }

@@ -33,7 +33,7 @@
 
 <app-edition-list-components 
   [isLoading]="isLoading()"
-  [editionDetailList]="bookDetailComputed()?.editions ?? []"
+  [editionDetailList]="computedEditionList()"
   (onEdit)="editEdition($event)"
   (onDelete)="deleteEdition($event)"
 />

@@ -17,9 +17,9 @@ import { EditionListComponents } from "@features/edition/components/edition-list
 import { EditionService } from '@features/edition/services/edition-service';
 import { BookDetailModel, BookModel, CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
 import { BookFormVM } from '@features/book/models/vm.book-form';
-import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
 import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
 import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
+import { EditionDetailModel } from '@features/edition/models/edition-model';
 
 @Component({
   selector: 'app-book-form-page',
@@ -69,13 +69,25 @@ export class BookFormPage {
       this.saveBookRX,
       this.deleteSubjectStepRX,
       this.deleteAuthorStepRX,
-      this.editionRX,
+      this.getEditionRX,
+      this.deleteEditionRX,
     ].some(r => r.isLoading())
   );
 
   private readonly bookService = inject(BookService);
   protected readonly bookDetailComputed = computed<BookDetailModel | null>(() => this.getBookRX.value() ?? null);
   private readonly getBookPayload = signal(this.routeId());
+  private readonly saveBookPayload = signal<CreateBookModel | UpdateBookModel | null>(null);
+
+  private readonly authorStepService = inject(BookAuthorStepService);
+  private readonly deleteAuthorStepPayload = signal<BookAuthorStepModel | null>(null);
+
+  private readonly subjectStepService = inject(BookSubjectStepService);
+  private readonly deleteSubjectStepPayload = signal<BookSubjectStepModel | null>(null);
+  
+  private readonly editionService = inject(EditionService);
+  private readonly deleteEditionPayload = signal<number | null>(null);
+  protected readonly computedEditionList = computed<EditionDetailModel[]>(() => this.getEditionRX.value() ?? []);
 
   private readonly getBookRX = rxResource({
     params: () => this.getBookPayload(),
@@ -100,8 +112,6 @@ export class BookFormPage {
       );
     }
   });
-
-  private readonly saveBookPayload = signal<CreateBookModel | UpdateBookModel | null>(null);
 
   private readonly saveBookRX = rxResource({
     params: () => this.saveBookPayload(),
@@ -132,9 +142,6 @@ export class BookFormPage {
     }
   });
 
-  private readonly authorStepService = inject(BookAuthorStepService);
-  private readonly deleteAuthorStepPayload = signal<BookAuthorStepModel | null>(null);
-
   private readonly deleteAuthorStepRX = rxResource({
     params: () => this.deleteAuthorStepPayload(),
     stream: ({ params }) => {
@@ -157,9 +164,6 @@ export class BookFormPage {
       );
     }
   });
-
-  private readonly subjectStepService = inject(BookSubjectStepService);
-  private readonly deleteSubjectStepPayload = signal<BookSubjectStepModel | null>(null);
 
   private readonly deleteSubjectStepRX = rxResource({
     params: () => this.deleteSubjectStepPayload(),
@@ -184,10 +188,26 @@ export class BookFormPage {
     }
   });
 
-  private readonly editionService = inject(EditionService);
-  private readonly deleteEditionPayload = signal<number | null>(null);
+  private readonly getEditionRX = rxResource({
+    params: () => this.getBookPayload(),
+    stream: ({ params: idBook }) => {
+      if (!idBook) return of(null);
 
-  private readonly editionRX = rxResource({
+      return this.editionService.getAllDetailByBook(idBook).pipe(
+        map(response => {
+          if (!response.isSuccess) throw new Error(response.message);
+          return response.data;
+        }),
+        catchError(err => {
+          const message = err?.error?.detail || err?.error?.message || err?.message || 'Unexpected error';
+          this.errorMessage.set(message);
+          return of(null);
+        })
+      );
+    }
+  });
+
+  private readonly deleteEditionRX = rxResource({
     params: () => this.deleteEditionPayload(),
     stream: ({ params: id_edition }) => {
       if (!id_edition) return of(null);

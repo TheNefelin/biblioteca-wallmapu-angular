@@ -1,7 +1,6 @@
 import { AuthorModel } from "@features/book-author/models/author-model"
 import { GenreModel } from "@features/book-genre/models/genre-model"
 import { SubjectModel } from "@features/book-subject/models/subject-model"
-import { EditionDetailModel } from "@features/edition/models/edition-detail-model"
 
 export interface CreateBookModel {
   title: string,
@@ -34,5 +33,5 @@ export interface BookDetailModel {
   genre: GenreModel,
   authors: AuthorModel[],
   subjects: SubjectModel[],
-  editions: EditionDetailModel[],
+  editions: [],
 }

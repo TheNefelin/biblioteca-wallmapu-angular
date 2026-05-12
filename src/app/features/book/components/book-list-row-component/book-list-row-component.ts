@@ -1,7 +1,7 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { BookDetailModel } from '@features/book/models/book-model';
-import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
+import { EditionDetailModel } from '@features/edition/models/edition-model';
 
 @Component({
   selector: 'app-book-list-row-component',
@@ -32,7 +32,7 @@ export class BookListRowComponent {
 
     // Reducimos todas las ediciones sumando la cantidad de copies
     return book.editions.reduce(
-      (sum: number, edition: EditionDetailModel) => sum + (edition.copies?.length ?? 0),
+      (sum: number, edition: EditionDetailModel) => sum + (edition.copy_count ?? 0),
       0
     );
   }

@@ -12,10 +12,12 @@
         <path d="m21 21-4.3-4.3"></path>
       </g>
     </svg>
+    
     <input type="search" class="grow" 
-      [placeholder]="searchPlaceholder() ?? 'Sin searchPlaceholder'"
-      [value]="clearSearch()"
+      [placeholder]="searchPlaceholder() ?? 'buscar...'"
+      [value]="searchText()"
       (input)="searchChange($event)"
+      (search)="searchChange($event)"
     />
   </label>
 
@@ -25,44 +27,37 @@
         <span class="label-text text-sm font-semibold">Filtrar por autor</span>
       </label>
       <app-author-select-components 
-        [clearTrigger]="clearAuthorTrigger()"
+        [clearTrigger]="clearTrigger()"
         (onNewSelectedAuthor)="authorSelected($event)"
       />
     </div>
-  
+   
     <div>
       <label class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por editorial</span>
       </label>
       <app-editorial-select-components 
-        [clearTrigger]="clearEditorialTrigger()"
+        [clearTrigger]="clearTrigger()"
         (newSelectedId)="editorialSelected($event)"
       />
     </div>
-  
+   
     <div>
       <label class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por género</span>
       </label>
       <app-genre-select-components 
-        [clearTrigger]="clearGenreTrigger()"
+        [clearTrigger]="clearTrigger()"
         (newSelectedId)="genreSelected($event)"
       />
     </div>
   
-    <div class="flex gap-2 ml-auto">
+    <div class="ml-auto">
       <button 
         class="btn border-0 text-my-purple"
         (click)="onClear()">
         
         Limpiar
-      </button>
-
-      <button
-        class="btn btn-outline bg-my-purple hover:bg-my-purple/90 text-my-light"
-        (click)="btnClick()">
-
-        {{ textBtn() ?? 'Sin textBtn' }}
       </button>
     </div>
   </section>  

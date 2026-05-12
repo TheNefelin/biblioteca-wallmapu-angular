@@ -144,6 +144,4 @@ export class HomePage {
     this.id_genre.set(id_genre);
   }
 
-  protected onBtnSearchClick() {
-  }
 }

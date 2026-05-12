@@ -8,59 +8,45 @@ import { AuthorSelectComponents } from "@features/book-author/components/author-
 
 @Component({
   selector: 'app-edition-search-component',
-  imports: [GenreSelectComponents, EditorialSelectComponents, AuthorSelectComponents],
+  imports: [
+    GenreSelectComponents, 
+    EditorialSelectComponents, 
+    AuthorSelectComponents
+  ],
   templateUrl: './edition-search-component.html',
 })
 export class EditionSearchComponent {
   readonly textTitle = input<string | null>(null);
   readonly textDescription = input<string | null>(null);
-  readonly textBtn = input<string | null>(null);
   readonly searchPlaceholder = input<string | null>(null);
   readonly onSearchChange = output<string>();
-  readonly onBtnSearchClick = output<void>();
   readonly onAuthorIdSelected = output<number>();
   readonly onEditorialIdSelected = output<number>();
   readonly onGenreIdSelected = output<number>();
 
-  protected btnClick() {
-    this.onBtnSearchClick.emit();
-  }
+  protected readonly searchText = signal<string>('');
+  protected readonly clearTrigger = signal<number>(0);
 
   protected searchChange(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchValue.set(value);
-    this.clearSearch.set(value);
+    this.searchText.set((event.target as HTMLInputElement).value);
   }
 
-  private readonly searchValue = signal('');
-
   private readonly emitSearch = effect(() => {
-    const value = this.searchDebounced();
-    if (value) {
-      this.onSearchChange.emit(value);
-    }
+    this.onSearchChange.emit(this.searchDebounced());
   });
 
   private readonly searchDebounced = toSignal(
-    toObservable(this.searchValue).pipe(
+    toObservable(this.searchText).pipe(
       debounceTime(300),
       distinctUntilChanged()
     ),
     { initialValue: '' }
   );
 
-  protected readonly clearSearch = signal<string>('');
-  protected readonly clearAuthorTrigger = signal<number>(0);
-  protected readonly clearEditorialTrigger = signal<number>(0);
-  protected readonly clearGenreTrigger = signal<number>(0);
-
   protected onClear(): void {
-    this.clearAuthorTrigger.update(v => v + 1);
-    this.clearEditorialTrigger.update(v => v + 1);
-    this.clearGenreTrigger.update(v => v + 1);
+    this.clearTrigger.update(v => v + 1);
+    this.searchText.set('');
     this.onAuthorIdSelected.emit(0);
-    this.clearSearch.set('');
-    this.onSearchChange.emit('');
   }
 
   protected authorSelected(item: AuthorModel | null) {

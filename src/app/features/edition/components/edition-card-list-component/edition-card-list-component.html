@@ -28,19 +28,19 @@
           <figure class="relative overflow-hidden aspect-7/10 rounded-t-2xl">
             <img
               [ngSrc]="item.cover_image ?? 'images/without_cover.webp'"
-              [alt]="item.book.title"
+              [alt]="item.book_title"
               fill
               class="w-full h-full object-cover transform group-hover:scale-103 transition-transform duration-500 borde"/>
           </figure>
           <div class="flex flex-col flex-1 gap-2 text-center p-2">
             <section>
-              <h2 class="card-title justify-center text-my-green">{{ item.book.title }}</h2>
-              <p class="text-sm text-my-purple">{{ item.book.authors[0]?.name ?? 'Sin Autor' }}</p>
+              <h2 class="card-title justify-center text-my-green">{{ item.book_title }}</h2>
+              <p class="text-sm text-my-purple">{{ item.author_name }}</p>
               <p class="text-sm text-my-purple">({{ item.edition }})</p>  
             </section>
             <section class="mt-auto">
-              <p class="text-sm text-my-dark/50">Género: {{ item.book.genre.name }}</p>
-              <p class="text-sm text-my-dark/50">Editorial: {{ item.editorial.name }}</p>              
+              <p class="text-sm text-my-dark/50">Género: {{ item.genre_name }}</p>
+              <p class="text-sm text-my-dark/50">Editorial: {{ item.editorial_name }}</p>              
             </section>
            </div>
         </article>

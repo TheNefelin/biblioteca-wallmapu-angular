@@ -7,12 +7,13 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
 import { BookDetailModel } from '@features/book/models/book-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { ButtonRefreshComponent } from "@shared/components/button-refresh-component/button-refresh-component";
+import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
+import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 
 @Component({
   selector: 'app-book-list-page',
@@ -21,10 +22,11 @@ import { ButtonRefreshComponent } from "@shared/components/button-refresh-compon
     SectionHeaderComponent,
     MessageErrorComponent,
     PaginationComponent,
-    ModalDeleteComponent,
     MessageSuccessComponent,
-    ButtonRefreshComponent
-  ],
+    ButtonRefreshComponent,
+    ModalActionComponent,
+    ButtonCreateComponent
+],
   templateUrl: './book-list-page.html',
 })
 export class BookListPage {
@@ -100,6 +102,7 @@ export class BookListPage {
   // ─── ACCIONES 
   protected refreshList(): void {
     this.bookRX.reload();
+    this.errorMessage.set(null);
   }
 
   onCreate(){

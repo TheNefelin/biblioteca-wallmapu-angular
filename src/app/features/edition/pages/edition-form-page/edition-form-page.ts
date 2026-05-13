@@ -8,7 +8,6 @@ import { EditionFormComponents } from "@features/edition/components/edition-form
 import { EditionImageService } from '@features/edition/services/edition-image-service';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
 import { CreateEditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
 import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
 import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
@@ -17,6 +16,9 @@ import { CopyDetailModel } from '@features/copy/models/copy-model';
 import { BookService } from '@features/book/services/book-service';
 import { BookModel } from '@features/book/models/book-model';
 import { CopyListForEditionComponents } from "@features/copy/components/copy-list-for-edition-components/copy-list-for-edition-components";
+import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
+import { extractErrorMessage } from '@core/utils/error-handler';
+import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 
 @Component({
   selector: 'app-edition-form-page',
@@ -24,10 +26,11 @@ import { CopyListForEditionComponents } from "@features/copy/components/copy-lis
     SectionHeaderComponent,
     EditionFormComponents,
     MessageErrorComponent,
-    ModalDeleteComponent,
     MessageSuccessComponent,
-    CopyListForEditionComponents
-  ],
+    CopyListForEditionComponents,
+    ModalActionComponent,
+    ButtonCreateComponent
+],
   templateUrl: './edition-form-page.html',
 })
 export class EditionFormPage {
@@ -90,18 +93,17 @@ export class EditionFormPage {
 
     return {
       id_edition: edition?.id_edition ?? this.editionId(),
+      book_id: edition?.book_id ?? this.bookId(),
       edition: edition?.edition ?? '',
       isbn: edition?.isbn ?? '',
       publication_year: edition?.publication_year ?? 0,
       pages: edition?.pages ?? 0,
       cover_image: edition?.cover_image ?? null,
-      book_id: edition?.book?.id_book ?? this.bookId(),
-      editorial_id: edition?.editorial?.id_editorial ?? 0,
+      editorial_id: edition?.editorial_id ?? 0,
       created_at: edition?.created_at ?? '',
       updated_at: edition?.updated_at ?? '',
       file: null,
       isNewImg: !edition?.cover_image,
-      copies: [] //edition?.copies ?? []
     };
   });
 
@@ -128,7 +130,7 @@ export class EditionFormPage {
     stream: ({ params: id_edition }) => {
       if (!id_edition || id_edition == 0) return of(null);
 
-      return this.editionService.getByIdDetail(id_edition).pipe(
+      return this.editionService.getById(id_edition).pipe(
         map(response => {
           if (!response.isSuccess) throw new Error(response.message);
           return response.data;
@@ -333,10 +335,7 @@ export class EditionFormPage {
   }
 
   private handleError(err: unknown): void {
-    const message = err instanceof Error 
-      ? err.message 
-      : (err as any)?.error?.detail || (err as any)?.error?.message || 'Unexpected error';
+    this.errorMessage.set(extractErrorMessage(err));
     this.successMessage.set(null);
-    this.errorMessage.set(message);
   }
 }

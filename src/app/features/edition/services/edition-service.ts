@@ -2,9 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { Observable } from 'rxjs';
-import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
-import { CreateEditionModel, EditionModel, UpdateEditionModel } from '../models/edition-model';
-import { EditionFilterModel } from '@features/edition/models/edition-filter-model';
+import { CreateEditionModel, EditionDetailModel, EditionFilterModel, EditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 
@@ -37,15 +35,15 @@ export class EditionService {
     );
   }
 
-  getAllByBook(id_book: number): Observable<ApiResponseModel<EditionModel[]>> {
-    return this.apiResponseService.getById<ApiResponseModel<EditionModel[]>>(
-      `${this.endpoint}/book`, id_book
+  getAllDetailByBook(id_book: number): Observable<ApiResponseModel<EditionDetailModel[]>> {
+    return this.apiResponseService.getById<ApiResponseModel<EditionDetailModel[]>>(
+      `${this.endpoint}/book`, `${id_book}/detail`
     );
   }
 
-  getByIdDetail(id: number): Observable<ApiResponseModel<EditionDetailModel | null>> {
-    return this.apiResponseService.getById<ApiResponseModel<EditionDetailModel | null>>(
-      this.endpoint, `${id}/detail`
+  getAllByBook(id_book: number): Observable<ApiResponseModel<EditionModel[]>> {
+    return this.apiResponseService.getById<ApiResponseModel<EditionModel[]>>(
+      `${this.endpoint}/book`, id_book
     );
   }
 

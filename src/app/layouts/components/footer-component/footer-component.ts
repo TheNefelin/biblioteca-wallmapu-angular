@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgOptimizedImage } from "@angular/common";
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-footer-component',
@@ -9,5 +10,6 @@ import { NgOptimizedImage } from "@angular/common";
   templateUrl: './footer-component.html',
 })
 export class FooterComponent {
-  currentYear = new Date().getFullYear();
+  protected version = environment.version;
+  protected currentYear = new Date().getFullYear();
 }

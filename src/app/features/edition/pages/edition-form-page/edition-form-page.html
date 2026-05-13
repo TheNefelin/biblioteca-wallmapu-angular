@@ -23,9 +23,10 @@
 
 @if (isEditMode()) {
   <div class="m-4 flex justify-end">
-    <button (click)="onCeateCopy()" class="btn max-w-48 bg-my-pink text-my-light">
-      Crear Copia
-    </button>
+    <app-button-create-component
+      [textBtn]="'Crear Copia'"
+      (onClick)="onCeateCopy()"
+    />
   </div>  
 }
 
@@ -36,11 +37,12 @@
   (onDelete)="onDeleteCopy($event)"
 />
 
-<app-modal-delete-component
-  title="Eliminar Copia"
-  [isOpen]="openDeleteModal()"
+<app-modal-action-component
   [isLoading]="isLoading()"
-  [itemName]="selectedCopyToDelete()?.signature_topography + ' - Copia N°: ' + selectedCopyToDelete()?.copy_number"
-  (confirm)="confirmDelete()"
-  (cancel)="closeDeleteModal()"
+  [isOpen]="openDeleteModal()"
+  [textTitle]="'Eliminar Copia'"
+  [textContent]="'¿Estás seguro que deseas eliminar la Copia?'"
+  [textName]="selectedCopyToDelete()?.signature_topography + ' - Copia N°: ' + selectedCopyToDelete()?.copy_number"
+  (onConfirm)="confirmDelete()"
+  (onModalClose)="closeDeleteModal()"
 />

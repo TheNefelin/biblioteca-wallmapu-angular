@@ -11,6 +11,9 @@
   (onDeleteAuthor)="deleteAuthor($event)"
   (onDeleteSubject)="deleteSubject($event)"
   (onFormSubmit)="formSubmit($event)"
+  (onNavigateToGenre)="navigateToGenre()"
+  (onNavigateToAuthor)="navigateToAuthor()"
+  (onNavigateToSubject)="navigateToSubject()"
 />
 
 <section class="p-4 pb-0 grid gap-4">
@@ -25,15 +28,16 @@
 
 @if (isEditMode()) {
   <div class="m-4 flex justify-end">
-    <button (click)="onCreateEdition()" class="btn max-w-48 bg-my-pink text-my-light">
-      Crear Edición
-    </button>
+    <app-button-create-component
+      [textBtn]="'Crear Edición'"
+      (onClick)="onCreateEdition()"
+    />
   </div>  
 }
 
 <app-edition-list-components 
   [isLoading]="isLoading()"
-  [editionDetailList]="bookDetailComputed()?.editions ?? []"
+  [editionDetailList]="computedEditionList()"
   (onEdit)="editEdition($event)"
   (onDelete)="deleteEdition($event)"
 />

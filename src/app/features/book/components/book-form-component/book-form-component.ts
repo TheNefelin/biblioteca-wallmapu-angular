@@ -9,8 +9,6 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { BookFormVM } from '@features/book/models/vm.book-form';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
-import { Router } from '@angular/router';
-import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { AuthorSelectedListComponents } from "@features/book-author/components/author-selected-list-components/author-selected-list-components";
 import { SubjectSelectedListComponents } from "@features/book-subject/components/subject-selected-list-components/subject-selected-list-components";
 
@@ -36,8 +34,10 @@ export class BookFormComponent {
   readonly onDeleteAuthor = output<AuthorModel>();
   readonly onDeleteSubject = output<SubjectModel>();
   readonly onFormSubmit = output<BookFormVM>();
+  readonly onNavigateToGenre = output<void>();
+  readonly onNavigateToAuthor = output<void>();
+  readonly onNavigateToSubject = output<void>();
 
-  private readonly router = inject(Router);
   readonly errorMessage = signal<string | null>(null);
   readonly formData = signal<Partial<BookFormVM>>({});
 
@@ -171,14 +171,14 @@ export class BookFormComponent {
   }
 
   protected navigateToGenre(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.GENRE.ROOT]);    
+    this.onNavigateToGenre.emit();
   }
 
   protected navigateToAuthor(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.AUTHOR.ROOT]);
+    this.onNavigateToAuthor.emit();
   }
 
   protected navigateToSubject(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.SUBJECT.ROOT]);
+    this.onNavigateToSubject.emit();
   }
 }

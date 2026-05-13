@@ -12,11 +12,10 @@ import { PaginationComponent } from "@shared/components/pagination-component/pag
 import { NewsCardListComponent } from "@features/news/components/news-card-list-component/news-card-list-component";
 import { AboutComponent } from '@features/home/components/about-component/about-component';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { EditionFilterModel } from '@features/edition/models/edition-filter-model';
 import { EditionService } from '@features/edition/services/edition-service';
-import { EditionDetailModel } from '@features/edition/models/edition-detail-model';
 import { EditionCardListComponent } from "@features/edition/components/edition-card-list-component/edition-card-list-component";
 import { EditionSearchComponent } from "@features/edition/components/edition-search-component/edition-search-component";
+import { EditionDetailModel, EditionFilterModel } from '@features/edition/models/edition-model';
 
 @Component({
   selector: 'app-home.page',
@@ -145,6 +144,4 @@ export class HomePage {
     this.id_genre.set(id_genre);
   }
 
-  protected onBtnSearchClick() {
-  }
 }

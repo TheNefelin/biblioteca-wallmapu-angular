@@ -11,9 +11,10 @@
         (onClick)="refreshList()"
       />
     
-      <button (click)="onCreate()" class="btn max-w-48 bg-my-pink text-my-light">
-        Crear Libro
-      </button>
+      <app-button-create-component 
+        [textBtn]="'Crear Libro'" 
+        (onClick)="onCreate()"
+      />
     </div>
 
   <div class="px-4">
@@ -29,8 +30,8 @@
     <app-book-list-component 
       [isLoading]="isLoading()"
       [bookList]="bookComputedList()"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)"
+      (onEdit)="onEdit($event)"
+      (onDelete)="onDelete($event)"
     />
   </div>
 
@@ -42,11 +43,12 @@
   />
 </section>
 
-<app-modal-delete-component
-  title="Eliminar Libro"
+<app-modal-action-component
   [isOpen]="openDeleteModal()"
   [isLoading]="isLoading()"
-  [itemName]="selectedBookToDelete()?.title"
-  (confirm)="confirmDelete()"
-  (cancel)="closeDeleteModal()"
+  [textTitle]="'Eliminar Libro'"
+  [textContent]="'¿Estás seguro de que deceas eliminar el libro?'"
+  [textName]="selectedBookToDelete()?.title"
+  (onConfirm)="confirmDelete()"
+  (onModalClose)="closeDeleteModal()"
 />

@@ -7,12 +7,48 @@
     </section>
   } @else {
   
-    @for (book of bookList(); track book.id_book) {
-      <app-book-list-row-component 
-        [bookDetail]="book"
-        (edit)="onEdit($event)"
-        (delete)="onDelete($event)"
-      />
+    @for (item of bookList(); track item.id_book) {
+
+      <li class="list-row">
+        <div class="relative overflow-hidden min-h-10 aspect-7/10">
+          <img 
+            placeholder="/images/layout.webp"
+            [ngSrc]="item?.edition_cover_image ?? '/images/book.png'"
+            [alt]="item?.title"
+            priority
+            fill
+            class="object-cover rounded-box" 
+          /> 
+        </div>
+        
+        <div>
+          <div class="text-sm">
+            <span>{{ item?.created_at | date:'yyyy-MM-dd' }}</span>
+            <span class="hidden md:inline"> - {{ item?.created_at | date:'HH:mm:ss' }}</span>
+          </div>
+          <div class="text-xs uppercase font-semibold opacity-60">{{ item?.title }}</div>
+      
+          <div class="text-xs font-semibold text-my-purple opacity-60">{{ item?.author_name }}</div>
+      
+          <div class="text-xs font-semibold text-my-purple opacity-60">{{ item?.genre_name }}</div>
+      
+          <div class="text-xs font-semibold text-my-green opacity-60">Ejemplares: {{ item?.edition_count }}</div>
+          <div class="text-xs font-semibold text-my-green opacity-60">Copias: {{ item?.copy_count }}</div>
+        </div>
+      
+        <button
+          (click)="onDelete.emit(item)"
+          class="btn bg-my-pink text-my-light">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
+        </button>
+      
+        <button
+          (click)="onEdit.emit(item)" 
+          class="btn bg-my-green text-my-light">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z"/></svg>
+        </button>
+      </li>     
+
     }
   }  
 </ul>

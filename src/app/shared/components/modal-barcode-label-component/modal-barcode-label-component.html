@@ -1,0 +1,35 @@
+@if (isOpen()) {
+  <div class="modal modal-open" role="dialog">
+    <div class="modal-box bg-my-light">
+      
+      <h3 class="text-lg font-bold text-my-pink">
+        Etiqueta
+      </h3>
+
+      <section class="border-2 p-4 grid justify-center">
+        <img [src]="labelUrl()" alt="Etiqueta" class="mx-auto" />
+      </section>
+
+      <section class="border-2 p-4 grid justify-center mt-2">
+        <img [src]="combinedUrl()" alt="Combinada" class="mx-auto" />
+      </section>
+
+      <section class="border-2 p-4 grid justify-center mt-2">
+        <img [src]="combinedSideUrlMyVersion()" alt="Mi versión" class="mx-auto" />
+      </section>
+
+      <section class="border-2 p-4 grid justify-center mt-2">
+        <img [src]="rowUrl()" alt="Fila" class="mx-auto" />
+      </section>
+
+      <div class="modal-action flex-wrap gap-2">
+        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light btn-sm" (click)="downloadLabel()">Descarga 1</button>
+        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light btn-sm" (click)="downloadCombined()">Descarga 2</button>
+        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light btn-sm" (click)="downloadMyVersion()">Descarga 3</button>
+        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light btn-sm" (click)="downloadRow()">Descarga 4</button>
+        <button class="btn btn-sm" (click)="onModalClose.emit()">Cerrar</button> 
+      </div>
+
+    </div>
+  </div>
+}

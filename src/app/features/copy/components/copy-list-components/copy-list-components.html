@@ -15,6 +15,7 @@
             <th>Firma</th>
             <th>Estado</th>
             <th>Creación / Modificación</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +38,11 @@
                 <br />
                 <span>{{ item.updated_at | date:'yyyy-MM-dd HH:mm:ss' }}</span>
               </td>
+              <td class="whitespace-nowrap p-1">
+                <app-button-barcode-component 
+                  (onClick)="onSelectedBarcode(item.barcode)"
+                />
+              </td>
             </tr>
           }
         </tbody>
@@ -45,3 +51,9 @@
 
   }
 </section>
+
+<app-modal-barcode-label-component 
+  [isOpen]="isModalOpen()"
+  [barcode]="selectedBarcode()"
+  (onModalClose)="onModalClose()"
+/>

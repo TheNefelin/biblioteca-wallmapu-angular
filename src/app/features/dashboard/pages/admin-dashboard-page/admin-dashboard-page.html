@@ -15,6 +15,7 @@
     <app-loan-overdue-list-component
       [isLoading]="isLoading()"
       [loanOverdueList]="computedLoanOverdueList()"
+      (navigateTo)="onNavigateToLoans()"
     />
     <app-loan-policy-component/>
   </section>  

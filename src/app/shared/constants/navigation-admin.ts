@@ -68,15 +68,15 @@ export const NAVIGATION_ADMIN: NavigationModel[] = [
     ],
     tooltip: 'Perfil'
   },
-  {
-    label: 'Configuración',
-    route: ROUTES_CONSTANTS.PROTECTED.ADMIN.SETTINGS.ROOT,
-    iconPaths: [
-      'M20 7h-9',
-      'M14 17H5',
-      'M17 17a3 3 0 1 0 6 0a3 3 0 0 0-6 0z',
-      'M7 7a3 3 0 1 1-6 0a3 3 0 0 1 6 0z'
-    ],
-    tooltip: 'Configuración'
-  },
+  //{
+  //  label: 'Configuración',
+  //  route: ROUTES_CONSTANTS.PROTECTED.ADMIN.SETTINGS.ROOT,
+  //  iconPaths: [
+  //    'M20 7h-9',
+  //    'M14 17H5',
+  //    'M17 17a3 3 0 1 0 6 0a3 3 0 0 0-6 0z',
+  //    'M7 7a3 3 0 1 1-6 0a3 3 0 0 1 6 0z'
+  //  ],
+  //  tooltip: 'Configuración'
+  //},
 ]

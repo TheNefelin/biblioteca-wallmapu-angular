@@ -7,13 +7,8 @@
     />
     
     <div class="flex justify-between m-4">
-      <button (click)="refreshList()" class="btn max-w-48 bg-my-purple text-my-light">
-        Refrescar
-      </button>  
-    
-      <button (click)="onCreate()" class="btn max-w-48 bg-my-pink text-my-light">
-        Crear Noticia
-      </button>
+      <app-button-refresh-component (onClick)="refreshList()" />
+      <app-button-create-component (onClick)="onCreate()" [textBtn]="'Crear Noticia'" />
     </div>
     
     @if (errorMessage()) {

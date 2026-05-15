@@ -12,6 +12,9 @@ import { SectionHeaderComponent } from "@shared/components/section-header-compon
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { NewsGalleryService } from '@features/news-gallery/services/news-gallery-service';
+import { ButtonRefreshComponent } from "@shared/components/button-refresh-component/button-refresh-component";
+import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { extractErrorMessage } from '@core/utils/error-handler';
 
 @Component({
   selector: 'app-news-list-page',
@@ -20,7 +23,9 @@ import { NewsGalleryService } from '@features/news-gallery/services/news-gallery
     ModalDeleteComponent,
     SectionHeaderComponent,
     PaginationComponent,
-    MessageErrorComponent
+    MessageErrorComponent,
+    ButtonRefreshComponent,
+    ButtonCreateComponent
 ],
   templateUrl: './news-list-page.html',
 })
@@ -30,31 +35,37 @@ export class NewsListPage {
   private readonly newsGalleryService = inject(NewsGalleryService)
 
   // ─── ESTADOS
+  readonly errorMessage = signal<string | null>(null);
   readonly selectedNewsWithImagesModel = signal<NewsWithImagesModel | null>(null);
   readonly openDeleteModal = signal(false);
   readonly currentPage = signal(1);
   private readonly items = signal(10);
   private readonly search = signal('');
   readonly totalPages = signal<number>(0);
-  private readonly refreshTrigger = signal(0);
   readonly isLoading = computed(() => 
-    this.dataResourceRX.isLoading() || this.deleteRX.isLoading() || this.deleteAllGalleryRX.isLoading()
+    [
+      this.getNewsRX,
+      this.deleteRX,
+      this.deleteAllGalleryRX,
+    ].some(e => e.isLoading())
   );
-  readonly errorMessage = computed(() => {
-    if (this.dataResourceRX.error()?.message) return this.dataResourceRX.error()!.message;
-    if (this.deleteRX.error()?.message) return this.deleteRX.error()!.message;
-    if (this.deleteAllGalleryRX.error()?.message) return this.deleteAllGalleryRX.error()!.message;
-    return null;
+
+  readonly newsWithImagesList = computed<NewsWithImagesModel[] | []>(() => {
+    const data = this.getNewsRX.value();
+    if (!data) return [];
+    return data
   });
 
-  // ─── GET RX
+  private readonly deleteAllGalleryByIdNewsPayload = signal<number | null>(null);
+  private readonly deleteNewsByIdPayload = signal<number | null>(null);
+
   private readonly params = computed<PaginationRequestModel>(() => ({
     page: this.currentPage(),
     limit: this.items(),
     search: this.search(),
   }));  
   
-  private readonly dataResourceRX = rxResource({
+  private readonly getNewsRX = rxResource({
     params: () => this.params(),
     stream: ({ params }) => {    
       return this.newsService.getAll(params).pipe(
@@ -64,20 +75,12 @@ export class NewsListPage {
           return response.data.data;
         }),
         catchError(err => {
+          this.handleError(err);
           return of(null);
         })
       );
     },
   });
-
-  readonly newsWithImagesList = computed<NewsWithImagesModel[] | []>(() => {
-    const data = this.dataResourceRX.value();
-    if (!data) return [];
-    return data
-  });
-
-  // DELETE ALL GALLERY IMAGES BY ID NEWS
-  private readonly deleteAllGalleryByIdNewsPayload = signal<number | null>(null);
 
   private readonly deleteAllGalleryRX = rxResource({
     params: () => this.deleteAllGalleryByIdNewsPayload(),
@@ -94,15 +97,13 @@ export class NewsListPage {
           this.deleteAllGalleryByIdNewsPayload.set(null);
         }),
         catchError(err => {
+          this.handleError(err);
           return of(null);
         })
       );
     }
   });
   
-  // ─── DELETE NEWS
-  private readonly deleteNewsByIdPayload = signal<number | null>(null);
-
   private readonly deleteRX = rxResource({
     params: () => this.deleteNewsByIdPayload(),
     stream: ({ params: payloadId }) => {
@@ -120,15 +121,15 @@ export class NewsListPage {
           this.selectedNewsWithImagesModel.set(null);
         }),
         catchError(err => {
+          this.handleError(err);
           return of(null);
         })
       );
     },
   });
  
-  // ─── ACCIONES 
   refreshList() {
-    this.refreshTrigger.update(v => v + 1);
+    this.getNewsRX.reload();
   }
 
   onCreate(){
@@ -153,12 +154,10 @@ export class NewsListPage {
     this.deleteAllGalleryByIdNewsPayload.set(selectedNewsWithImagesModel.id_news);
   } 
 
-  // ─── MODAL
   closeDeleteModal() {
     this.openDeleteModal.set(false);
   }
 
-  // ─── PAGINACION  
   searchText(text: string) {
     this.search.set(text);
     this.currentPage.set(1); 
@@ -174,5 +173,9 @@ export class NewsListPage {
     if (this.currentPage() > 1){
       this.currentPage.update(e => e - 1);
     }
+  }
+
+  private handleError(err: unknown): void {
+    this.errorMessage.set(extractErrorMessage(err));
   }
 }

@@ -35,6 +35,7 @@
 <app-edition-card-list-component
   [isLoading]="isLoading()"
   [editionDetailList]="editionListComputed()"
+  (navigateTo)="onNavigateTo($event)"
 />
 
 <app-pagination-component 

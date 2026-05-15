@@ -1,766 +1,317 @@
-# Biblioteca Wallmapu Angular 21
+# Biblioteca Wallmapu - Angular 21
 
-### Dependencies
-- [DaisyUI](https://daisyui.com/)
-- bwip-js CodeBar generator
-```
-npm install bwip-js
-```
+Frontend del proyecto Biblioteca Wallmapu desarrollado con Angular 21 siguiendo el patrón Senior.
 
-### Structure
+---
+
+## Dependencias
+
+- [DaisyUI](https://daisyui.com/) - Componentes UI
+- [bwip-js](https://github.com/bwip-js/bwip-js) - Generador de códigos de barras
+  ```bash
+  npm install bwip-js
+  ```
+
+---
+
+## Estructura del Proyecto
+
 ```
-project
+src/app/
+├── core/                        # Configuración central
+│   ├── guards/                 # Guards de autenticación
+│   │   └── auth-guard.ts
+│   ├── interceptors/           # Interceptors HTTP
+│   │   ├── auth-interceptor.ts
+│   │   └── error-interceptor.ts
+│   ├── models/                 # Modelos globales
+│   │   ├── api-response-model.ts
+│   │   ├── pagination-request-model.ts
+│   │   └── pagination-response-model.ts
+│   ├── pages/                  # Páginas de error
+│   │   ├── forbidden-page/
+│   │   ├── not-found-page/
+│   │   └── book-not-found-page/
+│   ├── services/                # Servicios core
+│   │   ├── api-response-service.ts
+│   │   └── error-modal-service.ts
+│   └── utils/                  # Utilidades
+│       └── error-handler.ts
 │
-├─ public/
-│   ├─ images/
-│   └─ favicon.ico
-│
-├─ src/
-│   ├─ app/
-│   │   ├─ core/
-│   │   │   ├─ guards/        <- sin implementar
-│   │   │   ├─ helpers/
-│   │   │   │   └─ api-response-service.ts
-│   │   │   ├─ interceptors/
-│   │   │   │   ├─ auth-interceptor.ts
-│   │   │   │   └─ error-interceptor.ts
-│   │   │   └─ services/
-│   │   │       ├─ book-service.ts
-│   │   │       └─ news-service.ts
-│   │   │
-│   │   ├─ features/
-│   │   │   ├─ user/
-│   │   │   │   ├─ models/
-│   │   │   │   │   └─ user-model.ts
-│   │   │   │   ├─ pages/
-│   │   │   │   │   ├─ user-edit.page/
-│   │   │   │   │   ├─ user-list.page/
-│   │   │   │   │   └─ user-profile.page/
-│   │   │   │   ├─ services/
-│   │   │   │   │   └─ user-service.ts
-│   │   │   │   └─ user.routes.ts
-│   │   │   ├─ auth/
-│   │   │   │   ├─ components/
-│   │   │   │   │   └─ auth-button-component/
-│   │   │   │   ├─ models/
-│   │   │   │   │   ├─ api-auth-request.ts
-│   │   │   │   │   ├─ api-auth-response.ts
-│   │   │   │   │   ├─ user-google.ts
-│   │   │   │   │   └─ user.ts
-│   │   │   │   └─ services/
-│   │   │   │       ├─ auth-google-service.ts
-│   │   │   │       ├─ auth-service.ts
-│   │   │   │       └─ auth-store.ts
-│   │   │   ├─ admin/
-│   │   │   │   ├─ book/
-│   │   │   │   │   ├─ pages/
-│   │   │   │   │   │   └─ book-page/
-│   │   │   │   │   └─ home.routes.ts
-│   │   │   │   ├─ dashboard/
-│   │   │   │   │   ├─ pages/
-│   │   │   │   │   │   └─ dashboard-page/
-│   │   │   │   │   └─ dashboard.routes.ts
-│   │   │   │   ├─ news/
-│   │   │   │   │   ├─ models/
-│   │   │   │   │   │   └─ image-item.ts
-│   │   │   │   │   ├─ pages/
-│   │   │   │   │   │   └─ news-page/
-│   │   │   │   │   └─ news.routes.ts
-│   │   │   │   └─ profile/
-│   │   │   │       ├─ pages/
-│   │   │   │       │   └─ profile-page/
-│   │   │   │       └─ profile.routes.ts
-│   │   │   ├─ auth/
-│   │   │   │   ├─ components/
-│   │   │   │   │   └─ auth-button-component/
-│   │   │   │   ├─ models/
-│   │   │   │   │   ├─ api-auth-request.ts
-│   │   │   │   │   ├─ api-auth-response.ts
-│   │   │   │   │   ├─ user-google.ts
-│   │   │   │   │   └─ user.ts
-│   │   │   │   └─ services/
-│   │   │   │       └─ auth-service.ts
-│   │   │   ├─ public/
-│   │   │   │   ├─ about/     <- sin implementar
-│   │   │   │   ├─ contact/   <- sin implementar
-│   │   │   │   ├─ home/
-│   │   │   │   │   ├─ components/
-│   │   │   │   │   │   ├─ banner-component/
-│   │   │   │   │   │   ├─ latest-news-component/
-│   │   │   │   │   │   ├─ recommended-books-component/
-│   │   │   │   │   │   └─ title-component/
-│   │   │   │   │   ├─ pages/
-│   │   │   │   │   │   └─ home-page/
-│   │   │   │   │   └─ home.routes.ts
-│   │   │   │   ├─ library/
-│   │   │   │   │   ├─ components/
-│   │   │   │   │   │   ├─ book-details-component/
-│   │   │   │   │   │   └─ book-list-component/
-│   │   │   │   │   ├─ pages/
-│   │   │   │   │   │   ├─ book-details-page/
-│   │   │   │   │   │   └─ books-page/
-│   │   │   │   │   └─ library.routes.ts
-│   │   │   │   └─ news/
-│   │   │   │       ├─ components/
-│   │   │   │       │   ├─ news-details-component/
-│   │   │   │       │   └─ news-list-component/
-│   │   │   │       ├─ pages/
-│   │   │   │       │   ├─ news-details-page/
-│   │   │   │       │   └─ news-page/
-│   │   │   │       └─ news.routes.ts
-│   │   │   └─ user/
-│   │   │       ├─ models/
-│   │   │       │   └─ user-model.ts
-│   │   │       ├─ pages/
-│   │   │       │   ├─ user-edit.page/
-│   │   │       │   ├─ user-list.page/
-│   │   │       │   └─ user-profile.page/
-│   │   │       ├─ services/
-│   │   │       │   └─ user-service.ts
-│   │   │       └─ user.routes.ts
-│   │   │
-│   │   ├─ layouts/
-│   │   │   ├─ admin-layout/  <- sin implementar
-│   │   │   ├─ public-layout/
-│   │   │   └─ user-layout/   <- sin implementar
-│   │   │
-│   │   ├─ shared/
-│   │   │   ├─ components/
-│   │   │   │   ├─ arrow-up-component/
-│   │   │   │   ├─ book-card-component/
-│   │   │   │   ├─ dashboard-component/
-│   │   │   │   ├─ footer-component/
-│   │   │   │   ├─ header-component/
-│   │   │   │   ├─ loading-component/
-│   │   │   │   ├─ newmessage-error-component/
-│   │   │   │   ├─ message-success-component/
-│   │   │   │   ├─ navbar-component/
-│   │   │   │   ├─ news-card-component/
-│   │   │   │   ├─ news-details-component/
-│   │   │   │   ├─ news-gallery-component/
-│   │   │   │   ├─ news-list-component/
-│   │   │   │   ├─ news-skeleton-component/
-│   │   │   │   ├─ pagination-component/
-│   │   │   │   └─ section-header-component/
-│   │   │   ├─ constants/
-│   │   │   │   ├─ default-api-result.ts
-│   │   │   │   ├─ navigation-admin.ts
-│   │   │   │   ├─ navigation-user.ts
-│   │   │   │   └─ routes.ts
-│   │   │   ├─ models/
-│   │   │   │   └─ NavigationItem.ts
-│   │   │   └─ pages/
-│   │   │       ├─ not-found-page/
-│   │   │       └─ test-page/
-│   │   │
-│   │   ├─ app.config.ts
-│   │   ├─ app.html
-│   │   ├─ app.routes.ts
-│   │   └─ app.ts
+├── features/                   # Módulos por dominio (Standalone)
+│   ├── auth/                   # Autenticación
+│   │   ├── components/
+│   │   ├── models/
+│   │   ├── services/
+│   │   │   ├── auth-service.ts
+│   │   │   ├── auth-google-service.ts
+│   │   │   └── auth-store.ts
+│   │   └── auth.routes.ts
 │   │
-│   ├── environments/
-│   │   └── environment.ts
+│   ├── book/                   # Libros (Admin)
+│   │   ├── components/
+│   │   ├── models/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── book.routes.ts
 │   │
-│   ├─ index.html
-│   ├─ main.ts
-│   └─ styles.css
+│   ├── book-author/            # Autores de libros
+│   ├── book-editorial/         # Editoriales
+│   ├── book-genre/             # Géneros
+│   ├── book-subject/           # Materias/Descriptores
+│   │
+│   ├── copy/                   # Ejemplares
+│   │   ├── components/
+│   │   ├── models/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── copy.routes.ts
+│   │
+│   ├── copy-status/            # Estados de ejemplares
+│   ├── dashboard/              # Dashboard Admin/User
+│   │   ├── components/
+│   │   │   └── admin-stats-components/
+│   │   └── pages/
+│   │       ├── admin-dashboard-page/
+│   │       └── user-dashboard-page/
+│   │
+│   ├── division-region/        # Regiones
+│   ├── division-province/       # Provincias
+│   ├── division-commune/       # Comunas
+│   │
+│   ├── edition/                 # Ediciones
+│   │   ├── components/
+│   │   │   ├── edition-card-list-component/
+│   │   │   ├── edition-form-components/
+│   │   │   ├── edition-list-components/
+│   │   │   └── edition-search-component/
+│   │   ├── models/
+│   │   ├── pages/
+│   │   │   ├── edition-form-page/
+│   │   │   └── edition-list-page/
+│   │   ├── services/
+│   │   └── edition.routes.ts
+│   │
+│   ├── home/                   # Home público
+│   │   ├── components/
+│   │   │   └── about-component/
+│   │   ├── pages/
+│   │   │   └── home-page/
+│   │   └── home.routes.ts
+│   │
+│   ├── loan/                   # Préstamos
+│   │   ├── components/
+│   │   ├── models/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── admin.loan.routes.ts
+│   │   └── user.loan.routes.ts
+│   │
+│   ├── loan-policies/          # Políticas de préstamos
+│   ├── loan-status/           # Estados de préstamos
+│   │
+│   ├── news/                   # Noticias
+│   │   ├── components/
+│   │   │   ├── news-card-component/
+│   │   │   ├── news-card-list-component/
+│   │   │   ├── news-detail-component/
+│   │   │   ├── news-detail-gallery-component/
+│   │   │   ├── news-featured-component/
+│   │   │   ├── news-form-component/
+│   │   │   ├── news-list-component/
+│   │   │   └── news-list-row-component/
+│   │   ├── models/
+│   │   │   ├── news-form-model.ts
+│   │   │   ├── news-model.ts
+│   │   │   └── news-with-images-model.ts
+│   │   ├── pages/
+│   │   │   ├── news-detail-page/
+│   │   │   ├── news-form-page/
+│   │   │   ├── news-list-page/
+│   │   │   └── news-page/
+│   │   ├── services/
+│   │   ├── news.routes.ts       # Admin (/admin/news)
+│   │   └── home.news.routes.ts  # Público (/news)
+│   │
+│   ├── notification/           # Notificaciones
+│   │   ├── components/
+│   │   ├── models/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   │   ├── notification-service.ts
+│   │   │   └── notification-badge-state.service.ts
+│   │   └── notification.routes.ts
+│   │
+│   ├── reservation/            # Reservas
+│   │   ├── components/
+│   │   ├── models/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── reservation.routes.ts
+│   │   └── admin.reservation.routes.ts
+│   │
+│   ├── reservation-status/     # Estados de reservas
+│   │
+│   ├── stats/                  # Estadísticas
+│   │   ├── components/
+│   │   ├── models/
+│   │   └── services/
+│   │
+│   └── user/                   # Usuarios
+│       ├── components/
+│       ├── models/
+│       ├── pages/
+│       │   ├── user-form.page/
+│       │   ├── user-list.page/
+│       │   └── user-profile.page/
+│       ├── services/
+│       ├── user.routes.ts
+│       └── profile.route.ts
 │
-├─ LICENSE.txt
-└─ README.md
+├── layouts/                    # Layouts
+│   ├── layout/                # Layout público (home)
+│   ├── layout-admin/         # Layout admin
+│   │   ├── components/
+│   │   │   ├── dashboard-navbar-component/
+│   │   │   └── dashboard-sidebar-component/
+│   │   └── layout-admin.ts
+│   └── layout-user/           # Layout usuario
+│
+├── shared/                     # Componentes reutilizables
+│   ├── components/
+│   │   ├── arrow-up-component/
+│   │   ├── barcode-generator.component/
+│   │   ├── button-barcode-component/
+│   │   ├── button-clear-component/
+│   │   ├── button-create-component/
+│   │   ├── button-delete-component/
+│   │   ├── button-edit-component/
+│   │   ├── button-goback-component/
+│   │   ├── button-notification-component/
+│   │   ├── button-refresh-component/
+│   │   ├── button-search-component/
+│   │   ├── footer-component/
+│   │   ├── header-component/
+│   │   ├── loading-component/
+│   │   ├── message-error-component/
+│   │   ├── message-success-component/
+│   │   ├── modal-action-component/
+│   │   ├── modal-barcode-label-component/
+│   │   ├── modal-delete-component/
+│   │   ├── modal-error-component/
+│   │   ├── modal-image-component/
+│   │   ├── pagination-component/
+│   │   ├── search-input-component/
+│   │   ├── search-codbar-component/
+│   │   └── section-header-component/
+│   ├── constants/
+│   │   ├── roles-enum.ts
+│   │   └── routes-constant.ts
+│   └── models/
+│       └── navigation-model.ts
+│
+├── app.config.ts              # Configuración de la app
+├── app.routes.ts              # Rutas principales
+└── app.ts                     # Componente raíz
 ```
 
-## Interceptors
-- /core/interceptors/auth-interceptor.ts
-```ts
-const token = localStorage.getItem('jwt_token');
-const protectedRoutes = ['/user', '/admin'];
-const isProtected = protectedRoutes.some(route => req.url.includes(route));
+---
 
-if (token && isProtected) {
-  req = req.clone({
-    setHeaders: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-}  
-```
-- app.config.ts
-```ts
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-    provideHttpClient(withInterceptors([
-      authInterceptor
-    ]))
-  ]
-};
+## Patrón Senior - Angular 21
+
+### Arquitectura Page vs Component
+
+**Page:** Lógica de negocio, consume servicios, maneja rxResource
+**Component:** Solo presentación, recibe datos por `input()`, emite eventos por `output()`
+
+### Signals y rxResource
+
+```typescript
+// Estado reactivo
+readonly count = signal<number>(0);
+readonly computedValue = computed(() => this.count() * 2);
+
+// Datos asíncronos
+private readonly dataRX = rxResource({
+  params: () => this.payload(),
+  stream: ({ params }) => this.service.getAll(params).pipe(
+    map(response => response.data)
+  )
+});
+
+readonly data = computed(() => this.dataRX.value() ?? []);
+readonly isLoading = computed(() => this.dataRX.isLoading());
 ```
 
-## Routes
-- tsconfig.app.json
-```ts
-{
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "paths": {
-      "@layouts/*": ["app/layouts/*"],
-      ...
-    }
-  }
+### input() y output()
+
+```typescript
+@Component({...})
+export class MyComponent {
+  readonly data = input.required<MyModel[]>();
+  readonly isLoading = input<boolean>(false);
+  readonly onSelect = output<MyModel>();
 }
 ```
-- app.routes.ts
-```ts
-import { Routes } from '@angular/router';
-import { PublicLayout } from '@layouts/public-layout/public-layout';
-
-export const routes: Routes = [
-  {
-    path: '',
-    component: PublicLayout,
-    children: []
-  }
-];
-```
-
-## Images CSR
-- /public/images
-- component ts
-```ts
-import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-navbar-component',
-  imports: [
-    NgOptimizedImage,
-  ],
-  templateUrl: './navbar-component.html',
-})
-export class NavbarComponent {
-
-}
-```
-- component html
-```html
-<img ngSrc="images/logo.webp" alt="Logo" height="40" width="40">
-```
-
-## Recursos y Referencias
-- [Angular Style Guide](https://angular.dev/style-guide)
-- [Angular Signals](https://angular.dev/guide/signals)
-- [Angular HTTP Best Practices](https://angular.dev/guide/http)
-- [RxJS Best Practices](https://rxjs.dev/guide/overview)
-
-## Components
-- Shortcut
-```bash
-# ---------------------------------------------------------------------------------
-# CORE
-ng g guard core/guards/auth --skip-tests
-
-ng g interceptor core/interceptors/auth --skip-tests
-ng g interceptor core/interceptors/error --skip-tests
-
-ng g interface core/models/api-response-model
-ng g interface core/models/pagination-model
-ng g interface core/models/pagination-request-model
-ng g interface core/models/pagination-response-model
-
-ng g c core/pages/book-not-found-page --skip-tests --style=none
-ng g c core/pages/forbidden-page --skip-tests --style=none
-ng g c core/pages/In-development-page --skip-tests --style=none
-ng g c core/pages/not-found-page --skip-tests --style=none
-
-ng g s core/services/error-modal-service --skip-tests
-ng g s core/services/api-response-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES AUTH
-ng g c features/auth/components/auth-button-component --skip-tests --style=none
-
-ng g interface features/auth/models/api-auth-google-request
-ng g interface features/auth/models/api-auth-google-response
-ng g interface features/auth/models/auth-user
-
-ng g s features/auth/services/auth-google-service --skip-tests
-ng g s features/auth/services/auth-service --skip-tests
-ng g s features/auth/services/auth-store --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK
-ng g c features/book/components/book-form-component --skip-tests --style=none
-ng g c features/book/components/book-list-component --skip-tests --style=none
-ng g c features/book/components/book-list-row-component --skip-tests --style=none
-
-ng g interface features/book/models/book-detail-model
-ng g interface features/book/models/book-model
-ng g interface features/book/models/book-pagination-request-model
-
-ng g c features/book/pages/book-form-page --skip-tests --style=none
-ng g c features/book/pages/book-list-page --skip-tests --style=none
-
-ng g s features/book/services/book-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK AUTHOR
-ng g c features/book-author/components/author-form-components --skip-tests --style=none
-ng g c features/book-author/components/author-list-components --skip-tests --style=none
-ng g c features/book-author/components/author-select-components --skip-tests --style=none
-ng g c features/book-author/components/author-selected-list-components --skip-tests --style=none
-
-ng g interface features/book-author/models/author-model
-
-ng g c features/book-author/pages/author-form-page --skip-tests --style=none
-
-ng g s features/book-author/services/author-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK AUTHOR STEP
-ng g interface features/book-author-step/models/book-author-step-model
-
-ng g s features/book-author-step/services/book-author-step-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK EDITORIAL
-ng g c features/book-editorial/components/editorial-select-components --skip-tests --style=none
-
-ng g interface features/book-editorial/models/editorial-model
-
-ng g s features/book-editorial/services/editorial-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK GENRE
-ng g c features/book-genre/components/genre-form-components --skip-tests --style=none
-ng g c features/book-genre/components/genre-list-components --skip-tests --style=none
-ng g c features/book-genre/components/genre-select-components --skip-tests --style=none
-
-ng g interface features/book-genre/models/genre-model
-
-ng g c features/book-genre/pages/genre-form-page --skip-tests --style=none
-
-ng g s features/book-genre/services/genre-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK SUBJECT
-ng g c features/book-subject/components/subject-form-components --skip-tests --style=none
-ng g c features/book-subject/components/subject-list-components --skip-tests --style=none
-ng g c features/book-subject/components/subject-select-components --skip-tests --style=none
-ng g c features/book-subject/components/subject-selected-list-components --skip-tests --style=none
-
-ng g interface features/book-subject/models/subject-model
-
-ng g c features/book-subject/pages/subject-form-page --skip-tests --style=none
-
-ng g s features/book-subject/services/subject-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES BOOK SUBJECT STEP
-ng g interface features/book-subject-step/models/book-subject-step-model
-
-ng g s features/book-subject-step/services/book-subject-step-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES COPY
-ng g c features/copy/components/copy-form-components --skip-tests --style=none
-ng g c features/copy/components/copy-list-components --skip-tests --style=none
-ng g c features/copy/components/copy-list-for-edition-components --skip-tests --style=none
-ng g c features/copy/components/copy-list-for-reservation-components --skip-tests --style=none
-ng g c features/copy/components/signature-manual-components --skip-tests --style=none
-
-ng g interface features/copy/models/copy-model
-
-ng g c features/copy/pages/copy-form-page --skip-tests --style=none
-
-ng g s features/copy/services/copy-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES COPY STATUS
-ng g c features/copy-status/components/copy-status-component --skip-tests --style=none
-ng g c features/copy-status/components/copy-status-select-components --skip-tests --style=none
-
-ng g interface features/copy-status/models/copy-status-model
-
-ng g s features/copy-status/services/copy-status-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES DASHBOARD
-ng g c features/dashboard/components/register-loan-components --skip-tests --style=none
-ng g c features/dashboard/components/register-loan-detail-components --skip-tests --style=none
-ng g c features/dashboard/components/register-return-components --skip-tests --style=none
-
-ng g c features/dashboard/pages/admin-dashboard-page --skip-tests --style=none
-ng g c features/dashboard/pages/user-dashboard-page --skip-tests --style=none
-
-# ---------------------------------------------------------------------------------
-# FEATURES DIVISION COMMUNE
-ng g c features/division-commune/components/commune-select-components --skip-tests --style=none
-
-ng g interface features/division-commune/models/commune-model
-
-ng g s features/division-commune/services/commune-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES DIVISION PROVINCE
-ng g c features/division-province/components/province-select-components --skip-tests --style=none
-
-ng g interface features/division-province/models/province-model
-
-ng g s features/division-province/services/province-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES DIVISION REGION
-ng g c features/division-region/components/region-select-components --skip-tests --style=none
-
-ng g interface features/division-region/models/region-model
-
-ng g s features/division-region/services/region-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES EDITION
-ng g c features/edition/components/edition-card-list-component --skip-tests --style=none
-ng g c features/edition/components/edition-detail-component --skip-tests --style=none
-ng g c features/edition/components/edition-form-components --skip-tests --style=none
-ng g c features/edition/components/edition-list-components --skip-tests --style=none
-ng g c features/edition/components/edition-search-component --skip-tests --style=none
-
-ng g interface features/edition/models/edition-detail-model
-ng g interface features/edition/models/edition-model
-ng g interface features/edition/models/edition-pagination-request-model
-
-ng g c features/edition/pages/edition-form-page --skip-tests --style=none
-
-ng g s features/edition/services/edition-service --skip-tests
-ng g s features/edition/services/edition-image-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES HOME
-ng g c features/home/components/about-component --skip-tests --style=none
-
-ng g c features/home/pages/edition-detail-page --skip-tests --style=none
-ng g c features/home/pages/home-page --skip-tests --style=none
-ng g c features/home/pages/news-page --skip-tests --style=none
-ng g c features/home/pages/news-detail-page --skip-tests --style=none
-
-# ---------------------------------------------------------------------------------
-# FEATURES LOANS
-ng g c features/loan/components/loan-overdue-list-component --skip-tests --style=none
-ng g c features/loan/components/loan-detail-component --skip-tests --style=none
-ng g c features/loan/components/loan-to-return-component --skip-tests --style=none
-ng g c features/loan/components/loan-list-component --skip-tests --style=none
-
-ng g interface features/loan/models/loan-model
-
-ng g c features/loan/pages/admin-loan-page --skip-tests --style=none
-ng g c features/loan/pages/user-loan-page --skip-tests --style=none
-
-ng g s features/loan/services/loan-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES LOANS POLICIES
-ng g c features/loan-policies/components/loan-policy-component --skip-tests --style=none
-
-ng g interface features/loan-policies/models/loan-policies-model
-
-ng g s features/loan-policies/services/loan-policies-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES LOANS STATUS
-ng g c features/loan-status/components/loan-status-component --skip-tests --style=none
-ng g c features/loan-status/components/loan-status-select-component --skip-tests --style=none
-
-ng g interface features/loan-status/models/loan-status-model
-
-ng g s features/loan-status/services/loan-status-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES NEWS
-ng g c features/news/components/news-card-component --skip-tests --style=none
-ng g c features/news/components/news-card-list-component --skip-tests --style=none
-ng g c features/news/components/news-detail-component --skip-tests --style=none
-ng g c features/news/components/news-detail-gallery-component --skip-tests --style=none
-ng g c features/news/components/news-featured-component --skip-tests --style=none
-ng g c features/news/components/news-form-component --skip-tests --style=none
-ng g c features/news/components/news-list-component --skip-tests --style=none
-ng g c features/news/components/news-list-row-component --skip-tests --style=none
-
-ng g interface features/news/models/news-form-model
-ng g interface features/news/models/news-model
-ng g interface features/news/models/news-with-images-model
-
-ng g c features/news/pages/news-card-list-page --skip-tests --style=none
-ng g c features/news/pages/news-details-page --skip-tests --style=none
-ng g c features/news/pages/news-form-page --skip-tests --style=none
-ng g c features/news/pages/news-list-page --skip-tests --style=none
-
-ng g s features/news/services/news-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES NEWS GALLERY
-ng g c features/news-gallery/components/image-list-component --skip-tests --style=none
-ng g c features/news-gallery/components/news-gallery-component --skip-tests --style=none
-
-ng g interface features/news-gallery/models/news-gallery-model
-ng g interface features/news-gallery/models/create-news-gallery-model
-
-ng g s features/news-gallery/services/news-gallery-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES NOTIFICATION
-ng g c features/notification/components/notification-bell-components --skip-tests --style=none
-ng g c features/notification/components/notification-form-components --skip-tests --style=none
-ng g c features/notification/components/notification-list-components --skip-tests --style=none
-
-ng g interface features/notification/models/notification-model
-
-ng g c features/notification/pages/notification-page --skip-tests --style=none
-
-ng g s features/notification/services/notification-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES RESERVATION
-ng g c features/reservation/components/reservation-barcode-components --skip-tests --style=none
-ng g c features/reservation/components/reservation-to-loan-components --skip-tests --style=none
-ng g c features/reservation/components/reservation-detail-components --skip-tests --style=none
-ng g c features/reservation/components/reservation-list-components --skip-tests --style=none
-
-ng g interface features/reservation/models/reservation-model
-
-ng g c features/reservation/pages/admin-reservation-page --skip-tests --style=none
-ng g c features/reservation/pages/reservation-page --skip-tests --style=none
-ng g c features/reservation/pages/user-reservation-page --skip-tests --style=none
-
-ng g s features/reservation/services/reservation-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES RESERVATION STATUS
-ng g c features/reservation-status/components/reservation-status-component --skip-tests --style=none
-ng g c features/reservation-status/components/reservation-status-select-components --skip-tests --style=none
-
-ng g interface features/reservation-status/models/reservation-status-model
-
-ng g s features/reservation-status/services/reservation-status-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES STATS
-ng g c features/stats/components/admin-stats-components --skip-tests --style=none
-ng g c features/stats/components/user-stats-components --skip-tests --style=none
-
-ng g interface features/stats/models/stat-model
-
-ng g c features/stats/pages/stat.page --skip-tests --style=none
-
-ng g s features/stats/services/stat-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES USER
-ng g c features/user/components/user-form-components --skip-tests --style=none
-ng g c features/user/components/user-list-components --skip-tests --style=none
-ng g c features/user/components/user-profile-components --skip-tests --style=none
-
-ng g interface features/user/models/user-detail-model
-ng g interface features/user/models/user-form-model
-ng g interface features/user/models/user-model
-ng g interface features/user/models/user-update-model
-
-ng g c features/user/pages/user-form.page --skip-tests --style=none
-ng g c features/user/pages/user-list.page --skip-tests --style=none
-ng g c features/user/pages/user-profile.page --skip-tests --style=none
-
-ng g s features/user/services/user-service --skip-tests
-
-# ---------------------------------------------------------------------------------
-# FEATURES USER ROL
-ng g interface features/user-role/models/user-role-model
-
-ng g s features/user-role/services/user-role-service --skip-tests
-
-ng g c features/user-role/components/user-role-select-components --skip-tests --style=none
-
-# ---------------------------------------------------------------------------------
-# FEATURES USER STATUS
-ng g interface features/user-status/models/user-status-model
-
-ng g s features/user-status/services/user-status-service --skip-tests
-
-ng g c features/user-status/components/user-status-select-components --skip-tests --style=none
-
-# ---------------------------------------------------------------------------------
-# LAYOUT
-ng g c layouts/components/arrow-up-component --skip-tests --style=none
-ng g c layouts/components/dashboard-component --skip-tests --style=none
-ng g c layouts/components/dashboard-navbar-component --skip-tests --style=none
-ng g c layouts/components/dashboard-sidebar-component --skip-tests --style=none
-ng g c layouts/components/footer-component --skip-tests --style=none
-ng g c layouts/components/navbar-component --skip-tests --style=none
-
-ng g c layouts/layout --skip-tests --style=none
-ng g c layouts/layout-admin --skip-tests --style=none
-ng g c layouts/layout-user --skip-tests --style=none
-
-# ---------------------------------------------------------------------------------
-# SHARED COMPONENTS
-ng g c shared/components/barcode-generator.component --skip-tests --style=none
-ng g c shared/components/button-barcode-component --skip-tests --style=none
-ng g c shared/components/button-clear-component --skip-tests --style=none
-ng g c shared/components/button-create-component --skip-tests --style=none
-ng g c shared/components/button-delete-component --skip-tests --style=none
-ng g c shared/components/button-edit-component --skip-tests --style=none
-ng g c shared/components/button-goback-component --skip-tests --style=none
-ng g c shared/components/button-notification-component --skip-tests --style=none
-ng g c shared/components/button-refresh-component --skip-tests --style=none
-ng g c shared/components/button-search-component --skip-tests --style=none
-ng g c shared/components/header-component --skip-tests --style=none
-ng g c shared/components/loading-component --skip-tests --style=none
-ng g c shared/components/message-error-component --skip-tests --style=none
-ng g c shared/components/message-success-component --skip-tests --style=none
-ng g c shared/components/modal-action-component --skip-tests --style=none
-ng g c shared/components/modal-barcode-label-component --skip-tests --style=none
-ng g c shared/components/modal-delete-component --skip-tests --style=none
-ng g c shared/components/modal-error-component --skip-tests --style=none
-ng g c shared/components/modal-image-component --skip-tests --style=none
-ng g c shared/components/search-input-component --skip-tests --style=none
-ng g c shared/components/search-codbar-component --skip-tests --style=none
-ng g c shared/components/Pagination-component --skip-tests --style=none
-ng g c shared/components/section-header-component --skip-tests --style=none
-
-# ---------------------------------------------------------------------------------
-# SHARED MODELS
-ng g interface shared/models/navigation-model
-
-# ---------------------------------------------------------------------------------
-```
-
-## To keep your Fork updated
-- Add: .github/workflows/sync-fork.yml
-```yaml
-name: Sync Fork with Upstream
-
-on:
-  schedule:
-    # Ejecuta cada 6 horas
-    - cron: '0 */6 * * *'
-  
-  # Permite disparo manual desde GitHub UI
-  workflow_dispatch:
-
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout fork
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Sync with upstream
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Agregar el repositorio original como upstream
-          git remote add upstream https://github.com/TU_USUARIO_ORIGINAL/TU_REPO_ORIGINAL.git
-          
-          # Obtener los cambios del original
-          git fetch upstream main
-          
-          # Sobrescribir el fork con los cambios del original
-          git checkout main
-          git reset --hard upstream/main
-          
-          # Hacer push al fork
-          git push origin main --force
-```
-
-## Google Auth
-- [Google Credentials](https://console.cloud.google.com/apis/credentials)
-
-## Prompt
-```text
-
-```
 
 ---
+
+## Rutas
+
+### Públicos (`/`)
+- `/` → Home
+- `/news` → Noticias (público)
+- `/news/:id` → Detalle noticia
+
+### Admin (`/admin`)
+- `/admin/dashboard` → Dashboard
+- `/admin/book` → Libros
+- `/admin/edition` → Ediciones
+- `/admin/copy` → Ejemplares
+- `/admin/loan` → Préstamos
+- `/admin/reservation` → Reservas
+- `/admin/news` → Noticias (admin)
+- `/admin/users` → Usuarios
+
+### Usuario (`/user`)
+- `/user/profile` → Perfil
+- `/user/reservations` → Mis reservas
+- `/user/loans` → Mis préstamos
+
 ---
----
----
 
-# BibliotecaWallmapu
-
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.0.
-
-## Development server
-
-To start a local development server, run:
+## Comandos
 
 ```bash
+# Desarrollo
 ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-- Commands
-```bash
-ng generate component component-name //components
-ng generate service service-name //services
-ng generate guard guard-name //guards
-ng generate interceptor interceptor-name //interceptors
-ng generate pipe pipe-name //pipes
-ng generate directive directive-name //directives
-ng generate class class-name //clases/modelos
-ng generate resolver resolver-name //resolvers
-ng generate interface interface-name //interfaces
-ng generate enum enum-name //enums
-```
-- Options
-```bash
-ng generate component component-name --skip-tests //sin archivo de test
-ng generate component component-name --skip-css //sin stylesheet
-ng generate component component-name --inline-template --inline-style //inline
-ng generate component component-name --standalone //standalone component
-ng generate component component-name --dry-run //vista previa sin crear
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+# Build producción
 ng build
+
+# Lint
+ng lint
+
+# Generar componente
+ng g c feature/name/component-name
+
+# Generar servicio
+ng g s feature/name/service-name
+
+# Generar página
+ng g c feature/name/pages/page-name
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Recursos
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- [Angular.dev](https://angular.dev)
+- [Angular Signals](https://angular.dev/guide/signals)
+- [Angular Standalone Components](https://angular.dev/guide/standalone-components)
+- [DaisyUI](https://daisyui.com/)
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+*Documento basado en proyecto Biblioteca Wallmapu*
+*Versión: Angular 21 (2026)*

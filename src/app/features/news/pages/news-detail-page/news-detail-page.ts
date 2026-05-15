@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
+import { extractErrorMessage } from '@core/utils/error-handler';
 import { NewsService } from '@features/news/services/news-service';
 import { catchError, map, of } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
@@ -10,15 +11,14 @@ import { NewsDetailGalleryComponent } from "@features/news/components/news-detai
 @Component({
   selector: 'app-news-detail-page',
   imports: [
-    MessageErrorComponent,
-    NewsDetailComponent,
-    NewsDetailGalleryComponent
-],
+    MessageErrorComponent, 
+    NewsDetailComponent, 
+    NewsDetailGalleryComponent,
+  ],
   templateUrl: './news-detail-page.html',
 })
 export class NewsDetailPage {
   private readonly route = inject(ActivatedRoute);
-  private readonly newsService = inject(NewsService);
 
   readonly paramId = toSignal(
     this.route.paramMap.pipe(
@@ -27,7 +27,13 @@ export class NewsDetailPage {
     { initialValue: 0 }
   );
 
-  private readonly newsRX = rxResource({
+  readonly errorMessage = signal<string | null>(null);
+  readonly isLoading = computed(() => this.getNewsRX.isLoading());
+
+  private readonly newsService = inject(NewsService);
+  readonly computedNewsWithImages = computed(() => this.getNewsRX.value() );
+
+  private readonly getNewsRX = rxResource({
     params: () => this.paramId(),
     stream: ({ params }) => {    
       if (!params) return of(null);
@@ -40,14 +46,14 @@ export class NewsDetailPage {
           return response.data;
         }),
         catchError(err => {
+          this.handleError(err);
           return of(null);
         })
       );
     },
   });
 
-  readonly isLoading = computed(() => this.newsRX.isLoading());
-  readonly errorMessage = computed(() => this.newsRX.error()?.message ? this.newsRX.error()!.message : null );
-  readonly newsWithImages = computed(() => this.newsRX.value() );
-
+  private handleError(err: unknown): void {
+    this.errorMessage.set(extractErrorMessage(err));
+  }
 }

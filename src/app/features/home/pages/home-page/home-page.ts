@@ -144,4 +144,8 @@ export class HomePage {
     this.id_genre.set(id_genre);
   }
 
+  protected onNavigateTo(item: EditionDetailModel): void {
+    this.router.navigate([ROUTES_CONSTANTS.HOME.RESERVATION.ROOT(item.book_id, item.id_edition)]);
+  }
+
 }

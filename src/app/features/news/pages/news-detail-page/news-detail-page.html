@@ -16,12 +16,12 @@
       </div>
     } @else {
 
-      @if (newsWithImages()) {
-        <app-news-detail-component [newsWithImages]="newsWithImages()!" />
+      @if (computedNewsWithImages()) {
+        <app-news-detail-component [newsWithImages]="computedNewsWithImages()!" />
 
         <div class="divider my-12 text-base-content/40">Galería de Imágenes</div>
   
-        <app-news-detail-gallery-component [newsWithImages]="newsWithImages()!"/>  
+        <app-news-detail-gallery-component [newsWithImages]="computedNewsWithImages()!"/>  
       }
     }
   </article>

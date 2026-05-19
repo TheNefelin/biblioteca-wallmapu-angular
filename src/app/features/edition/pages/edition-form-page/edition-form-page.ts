@@ -147,7 +147,6 @@ export class EditionFormPage {
     params: () => this.addEditionPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      this.successMessage.set(null);
 
       const request$ = 'id_edition' in params && params.id_edition > 0
       ? this.editionService.update(params.id_edition, params)
@@ -174,7 +173,6 @@ export class EditionFormPage {
     params: () => this.uploadImagePayload(),
     stream: ({ params: file }) => {
       if (!file) return of(null);
-      this.successMessage.set(null);
 
       return this.editionImageService.create(file).pipe(
         map(response => {
@@ -203,7 +201,6 @@ export class EditionFormPage {
     params: () => this.deleteImagePayload(),
     stream: ({ params: id_edition }) => {
       if (!id_edition) return of(null);
-      this.successMessage.set(null);
 
       return this.editionImageService.delete(id_edition).pipe(
         map(response => {
@@ -226,7 +223,6 @@ export class EditionFormPage {
     params: () => this.getCopyPayload(),
     stream: ({ params: id_edition }) => {
       if (!id_edition) return of(null);
-      this.successMessage.set(null);
 
       return this.copyService.getAllByEditionId(id_edition).pipe(
         map(response => {
@@ -245,7 +241,6 @@ export class EditionFormPage {
     params: () => this.deleteCopyPayload(),
     stream: ({ params: id_copy }) => {
       if (!id_copy) return of(null);
-      this.successMessage.set(null);
       
       return this.copyService.delete(id_copy).pipe(
         map(response => {
@@ -332,6 +327,10 @@ export class EditionFormPage {
   
   protected navigateBack(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.FORM(this.bookId())]);
+  }
+
+  protected navigateToEditorial(): void {
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITORIAL.ROOT]); 
   }
 
   private handleError(err: unknown): void {

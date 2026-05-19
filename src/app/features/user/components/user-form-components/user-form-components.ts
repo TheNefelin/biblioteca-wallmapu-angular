@@ -34,11 +34,13 @@ export class UserFormComponents {
     const user = this.userModel();
     if (!user) return; 
 
+    console.log(user)
+
     this.formData.set({
       ...user
     });
 
-
+    console.log(this.formData())
   });
 
   /* -- Form Updates -------------------------------------- */

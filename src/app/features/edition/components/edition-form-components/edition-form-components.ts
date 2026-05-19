@@ -4,6 +4,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
+import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 
 @Component({
   selector: 'app-edition-form-components',
@@ -12,7 +13,8 @@ import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
     NgOptimizedImage,
     LoadingComponent,
     EditorialSelectComponents,
-    MessageErrorComponent
+    MessageErrorComponent,
+    ButtonCreateComponent
 ],
   templateUrl: './edition-form-components.html',
 })
@@ -21,6 +23,7 @@ export class EditionFormComponents {
   readonly editionFormVM = input<EditionFormVM>();
   readonly onFormSubmit = output<EditionFormVM>();
   readonly onDeleteImage = output<number>();
+  readonly onNavigateToEditorial = output<void>();
 
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly formData = signal<Partial<EditionFormVM>>({});
@@ -161,6 +164,10 @@ export class EditionFormComponents {
     if (data.editorial_id == 0)   return 'La editorial es requerida';
     if (!data.cover_image)        return 'Debes seleccionar una imagen';
     return null;
+  }
+
+  protected navigateToEditorial(): void {
+    this.onNavigateToEditorial.emit();
   }
 
   protected deleteImage(id_edition: number): void {

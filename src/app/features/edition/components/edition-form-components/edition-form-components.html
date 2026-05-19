@@ -97,10 +97,10 @@
 
       <fieldset class="fieldset">
         <label class="label font-semibold mb-1">Editorial</label>
-        <app-editorial-select-components 
-          [selectedId]="formData().editorial_id ?? 0"
-          (newSelectedId)="updateEditorial($event)"
-        />    
+        <div class="flex gap-2">
+          <app-editorial-select-components [selectedId]="formData().editorial_id ?? 0" (newSelectedId)="updateEditorial($event)" /> 
+          <app-button-create-component (onClick)="navigateToEditorial()"/>
+        </div>
       </fieldset>
     </div>
 

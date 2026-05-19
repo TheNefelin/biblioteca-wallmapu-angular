@@ -127,7 +127,7 @@
         <label class="label font-semibold mb-1">Comuna</label>
         <!-- COMPONENTE FEATURE COMMUNE-->
         <app-commune-select-components
-          [selectedId]="formData().commune_id || 0" 
+          [selectedId]="formData().commune_id ?? 0" 
           (newSelectedId)="updateCommune($event)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>

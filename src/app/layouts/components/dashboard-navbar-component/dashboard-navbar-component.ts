@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '@environments/environment';
 import { AuthButtonComponent } from "@features/auth/components/auth-button-component/auth-button-component";
 
 @Component({
@@ -9,5 +10,5 @@ import { AuthButtonComponent } from "@features/auth/components/auth-button-compo
   templateUrl: './dashboard-navbar-component.html',
 })
 export class DashboardNavbarComponent {
-
+  protected version = environment.version;
 }

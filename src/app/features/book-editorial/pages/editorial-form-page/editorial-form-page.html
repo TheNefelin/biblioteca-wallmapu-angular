@@ -1,0 +1,44 @@
+<app-section-header-component 
+  [title]="'Editorial'"
+  [actionText]="'Volver Atras'"
+  (actionClicked)="navigateBack()"
+/>
+
+<section class="p-4 grid grid-cols-1 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-editorial-form-component
+      [isLoading]="isLoading()"
+      [editorial]="selectedEditorial()"
+      (onClear)="onClear()"
+      (onFormSubmit)="onFormSubmit($event)" 
+    />
+  </div>  
+
+  @if (successMessage()) {
+    <app-message-success-component [message]="successMessage()" />  }
+   
+  @if (errorMessage()) {
+    <app-message-error-component [message]="errorMessage()" />
+  }
+
+  <app-editorial-list-component
+    [isLoading]="isLoading()"
+    [paginationEditorialList]="computedPaginationGenreList()"
+    (onReload)="onReload()"
+    (onNextPage)="onNextPage()"
+    (onPrevPage)="onPrevPage()"
+    (onEdit)="onSelectedGenre($event)"
+    (onDelete)="onDeleteGenre($event)"
+    (onSearch)="onSearchFilter($event)"
+  />
+</section>
+
+<app-modal-action-component 
+  [isOpen]="isModalOpen()"
+  [isLoading]="isLoading()"
+  [textTitle]="'Eliminar Editorial'"
+  [textContent]="'¿Estás seguro que deseas eliminar la Editorial?'"
+  [textName]="selectedEditorialToDelete()?.name ?? 'Sin Nombre'"
+  (onModalClose)="onCloseModal()"
+  (onConfirm)="onConfirmModal()"
+/>

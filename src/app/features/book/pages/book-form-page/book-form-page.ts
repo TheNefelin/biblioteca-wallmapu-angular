@@ -121,7 +121,6 @@ export class BookFormPage {
     params: () => this.saveBookPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      this.successMessage.set(null);
 
       const request$ = 'id_book' in params && params.id_book > 0
         ? this.bookService.update(params.id_book, params)
@@ -149,11 +148,11 @@ export class BookFormPage {
     params: () => this.deleteAuthorStepPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      this.successMessage.set(null);
 
       return this.authorStepService.delete(params).pipe(
         map(res => {
           if (!res.isSuccess) throw new Error(res.message);
+          this.successMessage.set(res.message)
           return res.data;
         }),
         tap((res) => {
@@ -171,11 +170,11 @@ export class BookFormPage {
     params: () => this.deleteSubjectStepPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      this.successMessage.set(null);
 
       return this.subjectStepService.delete(params).pipe(
         map(res => {
           if (!res.isSuccess) throw new Error(res.message);
+          this.successMessage.set(res.message)
           return res.data;
         }),
         tap(() => {
@@ -211,7 +210,6 @@ export class BookFormPage {
     params: () => this.deleteEditionPayload(),
     stream: ({ params: id_edition }) => {
       if (!id_edition) return of(null);
-      this.successMessage.set(null);
       
       const request$ = this.editionService;
 

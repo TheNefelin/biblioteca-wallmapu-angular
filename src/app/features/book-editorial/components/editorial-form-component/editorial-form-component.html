@@ -1,0 +1,38 @@
+<section class="bg-my-light border-base-300 rounded-box border p-6 shadow-xl">
+  <section class="flex justify-between">
+    <div>
+      <h3 class="card-title text-xl text-my-purple">{{ actionText() }}</h3>
+      <div class="py-4">
+        <p class="text-sm text-base-content/60">ID: {{ formData().id_editorial }}</p>
+        <p class="text-sm text-base-content/60">{{ formData().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Creación</p>
+        <p class="text-sm text-base-content/60">{{ formData().updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Modificación</p>  
+      </div>
+    </div>
+    
+    <app-button-clear-component
+      (onClick)="clear()"
+    />
+  </section>
+
+  <form (submit)="submitForm($event)" class="grid grid-cols-1 gap-4">
+    <fieldset class="fieldset">
+       <label class="label font-semibold mb-1">Nombre de la Editorial:</label>
+      <input
+        #nameInput
+        type="text" class="input validator w-full" placeholder="Nombre..." required 
+        [disabled]="isLoading()"
+        [value]="formData().name ?? ''"
+        (input)="updateName($any($event.target).value, nameInput)"
+      />
+      <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
+    </fieldset> 
+    
+    <div class="justify-self-end">
+      @if (isLoading()) {
+        <app-loading-component/>
+      } @else {
+        <app-button-create-component [textBtn]="actionText()" />
+      }
+    </div>
+  </form>
+</section>

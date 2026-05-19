@@ -1,0 +1,62 @@
+<div class="bg-my-light rounded-md text-my-dark shadow-xl">
+  <!-- HEADER -->
+  <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
+    <div>
+      <h2 class="font-bold text-my-purple text-lg">
+        Gestión de Géneros
+      </h2>
+      <p class="text-sm text-my-dark/50">
+        Lista completa de todas las Editoriales
+      </p>
+    </div>
+
+    <div class="flex gap-2 items-center">
+      <app-search-input-component (onInputTextChange)="onSearch.emit($event)" />
+      <app-button-refresh-component (onClick)="onReload.emit()" />
+    </div>
+  </header>
+
+  <div class="overflow-x-auto">
+    @if(isLoading()) {
+      <div class="p-4 flex justify-center">
+        <app-loading-component/>
+      </div>
+    } @else {
+
+      <!-- TABLA -->
+      <table class="table w-full text-center py-4">
+        <thead class="uppercase">
+          <tr>
+            <th>Id</th>
+            <th>Editorial</th>
+            <th>Creación</th>
+            <th>Modificación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody class="[&>tr>td]:align-middle">
+          @for(item of paginationEditorialList()?.data; track item.id_editorial) {
+            <tr class="hover:bg-my-purple/10 text-my-purple">
+              <td>{{ item.id_editorial }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.created_at | date:'yyyy-MM-dd' }}</td>
+              <td>{{ item.updated_at | date:'yyyy-MM-dd' }}</td>
+              <td class="flex justify-center gap-2">
+                <app-button-delete-component (onClick)="onDelete.emit(item)" />
+                <app-button-edit-component (onClick)="onEdit.emit(item)" />
+              </td>
+            </tr>
+          }
+        </tbody>    
+      </table>
+    }
+  </div>
+
+  <app-pagination-component
+    [currentPage]="paginationEditorialList()?.page ?? 1"
+    [totalPages]="totalPages()"
+    (prevPage)="onPrevPage.emit()"
+    (nextPage)="onNextPage.emit()"
+  />
+</div>

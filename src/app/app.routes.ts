@@ -61,6 +61,10 @@ export const routes: Routes = [
         loadChildren: () => import('@features/book-genre/book-genre.routes').then(m => m.BOOK_GENRE_ROUTES),
       },
       {
+        path: 'editorial',
+        loadChildren: () => import('@features/book-editorial/book-editorial.routes').then(m => m.BOOK_EDITORIAL_ROUTES)
+      },
+      {
         path: 'book',
         loadChildren: () => import('@features/book/book.routes').then(m => m.BOOK_ROUTES),
       },

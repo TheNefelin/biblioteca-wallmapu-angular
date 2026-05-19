@@ -75,7 +75,7 @@ export class HomePage {
   private readonly editionService = inject(EditionService);
   protected readonly editionListComputed = computed<EditionDetailModel[]>(() => this.editionRX.value() ?? []);
   protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(12);
+  private readonly limit = signal<number>(20);
   private readonly search = signal<string>('');
   private readonly id_author = signal<number>(0);
   private readonly id_editorial  = signal<number>(0);

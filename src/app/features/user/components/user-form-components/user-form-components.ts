@@ -1,6 +1,6 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { DatePipe, JsonPipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { UserStatusSelectComponents } from "@features/user-status/components/user-status-select-components/user-status-select-components";
 import { UserRoleSelectComponents } from "@features/user-role/components/user-role-select-components/user-role-select-components";
 import { UserModel } from '@features/user/models/user-model';
@@ -10,7 +10,6 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 @Component({
   selector: 'app-user-form-components',
   imports: [
-    JsonPipe,
     DatePipe,
     NgOptimizedImage,
     MessageErrorComponent,

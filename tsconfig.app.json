@@ -4,14 +4,16 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
+    "rootDir": "./src",
     "types": [],
     "baseUrl": "./src",
+    //"ignoreDeprecations": "6.0",
     "paths": {
       "@core/*": ["app/core/*"],
       "@layouts/*": ["app/layouts/*"],
       "@shared/*": ["app/shared/*"],
       "@features/*": ["app/features/*"],
-      "@environments/*": ["environments/*"],
+      "@environments/*": ["environments/*"]
     }
   },
   "include": [

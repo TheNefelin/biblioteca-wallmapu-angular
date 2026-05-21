@@ -62,7 +62,25 @@ export class UserFormPage {
     return this.authUser()?.id_user ??  null
   });
   private readonly submitPayload = signal<UpdateUserModel | UpdateUserByAdminModel | null>(null);
-  protected readonly computedUser = computed<UserModel | null>(() => this.getUserRX.value() ?? null);
+  protected readonly computedUser = computed<UserModel | null>(() => {
+    const user = this.getUserRX.value()
+    if(!user) return null
+
+    return {
+      id_user: user.id_user,
+      email: user.email,
+      name: user.name,
+      lastname: user.lastname,
+      rut: user.rut,
+      address: user.address,
+      phone: user.phone,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      commune_id: user.commune_id,
+      user_role_id: user.user_role_id,
+      user_status_id: user.user_status_id,
+    }
+  });
 
   private readonly getUserRX = rxResource({
     params: () => this.getUserPayload(),
@@ -87,10 +105,9 @@ export class UserFormPage {
     stream: ({ params: payload }) => {
       if (!payload) return of(null);
   
-      const request$ = 
-      'user_role_id' in payload && payload.user_role_id > 0 && 'user_status_id' in payload && payload.user_status_id > 0
-      ? this.userService.update_admin(payload.id_user, payload)
-      : this.userService.update_user(payload.id_user, payload);
+      const request$ = this.isUser()
+      ? this.userService.update_user(payload.id_user, payload as UpdateUserModel)
+      : this.userService.update_admin(payload.id_user, payload as UpdateUserByAdminModel);
     
         return request$.pipe(
         map(response => {
@@ -107,7 +124,7 @@ export class UserFormPage {
   });
 
   protected onFormSubmit(form: UserModel): void {
-    const payload: UpdateUserModel | UpdateUserByAdminModel = this.authUser()?.role == Role.Admin
+    const payload: UpdateUserModel | UpdateUserByAdminModel = this.isUser()
     ? {
         id_user: form.id_user,
         name: form.name,
@@ -116,8 +133,6 @@ export class UserFormPage {
         address: form.address,
         phone: form.phone,
         commune_id: form.commune_id,
-        user_role_id: form.user_role_id,
-        user_status_id: form.user_status_id,
       }
     : {
         id_user: form.id_user,
@@ -127,6 +142,8 @@ export class UserFormPage {
         address: form.address,
         phone: form.phone,
         commune_id: form.commune_id,
+        user_role_id: form.user_role_id,
+        user_status_id: form.user_status_id,
       };
 
       this.submitPayload.set(payload);

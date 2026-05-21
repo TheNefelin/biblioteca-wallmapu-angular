@@ -34,13 +34,9 @@ export class UserFormComponents {
     const user = this.userModel();
     if (!user) return; 
 
-    console.log(user)
-
     this.formData.set({
       ...user
     });
-
-    console.log(this.formData())
   });
 
   /* -- Form Updates -------------------------------------- */
@@ -59,8 +55,9 @@ export class UserFormComponents {
   protected updateAddress(value: string, input: HTMLInputElement) { 
     this.updateField('address', value, input); 
   }
-  protected updateCommune(id: number | null) {
-    this.formData.update(data => ({ ...data, commune_id: id ?? 0 }));
+  protected updateCommune(id: number) {
+    if (!id) return;
+    this.formData.update(data => ({ ...data, commune_id: id }));
   }
 
   private updateField<K extends keyof UserModel>(key: K, value: string, input?: HTMLInputElement) {

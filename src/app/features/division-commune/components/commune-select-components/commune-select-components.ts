@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommuneService } from '@features/division-commune/services/commune-service';
 import { CommuneModel } from '@features/division-commune/models/commune-model';
-import { SelectItem, toSelectItemList } from '@shared/models/select-item.model';
-import { SearchableSelectComponent } from '@shared/components/searchable-select/searchable-select.component';
+import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
 import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-commune-select-components',
   standalone: true,
-  imports: [SearchableSelectComponent],
+  imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './commune-select-components.html',
 })
@@ -34,7 +33,7 @@ export class CommuneSelectComponents {
   protected readonly communeComputedList = computed<CommuneModel[]>(() => this.communeRX.value() ?? []);
 
   protected readonly communeSelectItems = computed<SelectItem[]>(() => {
-    return toSelectItemList(this.communeComputedList());
+    return this.communeComputedList().map(c => ({ id: c.id_commune, name: c.name }));
   });
 
   protected onSelectionChange(item: SelectItem): void {

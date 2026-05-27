@@ -5,6 +5,8 @@ import { EditorialSelectComponents } from "@features/book-editorial/components/e
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
+import { FormatSelectedListComponent } from "@features/format/components/format-selected-list-component/format-selected-list-component";
 
 @Component({
   selector: 'app-edition-form-components',
@@ -14,16 +16,19 @@ import { ButtonCreateComponent } from "@shared/components/button-create-componen
     LoadingComponent,
     EditorialSelectComponents,
     MessageErrorComponent,
-    ButtonCreateComponent
+    ButtonCreateComponent,
+    FormatSelectComponent,
+    FormatSelectedListComponent
 ],
   templateUrl: './edition-form-components.html',
 })
 export class EditionFormComponents {
   readonly isLoading = input<boolean>(false);
   readonly editionFormVM = input<EditionFormVM>();
-  readonly onFormSubmit = output<EditionFormVM>();
-  readonly onDeleteImage = output<number>();
-  readonly onNavigateToEditorial = output<void>();
+  protected readonly onFormSubmit = output<EditionFormVM>();
+  protected readonly onDeleteImage = output<number>();
+  protected readonly onNavigateToEditorial = output<void>();
+  protected readonly onNavigateToFormat = output<void>();
 
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly formData = signal<Partial<EditionFormVM>>({});
@@ -168,6 +173,10 @@ export class EditionFormComponents {
 
   protected navigateToEditorial(): void {
     this.onNavigateToEditorial.emit();
+  }
+
+  protected navigateToFormat(): void {
+    this.onNavigateToFormat.emit();
   }
 
   protected deleteImage(id_edition: number): void {

@@ -333,6 +333,10 @@ export class EditionFormPage {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITORIAL.ROOT]); 
   }
 
+  protected navigateToFormat(): void {
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.FORMAT.ROOT]); 
+  }
+
   private handleError(err: unknown): void {
     this.errorMessage.set(extractErrorMessage(err));
     this.successMessage.set(null);

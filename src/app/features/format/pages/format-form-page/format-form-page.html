@@ -1,0 +1,44 @@
+<app-section-header-component 
+  [title]="'Formato'"
+  [actionText]="'Volver Atras'"
+  (actionClicked)="navigateBack()"
+/>
+
+<section class="p-4 grid grid-cols-1 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-format-form-component
+      [isLoading]="isLoading()"
+      [format]="selectedFormat()"
+      (onClear)="onClear()"
+      (onFormSubmit)="onFormSubmit($event)" 
+    />
+  </div>  
+
+  @if (successMessage()) {
+    <app-message-success-component [message]="successMessage()" />  }
+   
+  @if (errorMessage()) {
+    <app-message-error-component [message]="errorMessage()" />
+  }
+
+  <app-format-list-component
+    [isLoading]="isLoading()"
+    [paginationFormatList]="computedPaginationFormatList()"
+    (onReload)="onReload()"
+    (onNextPage)="onNextPage()"
+    (onPrevPage)="onPrevPage()"
+    (onEdit)="onSelectedFormat($event)"
+    (onDelete)="onDeleteFormat($event)"
+    (onSearch)="onSearchFilter($event)"
+  />
+</section>
+
+<app-modal-action-component 
+  [isOpen]="isModalOpen()"
+  [isLoading]="isLoading()"
+  [textTitle]="'Eliminar Formato'"
+  [textContent]="'¿Estás seguro que deseas eliminar el Formato?'"
+  [textName]="selectedFormatToDelete()?.name ?? 'Sin Nombre'"
+  (onModalClose)="onCloseModal()"
+  (onConfirm)="onConfirmModal()"
+/>

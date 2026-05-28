@@ -253,8 +253,7 @@ export class BookFormPage {
       subject_ids: form.subjects.map(e => e.id_subject),
     }
 
-    const payload: CreateBookModel | UpdateBookModel =
-    basePayload.id_book === 0
+    const payload: CreateBookModel | UpdateBookModel = basePayload.id_book === 0
       ? (basePayload as CreateBookModel)
       : (basePayload as UpdateBookModel);
 

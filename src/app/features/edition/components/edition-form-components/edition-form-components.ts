@@ -7,6 +7,7 @@ import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
 import { FormatSelectedListComponent } from "@features/format/components/format-selected-list-component/format-selected-list-component";
+import { FormatModel } from '@features/format/models/format-model';
 
 @Component({
   selector: 'app-edition-form-components',
@@ -24,12 +25,13 @@ import { FormatSelectedListComponent } from "@features/format/components/format-
 })
 export class EditionFormComponents {
   readonly isLoading = input<boolean>(false);
-  readonly editionFormVM = input<EditionFormVM>();
+  readonly editionFormVM = input<EditionFormVM | null>();
   protected readonly onFormSubmit = output<EditionFormVM>();
   protected readonly onDeleteImage = output<number>();
   protected readonly onNavigateToEditorial = output<void>();
   protected readonly onNavigateToFormat = output<void>();
 
+  protected readonly formatClearTrigger = signal<number>(0);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly formData = signal<Partial<EditionFormVM>>({});
 
@@ -60,6 +62,33 @@ export class EditionFormComponents {
 
   protected updateEditorial(id_editorial: number) {
     this.formData.update(data => ({ ...data, editorial_id: id_editorial }));
+  }
+
+  protected addFormat(item: FormatModel | null): void {
+    if (!item) return;
+    if (!item.id_format || item.id_format=== 0) return;
+
+    this.formData.update(data => {
+      const exists = data.formats?.some(a => a.id_format === item.id_format);
+      if (exists) return data;
+    
+      return {
+        ...data,
+        formats: [...data.formats || [], item]
+      };
+    });
+
+    this.formatClearTrigger.update(e => e + 1);
+  }
+
+  protected deleteFormat(item: FormatModel): void {
+    console.log(item)
+    this.formData.update(data => {
+      return {
+        ...data,
+        formats: data.formats?.filter(s => s.id_format !== item.id_format) || []
+      };
+    });
   }
 
   private updateField<K extends keyof EditionFormVM>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {

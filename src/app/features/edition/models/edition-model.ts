@@ -1,3 +1,5 @@
+import { FormatModel } from "@features/format/models/format-model";
+
 export interface CreateEditionModel {
   edition: string;
   isbn: string;
@@ -6,13 +8,23 @@ export interface CreateEditionModel {
   cover_image: string | null;
   book_id: number;
   editorial_id: number;
+  format_ids?: number[];
 }
 
 export interface UpdateEditionModel extends CreateEditionModel {
   id_edition: number;
 }
 
-export interface EditionModel extends UpdateEditionModel {
+export interface EditionModel {
+  id_edition: number;
+  edition: string;
+  isbn: string;
+  publication_year: number;
+  pages: number;
+  cover_image: string | null;
+  book_id: number;
+  editorial_id: number;
+  formats: FormatModel[]
   created_at: string;
   updated_at: string;
 }

@@ -100,6 +100,7 @@ export class EditionFormPage {
       pages: edition?.pages ?? 0,
       cover_image: edition?.cover_image ?? null,
       editorial_id: edition?.editorial_id ?? 0,
+      formats: edition?.formats ?? [],
       created_at: edition?.created_at ?? '',
       updated_at: edition?.updated_at ?? '',
       file: null,
@@ -261,16 +262,20 @@ export class EditionFormPage {
   });
 
   protected formSubmit(form: EditionFormVM): void {
-    const payload: CreateEditionModel | UpdateEditionModel =
-    form.id_edition === 0
-      ? (form as CreateEditionModel)
-      : (form as UpdateEditionModel);
+    const basePayload = {
+      ...form,
+      format_ids: form.formats.map(e => e.id_format),
+    }
+
+    const payload: CreateEditionModel | UpdateEditionModel = basePayload.id_edition === 0
+      ? (basePayload as CreateEditionModel)
+      : (basePayload as UpdateEditionModel);
 
     this.addBaseEditionPayload.set(payload);
 
-    if (form.file) {
+    if (basePayload.file) {
       // subir imagen primero
-      this.uploadImagePayload.set(form.file);
+      this.uploadImagePayload.set(basePayload.file);
     } else {
       // guardar directamente
       this.addEditionPayload.set(payload);

@@ -1,3 +1,4 @@
+import { FormatModel } from "@features/format/models/format-model";
 
 export interface EditionFormVM {
   id_edition: number;
@@ -8,6 +9,7 @@ export interface EditionFormVM {
   cover_image: string | null;
   book_id: number;
   editorial_id: number;
+  formats: FormatModel[]
   created_at?: string;
   updated_at?: string;
   file: File | null;

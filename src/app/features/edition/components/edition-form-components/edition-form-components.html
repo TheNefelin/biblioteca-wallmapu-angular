@@ -54,6 +54,7 @@
       <fieldset class="fieldset">
         <label class="label font-semibold mb-1">Edición: (1ra Edición; 2da Edición... 5ta Edición)</label>
         <input
+          [disabled]="isLoading()"
           #titleEdition
           type="text" class="input validator w-full" placeholder="Edición del Libro" required 
           [value]="formData().edition"
@@ -65,6 +66,7 @@
       <fieldset class="fieldset">
         <label class="label font-semibold mb-1">ISBN</label>
         <input
+          [disabled]="isLoading()"
           #isbnInput
           type="text" class="input validator w-full uppercase" placeholder="Código isbn" required
           [value]="formData().isbn"
@@ -73,10 +75,11 @@
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
 
-      <div class="flex gap-4">
+      <div class="flex gap-x-4 flex-wrap">
         <fieldset class="fieldset">
           <label class="label font-semibold mb-1">Paginas</label>
           <input
+            [disabled]="isLoading()"
             #pagesInput
             type="text" class="input validator max-w-20" placeholder="Paginas" required
             [value]="formData().pages"
@@ -88,6 +91,7 @@
         <fieldset class="fieldset">
           <label class="label font-semibold mb-1">Año de publicación</label>
           <input
+            [disabled]="isLoading()"
             #yearInput
             type="text" class="input validator max-w-20" placeholder="Año" required
             [value]="formData().publication_year"
@@ -95,27 +99,35 @@
           />
           <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
         </fieldset>
-      </div>
 
-      <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Editorial</label>
-        <div class="flex gap-2">
-          <app-editorial-select-components [selectedId]="formData().editorial_id ?? 0" (newSelectedId)="updateEditorial($event)" /> 
-          <app-button-create-component (onClick)="navigateToEditorial()"/>
-        </div>
-      </fieldset>
+        <fieldset class="fieldset">
+          <label class="label font-semibold mb-1">Editorial</label>
+          <div class="flex gap-2">
+            <app-editorial-select-components 
+              [selectedId]="formData().editorial_id ?? 0" 
+              (newSelectedId)="updateEditorial($event)" 
+            /> 
+            <app-button-create-component (onClick)="navigateToEditorial()"/>
+          </div>
+        </fieldset>
+      </div>
 
       <div>
         <div class="divider text-base-content/40">Formatos</div>
         <label class="label font-semibold">Seleccionar Formato/s</label>
         <div class="my-2 flex gap-2">
-          <app-format-select-component/>
-          <!-- <app-author-select-components class="flex-1" (onNewSelectedAuthor)="addAuthor($event)" /> -->
+          <app-format-select-component 
+            class="flex-1" 
+            [clearTrigger]="formatClearTrigger()"
+            (onNewSelectedFormat)="addFormat($event)"
+          />
           <app-button-create-component (onClick)="navigateToFormat()"/>
         </div>
-        <app-format-selected-list-component />
-        <!-- <app-author-selected-list-components [authorList]="formData().authors" (onDelete)="deleteAuthor($event)" /> -->
-        </div>
+        <app-format-selected-list-component 
+          [formatList]="formData().formats" 
+          (onDelete)="deleteFormat($event)"
+        />
+      </div>
     </div>
 
     @if (isLoading()) {

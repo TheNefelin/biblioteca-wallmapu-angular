@@ -6,7 +6,7 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, EMPTY, finalize, map, of } from 'rxjs';
+import { catchError, firstValueFrom, map, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { extractErrorMessage } from '@core/utils/error-handler';
@@ -63,26 +63,23 @@ export class NotificationPage {
     },
   });
 
-  protected onFormSubmit(item: CreateNotificationByEmailModel): void {
+  protected async onFormSubmit(item: CreateNotificationByEmailModel): Promise<void> {
     this.isLoadingCreateNotfication.set(true);
 
-    this.notificationService.create(item)
-      .pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
+    try {
+      const response = await firstValueFrom(
+        this.notificationService.create(item)
+          .pipe(catchError(err => { this.handleError(err); return of(null as any); }))
+      );
 
-          this.successMessage.set(response.message)
-          this.cleanFormTrigger.update(e => e + 1);
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        finalize(() => this.isLoadingCreateNotfication.set(false))
-      )
-      .subscribe(() => {
+      if (response?.isSuccess) {
+        this.successMessage.set(response.message);
+        this.cleanFormTrigger.update(e => e + 1);
         this.getNotificationRX.reload();
-      });
+      }
+    } finally {
+      this.isLoadingCreateNotfication.set(false);
+    }
   }
 
   protected onFilterNotRead(is_read: boolean): void {

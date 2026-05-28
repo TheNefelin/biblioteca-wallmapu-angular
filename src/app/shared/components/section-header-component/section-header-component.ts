@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Component, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ButtonGobackComponent } from "../button-goback-component/button-goback-component";
 
 @Component({
@@ -20,19 +21,20 @@ export class SectionHeaderComponent {
   readonly searchPlaceholder = input<string | null>(); // Texto del placeholder
   readonly searchChange = output<string>();
 
-  private searchSubject = new Subject<string>();
+  private searchValue = signal<string>('');
+
+  private searchValue$ = toObservable(this.searchValue).pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    takeUntilDestroyed(),
+  );
+
   constructor() {
-    // Emitir solo después de 300ms sin cambios
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(value => {
-      this.searchChange.emit(value);
-    });
+    this.searchValue$.subscribe(value => this.searchChange.emit(value));
   }
 
   protected onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.searchSubject.next(value);  // ← Enviar al subject en lugar de emit directo
+    this.searchValue.set(value);
   }
 }

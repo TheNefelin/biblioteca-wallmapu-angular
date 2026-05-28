@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { catchError, of } from 'rxjs';
+import { catchError, firstValueFrom, of } from 'rxjs';
 import { environment } from '@environments/environment';
 import { NotificationService } from './notification-service';
 
@@ -80,19 +80,23 @@ export class NotificationBadgeState {
     return localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token') || '';
   }
 
-  loadUnreadCount(): void {
+  async loadUnreadCount(): Promise<void> {
     if (!this.getToken()) {
       this.disconnect();
       return;
     }
 
-    this.notificationService.getUnreadCount()
-      .pipe(catchError(() => of({ isSuccess: true, data: 0 } as any)))
-      .subscribe(response => {
-        if (response.isSuccess) {
-          this.unreadCount.set(response.data);
-        }
-      });
+    try {
+      const response = await firstValueFrom(
+        this.notificationService.getUnreadCount()
+          .pipe(catchError(() => of({ isSuccess: true, data: 0 } as any)))
+      );
+      if (response.isSuccess) {
+        this.unreadCount.set(response.data);
+      }
+    } catch {
+      // handled by catchError above
+    }
   }
 
   refresh(): void {

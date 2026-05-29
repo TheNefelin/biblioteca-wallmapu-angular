@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { rxResource } from '@angular/core/rxjs-interop';
 import { GenreModel } from '@features/book-genre/models/genre-model';
 import { GenreService } from '@features/book-genre/services/genre-service';
-import { SelectItem, toSelectItemList } from '@shared/models/select-item.model';
-import { SearchableSelectComponent } from '@shared/components/searchable-select/searchable-select.component';
+import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
 import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-genre-select-components',
   standalone: true,
-  imports: [SearchableSelectComponent],
+  imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './genre-select-components.html',
 })
@@ -37,7 +36,7 @@ export class GenreSelectComponents {
   protected readonly genreComputedList = computed<GenreModel[]>(() => this.genreRX.value() ?? []);
 
   protected readonly genreSelectItems = computed<SelectItem[]>(() => {
-    return toSelectItemList(this.genreComputedList());
+    return this.genreComputedList().map(g => ({ id: g.id_genre, name: g.name }));
   });
 
   protected onSelectionChange(item: SelectItem): void {

@@ -6,7 +6,7 @@ import { NotificationService } from '@features/notification/services/notificatio
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { catchError, EMPTY, finalize, map, of } from 'rxjs';
+import { catchError, firstValueFrom, map, of } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
@@ -59,36 +59,32 @@ export class UserDashboardPage {
     },
   });
 
-  protected onMarkAsRead(item: NotificationDetailModel): void {
+  protected async onMarkAsRead(item: NotificationDetailModel): Promise<void> {
     this.isLoadingMarkAsRead.set(true);
 
-    this.notificationService.markAsReadByUser(item.id_notification)
-      .pipe(
-        catchError(err => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        finalize(() => this.isLoadingMarkAsRead.set(false))
-      )
-      .subscribe(() => {
-        this.getNotificationRX.reload();
-      });
+    try {
+      await firstValueFrom(
+        this.notificationService.markAsReadByUser(item.id_notification)
+          .pipe(catchError(err => { this.handleError(err); return of(null); }))
+      );
+      this.getNotificationRX.reload();
+    } finally {
+      this.isLoadingMarkAsRead.set(false);
+    }
   }
 
-  protected onMarkAllAsRead(): void {
+  protected async onMarkAllAsRead(): Promise<void> {
     this.isLoadingMarkAllAsRead.set(true);
 
-    this.notificationService.markAllAsReadByUser()
-      .pipe(
-        catchError(err => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        finalize(() => this.isLoadingMarkAllAsRead.set(false))
-      )
-      .subscribe(() => {
-        this.getNotificationRX.reload();
-      });
+    try {
+      await firstValueFrom(
+        this.notificationService.markAllAsReadByUser()
+          .pipe(catchError(err => { this.handleError(err); return of(null); }))
+      );
+      this.getNotificationRX.reload();
+    } finally {
+      this.isLoadingMarkAllAsRead.set(false);
+    }
   }
 
   protected onFilterNotRead(is_read: boolean): void {

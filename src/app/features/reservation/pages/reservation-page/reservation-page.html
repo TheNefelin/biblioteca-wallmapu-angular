@@ -33,6 +33,28 @@
             </div>
           </div>
           -->
+
+          <div class="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
+            <table class="table text-sm text-my-dark/80 py-4">
+              <div class="divider text-base-content/40 max-w-7xl mx-auto m-0">Formato/s</div>
+              <tbody class="text-center">
+                @for (item of selectedEdition()?.formats; track item.id_format) {
+                  <tr><td class="p-0">{{ item.name }}</td></tr>
+                }
+                <tr></tr>
+              </tbody>
+            </table>
+
+            <table class="table text-sm text-my-dark/80 py-4">
+              <div class="divider text-base-content/40 max-w-7xl mx-auto m-0">Descriptor/es</div>
+              <tbody class="text-center">
+                @for (item of computedBook()?.subjects; track item.id_subject) {
+                  <tr><td class="p-0">{{ item.name }}</td></tr>
+                }
+                <tr></tr>
+              </tbody>
+            </table>  
+          </div>
   
           <p class="text-lg leading-relaxed my-6 text-my-dark/70">
             {{ computedBook()?.summary }}

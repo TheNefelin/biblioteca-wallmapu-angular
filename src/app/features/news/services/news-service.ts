@@ -2,8 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { NewsWithImagesModel } from '@features/news/models/news-with-images-model';
-import { NewsModel } from '@features/news/models/news-model';
-import { NewsFormModel } from '@features/news/models/news-form-model';
+import { CreateNewsModel, NewsModel, UpdateNewsModel } from '@features/news/models/news-model';
 import { Observable } from 'rxjs';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
@@ -32,14 +31,14 @@ export class NewsService {
     );
   }
 
-  create(item: NewsFormModel): Observable<ApiResponseModel<NewsModel>> {
-    return this.apiResponseService.create<ApiResponseModel<NewsModel>, NewsFormModel>(
+  create(item: CreateNewsModel): Observable<ApiResponseModel<NewsModel>> {
+    return this.apiResponseService.create<ApiResponseModel<NewsModel>, CreateNewsModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: NewsFormModel): Observable<ApiResponseModel<NewsModel>> {
-    return this.apiResponseService.update<ApiResponseModel<NewsModel>, NewsFormModel>(
+  update(id: number, item: UpdateNewsModel): Observable<ApiResponseModel<NewsModel>> {
+    return this.apiResponseService.update<ApiResponseModel<NewsModel>, UpdateNewsModel>(
       this.endpoint, id, item
     );
   }

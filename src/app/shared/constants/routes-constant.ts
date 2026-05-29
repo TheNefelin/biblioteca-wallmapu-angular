@@ -45,6 +45,9 @@ export const ROUTES_CONSTANTS = {
       EDITORIAL: {
         ROOT: '/admin/editorial'
       },
+      FORMAT: {
+        ROOT: '/admin/format'
+      },
       BOOK: {
         ROOT: '/admin/book/list',
         FORM: (bookId: number) => `/admin/book/form/${bookId}`,
@@ -57,7 +60,7 @@ export const ROUTES_CONSTANTS = {
       },
       NEWS: {
         ROOT: '/admin/news',
-        FORM: '/admin/news/form',
+        FORM: (newsId: number) => `/admin/news/form/${newsId}`,
       },
       USERS: {
         ROOT: '/admin/users',

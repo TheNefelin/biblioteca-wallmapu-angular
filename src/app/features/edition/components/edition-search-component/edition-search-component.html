@@ -30,8 +30,27 @@
         [clearTrigger]="clearTrigger()"
         (onNewSelectedAuthor)="authorSelected($event)"
       />
+    </div>   
+    
+    <div>
+      <label class="label mb-1 grid">
+        <span class="label-text text-sm font-semibold">Filtrar por Formato</span>
+      </label>
+      <app-format-select-component
+        [clearTrigger]="clearTrigger()" 
+        (onNewSelectedFormat)="formatSelected($event)"/>
     </div>
-   
+    
+    <div>
+      <label class="label mb-1 grid">
+        <span class="label-text text-sm font-semibold">Filtrar por descriptor</span>
+      </label>
+      <app-subject-select-components 
+        [clearTrigger]="clearTrigger()"
+        (onNewSelectedSubject)="subjectSelected($event)"
+      />
+    </div>
+
     <div>
       <label class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por editorial</span>
@@ -41,7 +60,7 @@
         (newSelectedId)="editorialSelected($event)"
       />
     </div>
-   
+
     <div>
       <label class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por género</span>
@@ -51,7 +70,7 @@
         (newSelectedId)="genreSelected($event)"
       />
     </div>
-  
+   
     <div class="ml-auto">
       <button 
         class="btn border-0 text-my-purple"

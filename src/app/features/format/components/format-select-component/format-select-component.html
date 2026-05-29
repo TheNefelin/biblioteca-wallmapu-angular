@@ -1,0 +1,10 @@
+<app-search-select-component
+  [items]="formatSelectItems()"
+  [selectedId]="selectedId()"
+  [isLoading]="isLoading()"
+  [disabled]="disabled()"
+  [placeholder]="'Buscar formato...'"
+  [clearTrigger]="clearTrigger()"
+  (selectionChange)="onSelectionChange($event)"
+  (cleared)="onCleared()"
+/>

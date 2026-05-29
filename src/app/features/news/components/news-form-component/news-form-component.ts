@@ -1,9 +1,9 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { NewsFormModel } from '@features/news/models/news-form-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { HttpErrorResponse } from '@angular/common/http';
 import { ImagePreviewVM } from '@features/news-gallery/models/image-preview.vm';
+import { NewsFormVM } from '@features/news/models/vm.news-form-model';
 
 @Component({
   selector: 'app-news-form-component',
@@ -16,26 +16,20 @@ import { ImagePreviewVM } from '@features/news-gallery/models/image-preview.vm';
 export class NewsFormComponent {
   // ─── IO
   readonly isLoading = input<boolean>(false);
-  readonly actionText = input<string>()
-  readonly newsFormModel = input<NewsFormModel>();
-  readonly onFormSubmit = output<NewsFormModel>();
+  readonly actionText = input.required<string>()
+  readonly newsFormVM = input<NewsFormVM | null>(null);
+  readonly onFormSubmit = output<NewsFormVM>();
   readonly onChangeImagesPreviewVMList = output<ImagePreviewVM[]>();
 
   // ─── ESTADO
   readonly errorMessage = signal<string | null>(null);
 
   // ─── FORM DATA
-  readonly formData = signal<Partial<NewsFormModel>>({});
+  readonly formData = signal<Partial<NewsFormVM>>({});
 
   private readonly syncFormEffect = effect(() => {
-    const news = this.newsFormModel();
-    if (!news) return; 
-
-    this.formData.set({
-      title: news.title ?? '',
-      subtitle: news.subtitle ?? '',
-      body: news.body ?? '',
-    });
+    const vm = this.newsFormVM();
+    if (vm)  this.formData.set(vm);
   });
 
   protected updateTitle(value: string, input: HTMLInputElement) { 
@@ -48,7 +42,7 @@ export class NewsFormComponent {
     this.updateField('body', value, input); 
   }
 
-  private updateField<K extends keyof NewsFormModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof NewsFormVM>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -60,7 +54,7 @@ export class NewsFormComponent {
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof NewsFormModel, value: string): string | null {
+  private sanitize(key: keyof NewsFormVM, value: string): string | null {
     switch (key){
       case 'title':
         if (value.length > 100) return null;
@@ -85,14 +79,14 @@ export class NewsFormComponent {
       return;
     }
 
-    const completeData = this.newsFormModel();
+    const completeData = this.newsFormVM();
     
     if (!completeData) {
       this.errorMessage.set('No se encontró la noticia original');
       return;
     }
 
-    const submitData: NewsFormModel = { 
+    const submitData: NewsFormVM = { 
       ...completeData,
       ...data 
     }
@@ -101,7 +95,7 @@ export class NewsFormComponent {
     this.onFormSubmit.emit(submitData);
   }
 
-  private validateFormOnSubmit(data: Partial<NewsFormModel>): string | null {
+  private validateFormOnSubmit(data: Partial<NewsFormVM>): string | null {
     if (!data.title?.trim())        return 'El titulo es requerido';
     if (data.title.length < 2)      return 'El titulo debe tener al menos 2 caracteres';
     if (data.title.length > 100)    return 'El titulo no debe superar los 100 caracteres';

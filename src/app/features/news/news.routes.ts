@@ -12,7 +12,7 @@ export const  NEWS_ROUTES: Routes = [
     data: { roles: [Role.Admin]},
   },
   {
-    path: 'form',
+    path: 'form/:id',
     component: NewsFormPage,
     canActivate: [authGuard],
     data: { roles: [Role.Admin]},

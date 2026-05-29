@@ -1,16 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal, ElementRef, viewChild } from '@angular/core';
-import { SelectItem } from '@shared/models/select-item.model';
+import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, input, output, signal, viewChild } from '@angular/core';
 import { LoadingComponent } from '@shared/components/loading-component/loading-component';
 
+export interface SelectItem {
+  id: number;
+  name: string;
+}
+
 @Component({
-  selector: 'app-searchable-select',
-  standalone: true,
+  selector: 'app-search-select-component',
   imports: [LoadingComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './searchable-select.component.html',
+  templateUrl: './search-select-component.html',
 })
-export class SearchableSelectComponent<T extends SelectItem = SelectItem> {
-  readonly items = input.required<T[]>();
+export class SearchSelectComponent {
+  readonly items = input.required<SelectItem[]>();
   readonly selectedId = input<number | undefined>(undefined);
   readonly isLoading = input<boolean>(false);
   readonly disabled = input<boolean>(false);
@@ -18,14 +21,14 @@ export class SearchableSelectComponent<T extends SelectItem = SelectItem> {
   readonly placeholderWhenSelected = input<string | null>(null);
   readonly clearTrigger = input<number>(0);
 
-  readonly selectionChange = output<T>();
+  readonly selectionChange = output<SelectItem>();
   readonly cleared = output<void>();
 
   readonly inputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   protected readonly searchText = signal('');
   protected readonly isOpen = signal(false);
-  protected readonly selectedItemInternal = signal<T | null>(null);
+  protected readonly selectedItemInternal = signal<SelectItem | null>(null);
 
   private readonly clearEffect = effect(() => {
     this.clearTrigger();
@@ -81,7 +84,7 @@ export class SearchableSelectComponent<T extends SelectItem = SelectItem> {
     }
   }
 
-  protected select(item: T, event: MouseEvent): void {
+  protected select(item: SelectItem, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 

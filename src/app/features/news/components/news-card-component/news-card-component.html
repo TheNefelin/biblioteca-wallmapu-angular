@@ -3,8 +3,8 @@
     <div class="relative overflow-hidden aspect-video">
       <img 
         placeholder="/images/layout.webp"
-        [ngSrc]="newsWithImages().images[0]?.url || '/images/layout.webp'"
-        [alt]="newsWithImages().images[0].alt || 'Sin Imagen'"
+        [ngSrc]="newsWithImages().images[0]?.url ?? 'images/layout.webp'"
+        [alt]="newsWithImages().images[0]?.alt ?? 'Sin Imagen'"
         fill
         class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
     </div>

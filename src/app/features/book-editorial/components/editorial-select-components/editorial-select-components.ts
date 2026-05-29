@@ -2,14 +2,15 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EditorialModel } from '@features/book-editorial/models/editorial-model';
 import { EditorialService } from '@features/book-editorial/services/editorial-service';
-import { SelectItem, toSelectItemList } from '@shared/models/select-item.model';
-import { SearchableSelectComponent } from '@shared/components/searchable-select/searchable-select.component';
+import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
 import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-editorial-select-components',
   standalone: true,
-  imports: [SearchableSelectComponent],
+  imports: [
+    SearchSelectComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './editorial-select-components.html',
 })
@@ -37,7 +38,7 @@ export class EditorialSelectComponents {
   protected readonly editorialComputedList = computed<EditorialModel[]>(() => this.editorialRX.value() ?? []);
 
   protected readonly editorialSelectItems = computed<SelectItem[]>(() => {
-    return toSelectItemList(this.editorialComputedList());
+    return (this.editorialComputedList() ?? []).map(e => ({ id: e.id_editorial, name: e.name }));
   });
 
   protected onSelectionChange(item: SelectItem): void {

@@ -1,8 +1,10 @@
-<app-searchable-select
+<app-search-select-component
   [items]="subjectSelectItems()"
   [selectedId]="selectedId()"
   [isLoading]="isLoading()"
   [disabled]="disabled()"
-  [placeholder]="'Buscar materia...'"
+  [placeholder]="'Buscar descriptor...'"
+  [clearTrigger]="clearTrigger()"
   (selectionChange)="onSelectionChange($event)"
+  (cleared)="onCleared()"
 />

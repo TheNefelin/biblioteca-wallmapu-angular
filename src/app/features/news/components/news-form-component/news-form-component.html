@@ -10,7 +10,8 @@
       <input 
         #titleInput
         type="text" class="input validator w-full" placeholder="Título" required 
-        [value]="formData().title"
+        [disabled]="isLoading()"
+        [value]="formData().title ?? ''"
         (input)="updateTitle($any($event.target).value, titleInput)"
       />
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -22,7 +23,8 @@
       <input
         #subtitleInput
         type="text" class="input validator w-full" placeholder="Subtítulo" required
-        [value]="formData().subtitle"
+        [disabled]="isLoading()"
+        [value]="formData().subtitle ?? ''"
         (input)="updateSubtitle($any($event.target).value, subtitleInput)"
       />
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -34,7 +36,8 @@
       <textarea 
         #bodyInput
         class="textarea validator mt-2 w-full min-h-56" placeholder="Descripción" required
-        [value]="formData().body"
+        [disabled]="isLoading()"
+        [value]="formData().body ?? ''"
         (input)="updateBody($any($event.target).value, bodyInput)"
       ></textarea>
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -47,6 +50,7 @@
         <span class="font-bold text-">Elegir Imagenes</span>
         <input 
           type="file" class="hidden" accept="image/*" multiple 
+          [disabled]="isLoading()"
           (change)="onChangeImages($event)">
       </label>
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>

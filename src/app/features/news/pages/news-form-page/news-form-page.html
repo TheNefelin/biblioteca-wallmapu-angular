@@ -4,37 +4,34 @@
   (actionClicked)="routeGoBack()"
 />
 
-@if (errorMessage()) {
-  <section class="max-w-4xl mx-auto px-4 pt-4">
-    <app-message-error-component 
-      [message]="errorMessage()"
-    />
-  </section>  
-}
-
 <section class="flex max-w-4xl flex-col gap-4 mx-auto p-4">
   <app-news-form-component 
     [isLoading]="isLoading()"
     [actionText]="actionText()"
-    [newsFormModel]="newsFormModel()"
+    [newsFormVM]="vmNewsForm()"
     (onFormSubmit)="onFormSubmit($event)"
     (onChangeImagesPreviewVMList)="onChangeImagesPreviewVMList($event)"
   />
 </section>
 
+@if (successMessage()) {
+  <section class="max-w-4xl mx-auto px-4">
+    <app-message-success-component [message]="successMessage()" />
+  </section>  
+}
+
 @if (errorMessage()) {
   <section class="max-w-4xl mx-auto px-4">
-    <app-message-error-component 
-      [message]="errorMessage()"
-    />
+    <app-message-error-component [message]="errorMessage()" />
   </section>  
 }
 
 <section class="flex max-w-4xl mx-auto p-4">
   <app-image-list-component 
     [isLoading]="isLoading()"
-    [imagesPreviewVMList]="imagesPreviewVMList()"
+    [imagesPreviewVMList]="imagePreviewList()"
     (updateImagesPreviewVMList)="onUpdateImagesPreviewVMList($event)"
     (deleteImagesPreviewVM)="onDeleteImagesPreviewVM($event)"
   />
 </section>
+

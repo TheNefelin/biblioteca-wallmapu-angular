@@ -293,13 +293,13 @@ ng build
 ng lint
 
 # Generar componente
-ng g c feature/name/component-name
+ng g c features/name/component-name
 
 # Generar servicio
-ng g s feature/name/service-name
+ng g s features/name/service-name
 
 # Generar página
-ng g c feature/name/pages/page-name
+ng g c features/name/pages/page-name
 ```
 
 ---

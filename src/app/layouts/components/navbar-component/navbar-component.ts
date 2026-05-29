@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
-import { fromEvent } from 'rxjs';
 import { AuthButtonComponent } from "@features/auth/components/auth-button-component/auth-button-component";
 import { NgOptimizedImage } from '@angular/common';
 
@@ -22,13 +20,9 @@ export class NavbarComponent {
   ROUTES_PAGES = ROUTES_CONSTANTS.PAGES;
   ROUTES_HOME = ROUTES_CONSTANTS.HOME;
 
-  constructor() {
-    // ✅ Scroll listener con cleanup automático usando takeUntilDestroyed
-    fromEvent(window, 'scroll', { passive: true })
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.isScrolled.set(window.scrollY > 10);
-      });
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.isScrolled.set(window.scrollY > 10);
   }
 
   handleLogoClick(event: Event): void {

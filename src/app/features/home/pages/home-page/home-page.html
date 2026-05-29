@@ -26,11 +26,12 @@
     [searchPlaceholder]="'Buscar Título, Descripción, ISBN...'"
     (onSearchChange)="searchText($event)"
     (onAuthorIdSelected)="onAuthorIdSelected($event)"
+    (onFormatIdSelected)="onFormatIdSelected($event)"
     (onEditorialIdSelected)="onEditorialIdSelected($event)"
     (onGenreIdSelected)="onGenreIdSelected($event)"
+    (onSubjectIdSelected)="onSubjectIdSelected($event)"
   />
 </div>
-
 
 <app-edition-card-list-component
   [isLoading]="isLoading()"

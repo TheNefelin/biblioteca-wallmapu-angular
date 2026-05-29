@@ -1,4 +1,4 @@
-@if (isLoading() || items().length === 0) {
+@if (isLoading()) {
   <app-loading-component />
 } @else {
   <div class="dropdown w-full" [class.dropdown-open]="isOpen()">

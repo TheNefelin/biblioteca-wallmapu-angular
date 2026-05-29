@@ -22,7 +22,6 @@ import { MessageSuccessComponent } from "@shared/components/message-success-comp
 import { EditionDetailModel } from '@features/edition/models/edition-model';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 import { extractErrorMessage } from '@core/utils/error-handler';
-import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-book-form-page',
@@ -254,8 +253,7 @@ export class BookFormPage {
       subject_ids: form.subjects.map(e => e.id_subject),
     }
 
-    const payload: CreateBookModel | UpdateBookModel =
-    basePayload.id_book === 0
+    const payload: CreateBookModel | UpdateBookModel = basePayload.id_book === 0
       ? (basePayload as CreateBookModel)
       : (basePayload as UpdateBookModel);
 

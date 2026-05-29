@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { AuthorService } from '@features/book-author/services/author-service';
-import { SelectItem, toSelectItemList } from '@shared/models/select-item.model';
-import { SearchableSelectComponent } from '@shared/components/searchable-select/searchable-select.component';
+import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
 import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-author-select-components',
   standalone: true,
-  imports: [SearchableSelectComponent],
+  imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './author-select-components.html',
 })
@@ -37,7 +36,7 @@ export class AuthorSelectComponents {
   protected readonly authorComputedList = computed<AuthorModel[]>(() => this.authorRX.value() ?? []);
 
   protected readonly authorSelectItems = computed<SelectItem[]>(() => {
-    return toSelectItemList(this.authorComputedList());
+    return this.authorComputedList().map(e => ({ id: e.id_author, name: e.name }));
   });
 
   protected onSelectionChange(item: SelectItem): void {

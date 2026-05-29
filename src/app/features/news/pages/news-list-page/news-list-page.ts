@@ -133,13 +133,11 @@ export class NewsListPage {
   }
 
   onCreate(){
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.NEWS.FORM]);
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.NEWS.FORM(0)]);
   }
 
   onEdit(newsWithImagesModel: NewsWithImagesModel){
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.NEWS.FORM], 
-      { state : { newsWithImagesModel: newsWithImagesModel } }
-    );
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.NEWS.FORM(newsWithImagesModel.id_news)]);
   }
 
   onDelete(newsWithImagesModel: NewsWithImagesModel) {

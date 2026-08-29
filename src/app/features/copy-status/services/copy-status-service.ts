@@ -22,7 +22,7 @@ export class CopyStatusService {
     }
 
     return this.apiResponseService.getAll<ApiResponseModel<CopyStatusModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     ).pipe(
       tap(response => {
         if (response.isSuccess) {

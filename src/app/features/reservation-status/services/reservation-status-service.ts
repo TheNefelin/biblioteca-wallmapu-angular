@@ -22,7 +22,7 @@ export class ReservationStatusService {
     }
 
     return this.apiResponseService.getAll<ApiResponseModel<ReservationStatusModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     ).pipe(
       tap(response => {
         if (response.isSuccess) {

@@ -26,7 +26,7 @@ export class GenreService {
   
   getAll(): Observable<ApiResponseModel<GenreModel[]>> {
     return this.apiResponseService.getAll<ApiResponseModel<GenreModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     );
   }
 

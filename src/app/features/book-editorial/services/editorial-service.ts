@@ -26,7 +26,7 @@ export class EditorialService {
   
   getAll(): Observable<ApiResponseModel<EditorialModel[]>> {
     return this.apiResponseService.getAll<ApiResponseModel<EditorialModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     );
   }
 

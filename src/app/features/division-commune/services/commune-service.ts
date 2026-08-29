@@ -13,7 +13,7 @@ export class CommuneService {
 
   getAll(): Observable<ApiResponseModel<CommuneModel[]>> {
     return this.apiResponseService.getAll<ApiResponseModel<CommuneModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     );
   }
 }

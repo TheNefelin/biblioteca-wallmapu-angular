@@ -26,7 +26,7 @@ export class SubjectService {
   
   getAll(): Observable<ApiResponseModel<SubjectModel[]>> {
     return this.apiResponseService.getAll<ApiResponseModel<SubjectModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     );
   }
 

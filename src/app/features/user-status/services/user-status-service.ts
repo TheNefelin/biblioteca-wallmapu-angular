@@ -22,7 +22,7 @@ export class UserStatusService {
     }
 
     return this.apiResponseService.getAll<ApiResponseModel<UserStatusModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     ).pipe(
       tap(response => {
         if (response.isSuccess) {

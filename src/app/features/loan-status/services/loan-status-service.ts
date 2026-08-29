@@ -22,7 +22,7 @@ export class LoanStatusService {
     }
 
     return this.apiResponseService.getAll<ApiResponseModel<LoanStatusModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     ).pipe(
       tap(response => {
         if (response.isSuccess) {

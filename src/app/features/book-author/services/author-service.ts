@@ -26,7 +26,7 @@ export class AuthorService {
   
   getAll(): Observable<ApiResponseModel<AuthorModel[]>> {
     return this.apiResponseService.getAll<ApiResponseModel<AuthorModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     );
   }
 

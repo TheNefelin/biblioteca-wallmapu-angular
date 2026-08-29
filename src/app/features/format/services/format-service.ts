@@ -26,7 +26,7 @@ export class FormatService {
   
   getAll(): Observable<ApiResponseModel<FormatModel[]>> {
     return this.apiResponseService.getAll<ApiResponseModel<FormatModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     );
   }
 

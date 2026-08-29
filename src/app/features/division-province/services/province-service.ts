@@ -22,7 +22,7 @@ export class ProvinceService {
     }
 
     return this.apiResponseService.getAll<ApiResponseModel<ProvinceModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     ).pipe(
       tap(response => {
         if (response.isSuccess) {

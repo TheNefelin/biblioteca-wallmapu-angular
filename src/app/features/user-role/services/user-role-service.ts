@@ -22,7 +22,7 @@ export class UserRoleService {
     }
 
     return this.apiResponseService.getAll<ApiResponseModel<UserRoleModel[]>>(
-      `${this.endpoint}`
+      `${this.endpoint}/`
     ).pipe(
       tap(response => {
         if (response.isSuccess) {

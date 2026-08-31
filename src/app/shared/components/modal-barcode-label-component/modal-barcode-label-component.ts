@@ -47,7 +47,7 @@ export class ModalBarcodeLabelComponent {
     return c;
   }
 
-  private newCanvas(w: number, h: number, bgColor: string = '#FFFFFF'): CanvasRenderingContext2D | null {
+  private newCanvas(w: number, h: number, bgColor = '#FFFFFF'): CanvasRenderingContext2D | null {
     const c = document.createElement('canvas');
     c.width = w;
     c.height = h;

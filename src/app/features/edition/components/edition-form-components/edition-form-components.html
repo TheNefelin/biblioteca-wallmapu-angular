@@ -107,7 +107,7 @@
               [selectedId]="formData().editorial_id ?? 0" 
               (newSelectedId)="updateEditorial($event)" 
             /> 
-            <app-button-create-component (onClick)="navigateToEditorial()"/>
+            <app-button-create-component (clicked)="navigateToEditorial()"/>
           </div>
         </fieldset>
       </div>
@@ -121,7 +121,7 @@
             [clearTrigger]="formatClearTrigger()"
             (onNewSelectedFormat)="addFormat($event)"
           />
-          <app-button-create-component (onClick)="navigateToFormat()"/>
+          <app-button-create-component (clicked)="navigateToFormat()"/>
         </div>
         <app-format-selected-list-component 
           [formatList]="formData().formats" 

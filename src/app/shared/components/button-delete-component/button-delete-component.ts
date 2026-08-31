@@ -6,5 +6,5 @@ import { Component, output } from '@angular/core';
   templateUrl: './button-delete-component.html',
 })
 export class ButtonDeleteComponent {
-  protected readonly onClick = output<void>();
+  protected readonly clicked = output<void>();
 }

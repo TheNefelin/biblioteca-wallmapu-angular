@@ -6,5 +6,5 @@ import { Component, output } from '@angular/core';
   templateUrl: './button-refresh-component.html',
 })
 export class ButtonRefreshComponent {
-  protected readonly onClick = output<void>();
+  protected readonly clicked = output<void>();
 }

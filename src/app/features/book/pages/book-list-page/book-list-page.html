@@ -8,12 +8,12 @@
 
     <div class="flex justify-between m-4">
       <app-button-refresh-component 
-        (onClick)="refreshList()"
+        (clicked)="refreshList()"
       />
     
       <app-button-create-component 
         [textBtn]="'Crear Libro'" 
-        (onClick)="onCreate()"
+        (clicked)="onCreate()"
       />
     </div>
 

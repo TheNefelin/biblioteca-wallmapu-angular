@@ -19,7 +19,7 @@
         />
 
         <app-button-refresh-component 
-          (onClick)="onReload.emit()"
+          (clicked)="onReload.emit()"
         />
       </div>
      </header>
@@ -70,7 +70,7 @@
 
               <td class="whitespace-nowrap p-1">
                 @if (item.reservation_status_id === 1) {
-                  <app-button-delete-component (onClick)="onCancelReservation.emit(item.id_reservation)" />
+                  <app-button-delete-component (clicked)="onCancelReservation.emit(item.id_reservation)" />
                 }
               </td>
             </tr>

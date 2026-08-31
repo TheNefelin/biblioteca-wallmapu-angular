@@ -10,13 +10,13 @@
     </div>
     
     <app-button-clear-component
-      (onClick)="clear()"
+      (clicked)="clear()"
     />
   </section>
 
   <form (submit)="submitForm($event)" class="grid grid-cols-1 gap-4">
     <fieldset class="fieldset">
-       <label class="label font-semibold mb-1">Nombre del Formato:</label>
+      <label class="label font-semibold mb-1">Nombre del Formato:</label>
       <input
         #nameInput
         type="text" class="input validator w-full" placeholder="Nombre..." required 

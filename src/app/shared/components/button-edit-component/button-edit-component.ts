@@ -7,5 +7,5 @@ import { Component, input, output } from '@angular/core';
 })
 export class ButtonEditComponent {
   readonly textBtn = input<string>("")
-  protected readonly onClick = output<void>();
+  protected readonly clicked = output<void>();
 }

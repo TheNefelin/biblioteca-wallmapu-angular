@@ -18,7 +18,7 @@
         <label class="label font-semibold">Género</label>
         <div class="flex gap-2">
           <app-genre-select-components class="flex-1" [selectedId]="formData().genre_id" (newSelectedId)="updateGenre($event)" />
-          <app-button-create-component (onClick)="navigateToGenre()"/>
+          <app-button-create-component (clicked)="navigateToGenre()"/>
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
@@ -50,7 +50,7 @@
       <label class="label font-semibold">Seleccionar Autor/es</label>
       <div class="my-2 flex gap-2">
         <app-author-select-components class="flex-1" (onNewSelectedAuthor)="addAuthor($event)" />
-        <app-button-create-component (onClick)="navigateToAuthor()"/>
+        <app-button-create-component (clicked)="navigateToAuthor()"/>
       </div>
       <app-author-selected-list-components [authorList]="formData().authors" (onDelete)="deleteAuthor($event)" />
     </div>
@@ -60,7 +60,7 @@
       <label class="label font-semibold">Descriptor/es</label>
       <div class="my-2 flex gap-2">
         <app-subject-select-components class="flex-1" (onNewSelectedSubject)="addSubject($event)" />
-        <app-button-create-component (onClick)="navigateToSubject()"/>
+        <app-button-create-component (clicked)="navigateToSubject()"/>
       </div>
       <app-subject-selected-list-components [subjectList]="formData().subjects" (onDelete)="deleteSubject($event)" />
     </div>

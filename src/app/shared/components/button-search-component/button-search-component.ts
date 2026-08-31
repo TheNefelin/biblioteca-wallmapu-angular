@@ -6,5 +6,5 @@ import { Component, output } from '@angular/core';
   templateUrl: './button-search-component.html',
 })
 export class ButtonSearchComponent {
-  protected readonly onClick = output<void>();
+  protected readonly clicked = output<void>();
 }

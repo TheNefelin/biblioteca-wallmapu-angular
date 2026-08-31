@@ -1,11 +1,11 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { ErrorModalService } from '@core/services/error-modal-service';
+import { ModalErrorService } from '@core/services/modal-error-service';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { catchError, throwError } from 'rxjs';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const modalService = inject(ErrorModalService);
+  const modalService = inject(ModalErrorService);
   const authStore = inject(AuthStore);
 
   return next(req).pipe(

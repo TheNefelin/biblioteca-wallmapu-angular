@@ -33,8 +33,8 @@ src/app/
 │   │   ├── not-found-page/
 │   │   └── book-not-found-page/
 │   ├── services/                # Servicios core
-│   │   ├── api-response-service.ts
-│   │   └── error-modal-service.ts
+│   │   ├── api-service.ts
+│   │   └── modal-error-service.ts
 │   └── utils/                  # Utilidades
 │       └── error-handler.ts
 │

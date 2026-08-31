@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { RegionModel } from '@features/division-region/models/region-model';
 import { Observable, tap } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class RegionService {
-  private apiResponseService = inject(ApiResponseService)
+  private ApiService = inject(ApiService)
   private readonly endpoint = 'division-region';
   private cache: { data: ApiResponseModel<RegionModel[]>; timestamp: number } | null = null;
   private readonly CACHE_TTL = 5 * 60 * 1000;
@@ -21,7 +21,7 @@ export class RegionService {
       });
     }
 
-    return this.apiResponseService.getAll<ApiResponseModel<RegionModel[]>>(
+    return this.ApiService.getAll<ApiResponseModel<RegionModel[]>>(
       `${this.endpoint}/`
     ).pipe(
       tap(response => {

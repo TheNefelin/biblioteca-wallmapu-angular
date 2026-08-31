@@ -7,7 +7,7 @@ import { ApiAuthGoogleRequest } from '@features/auth/models/api-auth-google-requ
 import { ApiAuthGoogleResponse } from '@features/auth/models/api-auth-google-response';
 import { firstValueFrom } from 'rxjs';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
-import { ErrorModalService } from '@core/services/error-modal-service';
+import { ModalErrorService } from '@core/services/modal-error-service';
 import { Role } from '@shared/constants/roles-enum';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class AuthStore {
   private router = inject(Router);
   private googleAuth = inject(AuthGoogleService);
   private apiAuth = inject(AuthService);
-  private errorModal = inject(ErrorModalService);
+  private errorModal = inject(ModalErrorService);
   
   // 🔹 Signals internas
   private currentUser = signal<AuthUser | null>(this.getStoredUser());

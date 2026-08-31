@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class ErrorModalService {
+export class ModalErrorService {
   private _isOpen = signal(false);
   private _statusCode = signal<number | null>(null);
   private _message = signal<string>('');

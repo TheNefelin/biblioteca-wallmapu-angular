@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
 import { CreateGenreModel, GenreModel, UpdateGenreModel } from '@features/book-genre/models/genre-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
@@ -10,7 +10,7 @@ import { PaginationResponseModel } from '@core/models/pagination-response-model'
   providedIn: 'root',
 })
 export class GenreService {
-  private apiResponseService = inject(ApiResponseService)
+  private ApiService = inject(ApiService)
   private readonly endpoint = 'genre';
 
   getAllPagination(params: PaginationRequestModel<null>): Observable<ApiResponseModel<PaginationResponseModel<GenreModel[]>>> {
@@ -19,31 +19,31 @@ export class GenreService {
     if (params.search && params.search.trim() != '')
       path = `${path}&search=${params.search}`
    
-    return this.apiResponseService.getAll<ApiResponseModel<PaginationResponseModel<GenreModel[]>>>(
+    return this.ApiService.getAll<ApiResponseModel<PaginationResponseModel<GenreModel[]>>>(
       `${this.endpoint}/pagination${path}`
     );
   }
   
   getAll(): Observable<ApiResponseModel<GenreModel[]>> {
-    return this.apiResponseService.getAll<ApiResponseModel<GenreModel[]>>(
+    return this.ApiService.getAll<ApiResponseModel<GenreModel[]>>(
       `${this.endpoint}/`
     );
   }
 
   create(item: CreateGenreModel): Observable<ApiResponseModel<GenreModel>> {
-    return this.apiResponseService.create<ApiResponseModel<GenreModel>, CreateGenreModel>(
+    return this.ApiService.create<ApiResponseModel<GenreModel>, CreateGenreModel>(
       this.endpoint, item
     );
   }
 
   update(id: number, item: UpdateGenreModel): Observable<ApiResponseModel<GenreModel>> {
-    return this.apiResponseService.update<ApiResponseModel<GenreModel>, UpdateGenreModel>(
+    return this.ApiService.update<ApiResponseModel<GenreModel>, UpdateGenreModel>(
       this.endpoint, id, item
     );
   }
 
   delete(id: number): Observable<ApiResponseModel<boolean>> {
-    return this.apiResponseService.delete<ApiResponseModel<boolean>>(
+    return this.ApiService.delete<ApiResponseModel<boolean>>(
       this.endpoint, id
     );
   }  

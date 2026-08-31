@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { UserRoleModel } from '@features/user-role/models/user-role-model';
 import { Observable, tap } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class UserRoleService {
-  private apiResponseService = inject(ApiResponseService)
+  private ApiService = inject(ApiService)
   private readonly endpoint = 'user-role';
   private cache: { data: ApiResponseModel<UserRoleModel[]>; timestamp: number } | null = null;
   private readonly CACHE_TTL = 5 * 60 * 1000;
@@ -21,7 +21,7 @@ export class UserRoleService {
       });
     }
 
-    return this.apiResponseService.getAll<ApiResponseModel<UserRoleModel[]>>(
+    return this.ApiService.getAll<ApiResponseModel<UserRoleModel[]>>(
       `${this.endpoint}/`
     ).pipe(
       tap(response => {

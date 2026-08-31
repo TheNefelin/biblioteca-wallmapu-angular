@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { CopyStatusModel } from '@features/copy-status/models/copy-status-model';
 import { Observable, tap } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class CopyStatusService {
-  private apiResponseService = inject(ApiResponseService)
+  private ApiService = inject(ApiService)
   private readonly endpoint = 'copy-status';
   private cache: { data: ApiResponseModel<CopyStatusModel[]>; timestamp: number } | null = null;
   private readonly CACHE_TTL = 5 * 60 * 1000;
@@ -21,7 +21,7 @@ export class CopyStatusService {
       });
     }
 
-    return this.apiResponseService.getAll<ApiResponseModel<CopyStatusModel[]>>(
+    return this.ApiService.getAll<ApiResponseModel<CopyStatusModel[]>>(
       `${this.endpoint}/`
     ).pipe(
       tap(response => {

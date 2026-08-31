@@ -1,5 +1,5 @@
-import { Component, inject, input, output } from '@angular/core';
-import { ErrorModalService } from '@core/services/error-modal-service';
+import { Component, inject } from '@angular/core';
+import { ModalErrorService } from '@core/services/modal-error-service';
 
 @Component({
   selector: 'app-modal-error-component',
@@ -7,7 +7,7 @@ import { ErrorModalService } from '@core/services/error-modal-service';
   templateUrl: './modal-error-component.html',
 })
 export class ModalErrorComponent {
-  private modal = inject(ErrorModalService);
+  private modal = inject(ModalErrorService);
 
   isOpen = this.modal.isOpen;
   statusCode = this.modal.statusCode;

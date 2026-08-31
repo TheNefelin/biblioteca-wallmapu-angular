@@ -1,0 +1,19 @@
+@if (dialog(); as dlg) {
+  <dialog class="modal modal-open modal-bottom sm:modal-middle">
+    <div class="modal-box bg-my-light">
+      <h3 class="text-lg font-bold text-my-pink">{{ dlg.title }}</h3>
+      <p class="py-4 text-my-purple text-lg">{{ dlg.message }}</p>
+      <div class="modal-action flex items-center gap-2">
+        <app-button-component
+          [icon]="'save'"
+          [textBtn]="'Confirmar'"
+          (clicked)="confirm()" />
+
+        <app-button-component
+          [icon]="'cancel'"
+          [textBtn]="'Cancelar'"
+          (clicked)="closed()" />
+      </div>
+    </div>
+  </dialog>
+}

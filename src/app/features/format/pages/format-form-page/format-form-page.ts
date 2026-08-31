@@ -1,137 +1,70 @@
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { catchError, map, of } from 'rxjs';
 import { FormatFormComponent } from '@features/format/components/format-form-component/format-form-component';
-import { FormatListComponent } from '@features/format/components/format-list-component/format-list-component';
 import { CreateFormatModel, FormatModel, UpdateFormatModel } from '@features/format/models/format-model';
 import { FormatService } from '@features/format/services/format-service';
-import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { catchError, finalize, map, of, tap } from 'rxjs';
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
-import { extractErrorMessage } from '@core/utils/error-handler';
+import { MutationService } from '@core/services/mutation-service';
+import { ModalConfirmService } from '@core/services/modal-confirm-service';
+import { CrudPage } from '@shared/base/crud-page';
+import { ButtonComponent } from '@shared/components/button-component/button-component';
+import { LoadingComponent } from '@shared/components/loading-component/loading-component';
+import { PaginationComponent } from '@shared/components/pagination-component/pagination-component';
+import { SearchInputComponent } from '@shared/components/search-input-component/search-input-component';
+import { SectionHeaderComponent } from '@shared/components/section-header-component/section-header-component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-format-form-page',
   imports: [
+    DatePipe,
     SectionHeaderComponent,
     FormatFormComponent,
-    FormatListComponent,
-    MessageSuccessComponent,
-    MessageErrorComponent,
-    ModalActionComponent
-],
+    SearchInputComponent,
+    LoadingComponent,
+    PaginationComponent,
+    ButtonComponent,
+  ],
   templateUrl: './format-form-page.html',
 })
-export class FormatFormPage {
+export class FormatFormPage extends CrudPage<FormatModel> {
   private location = inject(Location);
+  private service = inject(FormatService);
+  private mutation = inject(MutationService);
+  private confirmService = inject(ModalConfirmService);
 
   protected readonly selectedFormat = signal<FormatModel | null>(null);
-  protected readonly selectedFormatToDelete = signal<FormatModel | null>(null);
-  protected readonly isModalOpen = signal<boolean>(false);
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
-  
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getFormatRX,
-      this.saveFormatRX,
-      this.deleteFormatRX,
-    ].some(e => e.isLoading())
-  );
+  protected readonly isSaving = signal<boolean>(false);
 
-  private readonly formatService = inject(FormatService);
-  private readonly saveFormatPayload = signal<CreateFormatModel | UpdateFormatModel | null>(null);
-  private readonly deleteFormatPayload = signal<number | null>(null);
-  private readonly getFormatPayload = computed<PaginationRequestModel<null>>(() => {
-    return {
-      page: this.currentPage(),
-      limit: this.limit(),
-      search: this.search(),
-    }
-  });
-  protected readonly computedPaginationFormatList = computed<PaginationResponseModel<FormatModel[]> | null>(() => this.getFormatRX.value() ?? null);
+  protected readonly computedList = computed<FormatModel[]>(() => this.getAllRX.value() ?? []);
 
-  private readonly getFormatRX = rxResource({
-    params: () => this.getFormatPayload(),
-    stream: ({ params }) => {
-
-       return this.formatService.getAllPagination(params).pipe(
-        map((response: { isSuccess: any; message: string | undefined; data: any; }) => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly saveFormatRX = rxResource({
-    params: () => this.saveFormatPayload(),
+  protected readonly getAllRX = rxResource({
+    params: () => this.getAllPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      
-      const request$ = 'id_format' in params && params.id_format > 0
-        ? this.formatService.update(params.id_format, params)
-        : this.formatService.create(params);
 
-      return request$.pipe(
+      return this.service.getAllPagination(params).pipe(
         map(response => {
           if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
-        }),
-        tap(() => {
-          this.onClear();
-          this.onReload();
+          return this.mapPaginated(response.data);
         }),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
+          console.error('[FormatService::FormatFormPage] getAllPagination:', err);
+          return of(this.emptyPaginated());
         })
-      );
-    }
-  });
-
-  private readonly deleteFormatRX = rxResource({
-    params: () => this.deleteFormatPayload(),
-    stream: ({ params: id_format }) => { 
-      if (!id_format) return of(null);
-
-       return this.formatService.delete(id_format).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
-        }),
-        tap(() => {
-          this.onClear();
-          this.onReload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        }),
-        finalize(() => {
-          this.onCloseModal();
-        }),
       );
     },
   });
 
-  protected onSearchFilter(searchText: string): void {
-    this.search.set(searchText);
+  protected override reload(): void {
+    this.getAllRX.reload();
   }
-  
+
+  protected onSearchFilter(searchText: string): void {
+    this.onFilterChange({ search: searchText, limit: this.limit() });
+  }
+
   protected onSelectedFormat(item: FormatModel): void {
     this.selectedFormat.set(item);
 
@@ -142,69 +75,48 @@ export class FormatFormPage {
   }
 
   protected onFormSubmit(form: FormatModel): void {
-    const payload: CreateFormatModel | UpdateFormatModel = form.id_format > 0
-    ? {
-        id_format: form.id_format,
-        name: form.name,
-      } as UpdateFormatModel
-    : {
-        name: form.name,
-      } as CreateFormatModel;
+    const id = form.id_format;
+    const payload: CreateFormatModel | UpdateFormatModel = id > 0
+      ? { id_format: id, name: form.name }
+      : { name: form.name };
 
-    this.saveFormatPayload.set(payload);
+    this.mutation.run(
+      id > 0
+        ? this.service.update(id, payload as UpdateFormatModel)
+        : this.service.create(payload as CreateFormatModel),
+      { isSaving: this.isSaving },
+      {
+        successMsg: id > 0
+          ? `Formato: ${form.name} modificado correctamente`
+          : `Formato: ${form.name} creado correctamente`,
+        errorMsg: id > 0 ? 'Error al modificar el Formato' : 'Error al crear el Formato',
+        onSuccess: () => {
+          this.selectedFormat.set(null);
+          this.reload();
+        },
+      }
+    );
   }
 
-  protected onDeleteFormat(item: FormatModel): void {
-    this.onOpenModal();
-    this.selectedFormatToDelete.set(item);
-  }
+  protected async onDelete(item: FormatModel): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Eliminar Formato',
+      message: `Estás seguro que deseas eliminar el formato (${item.name})?`,
+    });
+    if (!confirmed) return;
 
-
-  protected onOpenModal(): void {
-    this.isModalOpen.set(true);
-  }
-
-  protected onCloseModal(): void {
-    this.isModalOpen.set(false);
-  }
-
-  protected onConfirmModal(): void {
-    if (!this.selectedFormatToDelete()) return;
-    const id_format = this.selectedFormatToDelete()?.id_format ?? null
-
-    this.deleteFormatPayload.set(id_format);
-  }
-  
-  protected onClear(): void{
-    this.selectedFormatToDelete.set(null);
-    this.selectedFormat.set(null);
-    this.errorMessage.set(null);
-  }
-
-  protected onReload(): void {
-    this.getFormatRX.reload();
-  }
-
-  protected onNextPage(): void {
-    const totalPages = this.computedPaginationFormatList()?.pages ?? 1
-
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  protected onPrevPage(): void {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+    this.mutation.run(
+      this.service.delete(item.id_format),
+      { isSaving: this.isSaving },
+      {
+        successMsg: `Formato: ${item.name} eliminado correctamente`,
+        errorMsg: 'Error al eliminar el Formato',
+        onSuccess: () => this.reload(),
+      }
+    );
   }
 
   protected navigateBack(): void {
     this.location.back();
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
   }
 }

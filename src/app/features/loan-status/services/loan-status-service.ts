@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { ApiService } from '@core/services/api-service';
+import { ApiResponseService } from '@core/services/api-response-service';
 import { LoanStatusModel } from '@features/loan-status/models/loan-status-model';
 import { Observable, tap } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class LoanStatusService {
-  private ApiService = inject(ApiService)
+  private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'loan-status';
   private cache: { data: ApiResponseModel<LoanStatusModel[]>; timestamp: number } | null = null;
   private readonly CACHE_TTL = 5 * 60 * 1000;
@@ -21,7 +21,7 @@ export class LoanStatusService {
       });
     }
 
-    return this.ApiService.getAll<ApiResponseModel<LoanStatusModel[]>>(
+    return this.ApiResponseService.getAll<ApiResponseModel<LoanStatusModel[]>>(
       `${this.endpoint}/`
     ).pipe(
       tap(response => {

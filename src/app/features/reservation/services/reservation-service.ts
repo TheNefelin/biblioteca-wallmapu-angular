@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { ApiService } from '@core/services/api-service';
+import { ApiResponseService } from '@core/services/api-response-service';
 import { CreateReservationModel, ReservationDetailModel, ReservationFilterModel, ReservationModel, ReservationPickupModel } from '@features/reservation/models/reservation-model';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ReservationService {
-  private ApiService = inject(ApiService)
+  private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'reservations';
 
   getAllPagination(params: PaginationRequestModel<ReservationFilterModel>): Observable<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>> {
@@ -24,7 +24,7 @@ export class ReservationService {
         path = `${path}&id_status=${params.filter.id_status}`
     }
 
-    return this.ApiService.getAll<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>>(
+    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>>(
       `${this.endpoint}/pagination${path}`
     );
   }
@@ -40,37 +40,37 @@ export class ReservationService {
         path = `${path}&id_status=${params.filter.id_status}`
     }
 
-    return this.ApiService.getAll<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>>(
+    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>>(
       `${this.endpoint}/pagination/user${path}`
     );
   }  
   
   getById(id: number): Observable<ApiResponseModel<ReservationDetailModel | null>> {
-    return this.ApiService.getById<ApiResponseModel<ReservationDetailModel | null>>(
+    return this.ApiResponseService.getById<ApiResponseModel<ReservationDetailModel | null>>(
       this.endpoint, id
     );
   }  
 
   create(item: CreateReservationModel): Observable<ApiResponseModel<ReservationModel>> {
-    return this.ApiService.create<ApiResponseModel<ReservationModel>, CreateReservationModel>(
+    return this.ApiResponseService.create<ApiResponseModel<ReservationModel>, CreateReservationModel>(
       this.endpoint, item
     );
   }
   
   pickup(params: ReservationPickupModel): Observable<ApiResponseModel<ReservationModel>> {
-    return this.ApiService.update<ApiResponseModel<ReservationModel>, { copy_id: number }>(
+    return this.ApiResponseService.update<ApiResponseModel<ReservationModel>, { copy_id: number }>(
       this.endpoint, `${params.id_reservation}/pickup`, { copy_id: params.copy_id }
     );
   }
 
   cancel(id: number): Observable<ApiResponseModel<ReservationModel>> {
-    return this.ApiService.update<ApiResponseModel<ReservationModel>, null>(
+    return this.ApiResponseService.update<ApiResponseModel<ReservationModel>, null>(
       this.endpoint, `${id}/cancel`, null
     );
   }
 
   expire(): Observable<ApiResponseModel<number>> {
-    return this.ApiService.update<ApiResponseModel<number>, null>(
+    return this.ApiResponseService.update<ApiResponseModel<number>, null>(
       this.endpoint, `expire-overdue`, null
     );
   } 

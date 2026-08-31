@@ -9,7 +9,8 @@
       </div>
     </div>
     
-    <app-button-clear-component
+    <app-button-component
+      [icon]="'clear'"
       (clicked)="clear()"
     />
   </section>
@@ -27,11 +28,11 @@
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
     </fieldset> 
     
-    <div class="justify-self-end">
+    <div class="justify-self-end flex gap-2 items-center">
       @if (isLoading()) {
         <app-loading-component/>
       } @else {
-        <app-button-create-component [textBtn]="actionText()" />
+        <app-button-component [icon]="'create'" [textBtn]="actionText()" />
       }
     </div>
   </form>

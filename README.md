@@ -33,8 +33,11 @@ src/app/
 │   │   ├── not-found-page/
 │   │   └── book-not-found-page/
 │   ├── services/                # Servicios core
-│   │   ├── api-service.ts
-│   │   └── modal-error-service.ts
+│   │   ├── api-service.ts        # Cliente HTTP genérico
+│   │   ├── modal-error-service.ts
+│   │   ├── modal-confirm-service.ts
+│   │   ├── toast-success-service.ts
+│   │   └── mutation-service.ts
 │   └── utils/                  # Utilidades
 │       └── error-handler.ts
 │
@@ -181,29 +184,34 @@ src/app/
 │   ├── components/
 │   │   ├── arrow-up-component/
 │   │   ├── barcode-generator.component/
-│   │   ├── button-barcode-component/
-│   │   ├── button-clear-component/
-│   │   ├── button-create-component/
-│   │   ├── button-delete-component/
-│   │   ├── button-edit-component/
-│   │   ├── button-goback-component/
-│   │   ├── button-notification-component/
-│   │   ├── button-refresh-component/
-│   │   ├── button-search-component/
+│   │   ├── button-component/        # Botón unificado (icon tipado + textBtn + clicked)
+│   │   ├── button-barcode-component/  # (basura futura: usar button-component)
+│   │   ├── button-clear-component/    # (basura futura)
+│   │   ├── button-create-component/   # (basura futura)
+│   │   ├── button-delete-component/   # (basura futura)
+│   │   ├── button-edit-component/     # (basura futura)
+│   │   ├── button-goback-component/   # (basura futura)
+│   │   ├── button-notification-component/  # (basura futura)
+│   │   ├── button-refresh-component/  # (basura futura)
+│   │   ├── button-search-component/   # (basura futura)
 │   │   ├── footer-component/
 │   │   ├── header-component/
 │   │   ├── loading-component/
-│   │   ├── message-error-component/
-│   │   ├── message-success-component/
-│   │   ├── modal-action-component/
+│   │   ├── message-error-component/   # (basura futura: usar toast/modal-error)
+│   │   ├── message-success-component/ # (basura futura: usar toast)
+│   │   ├── modal-action-component/    # (basura futura: usar modal-confirm)
 │   │   ├── modal-barcode-label-component/
-│   │   ├── modal-delete-component/
+│   │   ├── modal-confirm-component/
+│   │   ├── modal-delete-component/    # (basura futura: usar modal-confirm)
 │   │   ├── modal-error-component/
 │   │   ├── modal-image-component/
 │   │   ├── pagination-component/
 │   │   ├── search-input-component/
 │   │   ├── search-codbar-component/
-│   │   └── section-header-component/
+│   │   ├── section-header-component/
+│   │   └── toast-success-component/
+│   ├── base/
+│   │   └── crud-page.ts         # Clase base de páginas de listado paginado
 │   ├── constants/
 │   │   ├── roles-enum.ts
 │   │   └── routes-constant.ts
@@ -253,6 +261,110 @@ export class MyComponent {
   readonly onSelect = output<MyModel>();
 }
 ```
+
+---
+
+## Arquitectura de feedback (mutation, error, confirm, toast)
+
+Los servicios de feedback centralizan la interacción con el usuario. Son singletons globales (`providedIn: 'root'`) y sus componentes de presentación se montan **una sola vez** en `app.html`. El feature **nunca** instancia el modal/toast: solo llama al servicio y reacciona a su retorno.
+
+```
+app.html  (montaje global único)
+├─ <app-modal-error-component/>    ← inyecta ModalErrorService
+├─ <app-modal-confirm-component/>  ← inyecta ModalConfirmService
+└─ <app-toast-success-component/>  ← inyecta ToastSuccessService
+```
+
+### ToastSuccessService — notificaciones no bloqueantes
+
+Confirmaciones de éxito/guardado/información. Solo `success`/`info` (los errores van por `modal-error`).
+
+```
+feature ── toastSuccess.show('Formato: X guardado correctamente', 'success')
+             │  agrega {id, message, type} al signal
+             ▼
+       <app-toast-success-component/>  (montado en app.html)
+             │  renderiza toast toast-end + auto-clear 5s
+             ▼  el toast desaparece solo
+```
+
+- El **mensaje lo construye el feature**, el toast solo lo renderiza.
+- Ej: `toastSuccess.show(Formato: ${name} guardado correctamente)`.
+
+### ModalErrorService — errores críticos/bloqueantes
+
+Para fallos que requieren atención (interceptor HTTP, 401, 500).
+
+```
+feature/interceptor ── modalError.open({ title, message })
+                       ▼
+              ModalErrorService (signal) → <app-modal-error-component/> → modal bloqueante
+```
+
+### ModalConfirmService — confirmación de acciones destructivas
+
+```
+feature ── const ok = await confirmService.confirm({ title, message })
+              ▼ (Promise<boolean>)
+      ModalConfirmService (signal) → <app-modal-confirm-component/>
+              ▼  usuario pulsa Confirmar → true | Cancelar → false
+     if (!ok) return;   // el feature decide seguir
+```
+
+El feature recibe `true`/`false` **sin tocar el modal**.
+
+### MutationService — orquesta save/delete + toast
+
+Encapsula el ciclo completo de una mutación y dispara el toast de éxito.
+
+```typescript
+this.mutation.run(request$, { isSaving: this.isSaving }, {
+  successMsg: `Formato: ${name} guardado correctamente`,
+  errorMsg: 'Error al guardar el Formato',
+  onSuccess: () => this.reload(),
+});
+```
+
+```
+run(request$, {isSaving}, {successMsg, errorMsg, onSuccess})
+  1. isSaving.set(true)        # deshabilita botones / muestra loading
+  2. request$.subscribe(
+       next → toastSuccess.show(successMsg); isSaving=false; onSuccess?.()
+       error → console.error; isSaving=false
+     )
+```
+
+### CrudPage — base para listados paginados
+
+Para un **listado + form embebido** (caso `format`), el page extiende `CrudPage<TModel>`:
+
+```typescript
+class FormatFormPage extends CrudPage<FormatModel> {
+  protected readonly computedList = computed(() => this.getAllRX.value() ?? []);
+
+  protected readonly getAllRX = rxResource({
+    params: () => this.getAllPayload(),
+    stream: ({ params }) => this.service.getAllPagination(params).pipe(
+      map(response => this.mapPaginated(response.data)),  // => array de items
+      catchError(() => of(this.emptyPaginated()))
+    ),
+  });
+
+  protected async onDelete(item: FormatModel) {
+    const ok = await this.confirmService.confirm({ title, message });
+    if (!ok) return;
+    this.mutation.run(this.service.delete(item.id_format), { isSaving }, {
+      successMsg: `Formato: ${item.name} eliminado correctamente`,
+      onSuccess: () => this.reload(),
+    });
+  }
+}
+```
+
+Pautas:
+- La tabla se itera **inline** con `computedList()` y `button-component` (edit/delete).
+- Paginación con `PaginationComponent` (`[currentPage]`, `[totalPages]`, `prevPage`/`nextPage`).
+- No usar `MessageSuccess`/`MessageError`/`modal-action`: los reemplaza el toast/confirm global.
 
 ---
 

@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UpdateUserByAdminModel, UpdateUserModel, UserDetailModel, UserModel } from '@features/user/models/user-model';
 import { ApiResponseModel } from '@core/models/api-response-model';
-import { ApiService } from '@core/services/api-service';
+import { ApiResponseService } from '@core/services/api-response-service';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 
@@ -10,7 +10,7 @@ import { PaginationResponseModel } from '@core/models/pagination-response-model'
   providedIn: 'root',
 })
 export class UserService {
-  private ApiService = inject(ApiService)
+  private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'users';
 
   getAllDetails(params: PaginationRequestModel): Observable<ApiResponseModel<PaginationResponseModel<UserDetailModel[]>>> {
@@ -19,25 +19,25 @@ export class UserService {
     if (params.search && params.search.trim() != '')
       path = `${path}&search=${params.search}`
   
-    return this.ApiService.getAll<ApiResponseModel<PaginationResponseModel<UserDetailModel[]>>>(
+    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<UserDetailModel[]>>>(
       `${this.endpoint}/pagination${path}`
     );
   }
 
   getById(id: string): Observable<ApiResponseModel<UserDetailModel | null>> {
-    return this.ApiService.getById<ApiResponseModel<UserDetailModel | null>>(
+    return this.ApiResponseService.getById<ApiResponseModel<UserDetailModel | null>>(
       `${this.endpoint}`, id
     );
   }
 
   update_user(id_user: string, item: UpdateUserModel): Observable<ApiResponseModel<UserModel>> {
-    return this.ApiService.update<ApiResponseModel<UserModel>, UpdateUserModel>(
+    return this.ApiResponseService.update<ApiResponseModel<UserModel>, UpdateUserModel>(
       this.endpoint, id_user, item
     );
   }
 
   update_admin(id_user: string, item: UpdateUserByAdminModel): Observable<ApiResponseModel<UserModel>> {
-    return this.ApiService.update<ApiResponseModel<UserModel>, UpdateUserByAdminModel>(
+    return this.ApiResponseService.update<ApiResponseModel<UserModel>, UpdateUserByAdminModel>(
       `${this.endpoint}/admin`, id_user, item
     );
   }

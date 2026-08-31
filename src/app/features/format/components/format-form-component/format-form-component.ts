@@ -1,16 +1,14 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FormatModel } from '@features/format/models/format-model';
-import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   selector: 'app-format-form-component',
   imports: [
     DatePipe,
-    ButtonClearComponent,
-    ButtonCreateComponent,
+    ButtonComponent,
     LoadingComponent,
   ],
   templateUrl: './format-form-component.html',

@@ -1,14 +1,14 @@
-import { inject, Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { ApiResponseModel } from '@core/models/api-response-model';
 import { Observable, tap } from 'rxjs';
 import { UserStatusModel } from '@features/user-status/models/user-status-model';
-import { ApiService } from '@core/services/api-service';
+import { ApiResponseService } from '@core/services/api-response-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserStatusService {
-  private apiService = inject(ApiService)
+  private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'user-status';
   private cache: { data: ApiResponseModel<UserStatusModel[]>; timestamp: number } | null = null;
   private readonly CACHE_TTL = 5 * 60 * 1000;
@@ -21,7 +21,7 @@ export class UserStatusService {
       });
     }
 
-    return this.apiService.getAll<ApiResponseModel<UserStatusModel[]>>(
+    return this.ApiResponseService.getAll<ApiResponseModel<UserStatusModel[]>>(
       `${this.endpoint}/`
     ).pipe(
       tap(response => {

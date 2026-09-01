@@ -1,5 +1,4 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { Observable } from 'rxjs';
 import { LoanFilterModel, LoanDetailModel, LoanModel } from '@features/loan/models/loan-model';
@@ -13,7 +12,7 @@ export class LoanService {
   private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'loans';
 
-  getAllPagination(params: PaginationRequestModel<LoanFilterModel>): Observable<ApiResponseModel<PaginationResponseModel<LoanDetailModel[]>>> {
+  getAllPagination(params: PaginationRequestModel<LoanFilterModel>): Observable<PaginationResponseModel<LoanDetailModel[]>> {
     let path = `?page=${params.page}&limit=${params.limit}`
     
     if (params.search && params.search.trim() != '')
@@ -24,12 +23,12 @@ export class LoanService {
         path = `${path}&id_status=${params.filter.id_status}`
     }
 
-    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<LoanDetailModel[]>>>(
+    return this.ApiResponseService.getAll<PaginationResponseModel<LoanDetailModel[]>>(
       `${this.endpoint}/pagination${path}`
     );
   }
 
-  getAllPaginationByUser(params: PaginationRequestModel<LoanFilterModel>): Observable<ApiResponseModel<PaginationResponseModel<LoanDetailModel[]>>> {
+  getAllPaginationByUser(params: PaginationRequestModel<LoanFilterModel>): Observable<PaginationResponseModel<LoanDetailModel[]>> {
     let path = `?page=${params.page}&limit=${params.limit}`
     
     if (params.search && params.search.trim() != '')
@@ -40,31 +39,31 @@ export class LoanService {
         path = `${path}&id_status=${params.filter.id_status}`
     }
 
-    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<LoanDetailModel[]>>>(
+    return this.ApiResponseService.getAll<PaginationResponseModel<LoanDetailModel[]>>(
       `${this.endpoint}/pagination/user${path}`
     );
   }  
 
-  getAllOverdue(): Observable<ApiResponseModel<LoanDetailModel[]>> {
-    return this.ApiResponseService.getAll<ApiResponseModel<LoanDetailModel[]>>(
+  getAllOverdue(): Observable<LoanDetailModel[]> {
+    return this.ApiResponseService.getAll<LoanDetailModel[]>(
       `${this.endpoint}/overdue`
     );
   }  
 
-  getByCopyBarCode(codebar: string): Observable<ApiResponseModel<LoanDetailModel | null>> {
-    return this.ApiResponseService.getById<ApiResponseModel<LoanDetailModel | null>>(
+  getByCopyBarCode(codebar: string): Observable<LoanDetailModel | null> {
+    return this.ApiResponseService.getById<LoanDetailModel | null>(
       `${this.endpoint}/copy`, codebar
     );
   }  
 
-  return(id_copy: number): Observable<ApiResponseModel<LoanModel>> {
-    return this.ApiResponseService.update<ApiResponseModel<LoanModel>, null>(
+  return(id_copy: number): Observable<LoanModel> {
+    return this.ApiResponseService.update<LoanModel, null>(
       `${this.endpoint}/copy`, `${id_copy}/return`, null
     );
   } 
 
-  expire(): Observable<ApiResponseModel<number>> {
-    return this.ApiResponseService.update<ApiResponseModel<number>, null>(
+  expire(): Observable<number> {
+    return this.ApiResponseService.update<number, null>(
       this.endpoint, `expire-overdue`, null
     );
   } 

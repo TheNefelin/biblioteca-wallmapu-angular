@@ -88,10 +88,7 @@ export class UserProfilePage {
       if (!params) return of(null);
   
       return this.userService.getById(params.id_user).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -106,10 +103,7 @@ export class UserProfilePage {
       if (!params) return of(null);
 
       return this.notificationService.getAllPaginationByUser(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -124,10 +118,7 @@ export class UserProfilePage {
       if (!params) return of(null);
 
       return this.notificationService.markAsReadByUser(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap(() => {
           this.getNotificationRX.reload();
         }),
@@ -145,10 +136,7 @@ export class UserProfilePage {
       if (!params) return of(null);
 
       return this.notificationService.markAllAsReadByUser().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap(() => {
           this.getNotificationRX.reload();
         }),

@@ -23,10 +23,7 @@ export class AuthorSelectComponents {
   private readonly authorRX = rxResource({
     stream: () => {
       return this.authorService.getAll().pipe(
-        map((res) => {
-          if (!res.isSuccess) throw new Error(res.message);
-          return res.data;
-        }),
+        map((res) => res),
         catchError(() => of([])),
       );
     },

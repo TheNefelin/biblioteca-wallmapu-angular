@@ -48,10 +48,7 @@ export class UserDashboardPage {
     stream: ({ params }) => { 
 
       return this.notificationService.getAllPaginationByUser(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);

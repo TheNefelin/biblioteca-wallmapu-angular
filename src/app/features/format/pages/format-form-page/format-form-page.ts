@@ -45,10 +45,7 @@ export class FormatFormPage extends CrudPage<FormatModel> {
       if (!params) return of(null);
 
       return this.service.getAllPagination(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return this.mapPaginated(response.data);
-        }),
+        map(response => this.mapPaginated(response)),
         catchError(err => {
           console.error('[FormatService::FormatFormPage] getAllPagination:', err);
           return of(this.emptyPaginated());

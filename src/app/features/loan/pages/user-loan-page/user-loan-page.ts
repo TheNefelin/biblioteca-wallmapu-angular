@@ -48,10 +48,7 @@ export class UserLoanPage {
     stream: ({ params }) => { 
 
       return this.loanService.getAllPaginationByUser(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);

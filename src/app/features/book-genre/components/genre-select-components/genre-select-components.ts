@@ -23,10 +23,7 @@ export class GenreSelectComponents {
   private readonly genreRX = rxResource({
     stream: () => {
       return this.genreService.getAll().pipe(
-        map((res) => {
-          if (!res.isSuccess) throw new Error(res.message);
-          return res.data;
-        }),
+        map((res) => res),
         catchError(() => of([])),
       );
     },

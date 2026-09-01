@@ -35,10 +35,7 @@ export class AdminDashboardPage {
   private readonly getLoanOverdueRX = rxResource({
     stream: () => { 
       return this.loanService.getAllOverdue().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

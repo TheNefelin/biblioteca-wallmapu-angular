@@ -23,10 +23,7 @@ export class SubjectSelectComponents {
   private readonly subjectRX = rxResource({
     stream: () => {
       return this.subjectService.getAll().pipe(
-        map((res) => {
-          if (!res.isSuccess) throw new Error(res.message);
-          return res.data;
-        }),
+        map((res) => res),
         catchError(() => of([])),
       );
     },

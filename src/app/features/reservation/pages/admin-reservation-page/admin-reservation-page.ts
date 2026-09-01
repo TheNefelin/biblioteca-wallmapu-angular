@@ -70,10 +70,7 @@ export class AdminReservationPage {
     stream: ({ params }) => { 
 
       return this.reservationService.getAllPagination(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -89,10 +86,7 @@ export class AdminReservationPage {
       this.errorMessage.set(null);
       
       return this.reservationService.getById(id_reservation).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -108,9 +102,8 @@ export class AdminReservationPage {
 
       return this.reservationService.cancel(id_reservation).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Reserva eliminada correctamente');
+          return response;
         }),
         tap(() => {
           this.reloadReservation();
@@ -129,10 +122,7 @@ export class AdminReservationPage {
   private readonly updateExpiredReservationRX = rxResource({
     stream: () => {    
       return this.reservationService.expire().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap(() => {
           this.reloadReservation();
         }),
@@ -152,9 +142,8 @@ export class AdminReservationPage {
       
       return this.reservationService.pickup(params).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message)
-          return response.data;
+          this.successMessage.set('Reserva convertida a préstamo correctamente');
+          return response;
         }),
         tap(() => {
           this.reloadReservation();

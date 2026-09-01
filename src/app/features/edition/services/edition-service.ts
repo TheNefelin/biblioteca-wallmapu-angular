@@ -1,5 +1,4 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
 import { Observable } from 'rxjs';
 import { CreateEditionModel, EditionDetailModel, EditionFilterModel, EditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
@@ -13,7 +12,7 @@ export class EditionService {
   private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'edition';
 
-  getAllPagination(params: PaginationRequestModel<EditionFilterModel>): Observable<ApiResponseModel<PaginationResponseModel<EditionDetailModel[]>>> {
+  getAllPagination(params: PaginationRequestModel<EditionFilterModel>): Observable<PaginationResponseModel<EditionDetailModel[]>> {
     let path = `?page=${params.page}&limit=${params.limit}`
     
     if (params.search && params.search.trim() != '')
@@ -36,43 +35,43 @@ export class EditionService {
         path = `${path}&id_subject=${params.filter.id_subject}`
     }
 
-    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<EditionDetailModel[]>>>(
+    return this.ApiResponseService.getAll<PaginationResponseModel<EditionDetailModel[]>>(
       `${this.endpoint}/pagination${path}`
     );
   }
 
-  getAllDetailByBook(id_book: number): Observable<ApiResponseModel<EditionDetailModel[]>> {
-    return this.ApiResponseService.getById<ApiResponseModel<EditionDetailModel[]>>(
+  getAllDetailByBook(id_book: number): Observable<EditionDetailModel[]> {
+    return this.ApiResponseService.getById<EditionDetailModel[]>(
       `${this.endpoint}/book`, `${id_book}/detail`
     );
   }
 
-  getAllByBook(id_book: number): Observable<ApiResponseModel<EditionModel[]>> {
-    return this.ApiResponseService.getById<ApiResponseModel<EditionModel[]>>(
+  getAllByBook(id_book: number): Observable<EditionModel[]> {
+    return this.ApiResponseService.getById<EditionModel[]>(
       `${this.endpoint}/book`, id_book
     );
   }
 
-  getById(id: number): Observable<ApiResponseModel<EditionModel | null>> {
-    return this.ApiResponseService.getById<ApiResponseModel<EditionModel | null>>(
+  getById(id: number): Observable<EditionModel | null> {
+    return this.ApiResponseService.getById<EditionModel | null>(
       this.endpoint, id
     );
   }
 
-  create(item: CreateEditionModel): Observable<ApiResponseModel<EditionModel>> {
-    return this.ApiResponseService.create<ApiResponseModel<EditionModel>, CreateEditionModel>(
+  create(item: CreateEditionModel): Observable<EditionModel> {
+    return this.ApiResponseService.create<EditionModel, CreateEditionModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateEditionModel): Observable<ApiResponseModel<EditionModel>> {
-    return this.ApiResponseService.update<ApiResponseModel<EditionModel>, UpdateEditionModel>(
+  update(id: number, item: UpdateEditionModel): Observable<EditionModel> {
+    return this.ApiResponseService.update<EditionModel, UpdateEditionModel>(
       this.endpoint, id, item
     );
   }
 
-  delete(id: number): Observable<ApiResponseModel<boolean>> {
-    return this.ApiResponseService.delete<ApiResponseModel<boolean>>(
+  delete(id: number): Observable<boolean> {
+    return this.ApiResponseService.delete<boolean>(
       this.endpoint, id
     );
   }

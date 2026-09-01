@@ -23,10 +23,7 @@ export class UserStatusSelectComponents {
   private readonly userStatusRX = rxResource({
     stream: () => {    
       return this.userStatusService.getAll().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

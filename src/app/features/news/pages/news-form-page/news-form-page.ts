@@ -104,10 +104,7 @@ export class NewsFormPage {
       if (!id_news) return of(null);
 
       return this.newsService.getById(id_news).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap((news) => {
           if (!news) this.updateRouteId(0);
         }),
@@ -129,10 +126,7 @@ export class NewsFormPage {
         : this.newsService.create(params);
 
       return request$.pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap((news) => {
           if (!news) return;
 
@@ -173,9 +167,8 @@ export class NewsFormPage {
         params.createNewsGalleryModel.alts
       ).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Galería actualizada correctamente');
+          return response;
         }),
         tap(() => {
           this.routeGoBack();
@@ -194,10 +187,7 @@ export class NewsFormPage {
       if (!params) return of(null);
 
       return this.newsGalleryService.delete(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap(() => {
           this.imagePreviewList.update(list =>
             list.filter(i => i.id !== params)

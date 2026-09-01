@@ -21,10 +21,7 @@ export class FormatSelectComponent {
   private readonly formatRX = rxResource({
     stream: () => {
       return this.formatService.getAll().pipe(
-        map((res) => {
-          if (!res.isSuccess) throw new Error(res.message);
-          return res.data;
-        }),
+        map((res) => res),
         catchError(() => of([])),
       );
     },

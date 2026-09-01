@@ -1,5 +1,4 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
@@ -13,7 +12,7 @@ export class ReservationService {
   private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'reservations';
 
-  getAllPagination(params: PaginationRequestModel<ReservationFilterModel>): Observable<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>> {
+  getAllPagination(params: PaginationRequestModel<ReservationFilterModel>): Observable<PaginationResponseModel<ReservationDetailModel[]>> {
     let path = `?page=${params.page}&limit=${params.limit}`
     
     if (params.search && params.search.trim() != '')
@@ -24,12 +23,12 @@ export class ReservationService {
         path = `${path}&id_status=${params.filter.id_status}`
     }
 
-    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>>(
+    return this.ApiResponseService.getAll<PaginationResponseModel<ReservationDetailModel[]>>(
       `${this.endpoint}/pagination${path}`
     );
   }
 
-  getByUserPagination(params: PaginationRequestModel<ReservationFilterModel>): Observable<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>> {
+  getByUserPagination(params: PaginationRequestModel<ReservationFilterModel>): Observable<PaginationResponseModel<ReservationDetailModel[]>> {
     let path = `?page=${params.page}&limit=${params.limit}`
     
     if (params.search && params.search.trim() != '')
@@ -40,37 +39,37 @@ export class ReservationService {
         path = `${path}&id_status=${params.filter.id_status}`
     }
 
-    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<ReservationDetailModel[]>>>(
+    return this.ApiResponseService.getAll<PaginationResponseModel<ReservationDetailModel[]>>(
       `${this.endpoint}/pagination/user${path}`
     );
   }  
   
-  getById(id: number): Observable<ApiResponseModel<ReservationDetailModel | null>> {
-    return this.ApiResponseService.getById<ApiResponseModel<ReservationDetailModel | null>>(
+  getById(id: number): Observable<ReservationDetailModel | null> {
+    return this.ApiResponseService.getById<ReservationDetailModel | null>(
       this.endpoint, id
     );
   }  
 
-  create(item: CreateReservationModel): Observable<ApiResponseModel<ReservationModel>> {
-    return this.ApiResponseService.create<ApiResponseModel<ReservationModel>, CreateReservationModel>(
+  create(item: CreateReservationModel): Observable<ReservationModel> {
+    return this.ApiResponseService.create<ReservationModel, CreateReservationModel>(
       this.endpoint, item
     );
   }
   
-  pickup(params: ReservationPickupModel): Observable<ApiResponseModel<ReservationModel>> {
-    return this.ApiResponseService.update<ApiResponseModel<ReservationModel>, { copy_id: number }>(
+  pickup(params: ReservationPickupModel): Observable<ReservationModel> {
+    return this.ApiResponseService.update<ReservationModel, { copy_id: number }>(
       this.endpoint, `${params.id_reservation}/pickup`, { copy_id: params.copy_id }
     );
   }
 
-  cancel(id: number): Observable<ApiResponseModel<ReservationModel>> {
-    return this.ApiResponseService.update<ApiResponseModel<ReservationModel>, null>(
+  cancel(id: number): Observable<ReservationModel> {
+    return this.ApiResponseService.update<ReservationModel, null>(
       this.endpoint, `${id}/cancel`, null
     );
   }
 
-  expire(): Observable<ApiResponseModel<number>> {
-    return this.ApiResponseService.update<ApiResponseModel<number>, null>(
+  expire(): Observable<number> {
+    return this.ApiResponseService.update<number, null>(
       this.endpoint, `expire-overdue`, null
     );
   } 

@@ -63,10 +63,7 @@ export class EditorialFormPage {
     stream: ({ params }) => {
 
        return this.editorialService.getAllPagination(params).pipe(
-        map((response: { isSuccess: any; message: string | undefined; data: any; }) => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -86,9 +83,8 @@ export class EditorialFormPage {
 
       return request$.pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Guardado correctamente');
+          return response;
         }),
         tap(() => {
           this.onClear();
@@ -109,9 +105,8 @@ export class EditorialFormPage {
 
        return this.editorialService.delete(id_subject).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Eliminado correctamente');
+          return response;
         }),
         tap(() => {
           this.onClear();

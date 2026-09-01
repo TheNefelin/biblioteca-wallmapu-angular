@@ -1,5 +1,4 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { Observable, tap } from 'rxjs';
 import { UserStatusModel } from '@features/user-status/models/user-status-model';
 import { ApiResponseService } from '@core/services/api-response-service';
@@ -10,10 +9,10 @@ import { ApiResponseService } from '@core/services/api-response-service';
 export class UserStatusService {
   private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'user-status';
-  private cache: { data: ApiResponseModel<UserStatusModel[]>; timestamp: number } | null = null;
+  private cache: { data: UserStatusModel[]; timestamp: number } | null = null;
   private readonly CACHE_TTL = 5 * 60 * 1000;
 
-  getAll(): Observable<ApiResponseModel<UserStatusModel[]>> {
+  getAll(): Observable<UserStatusModel[]> {
     if (this.cache && Date.now() - this.cache.timestamp < this.CACHE_TTL) {
       return new Observable(subscriber => {
         subscriber.next(this.cache!.data);
@@ -21,13 +20,11 @@ export class UserStatusService {
       });
     }
 
-    return this.ApiResponseService.getAll<ApiResponseModel<UserStatusModel[]>>(
+    return this.ApiResponseService.getAll<UserStatusModel[]>(
       `${this.endpoint}/`
     ).pipe(
       tap(response => {
-        if (response.isSuccess) {
-          this.cache = { data: response, timestamp: Date.now() };
-        }
+        this.cache = { data: response, timestamp: Date.now() };
       })
     );
   }

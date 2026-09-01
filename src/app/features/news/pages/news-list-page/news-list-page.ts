@@ -70,9 +70,8 @@ export class NewsListPage {
     stream: ({ params }) => {    
       return this.newsService.getAll(params).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.totalPages.set(response.data.pages);
-          return response.data.data;
+          this.totalPages.set(response.pages);
+          return response.data;
         }),
         catchError(err => {
           this.handleError(err);
@@ -88,10 +87,7 @@ export class NewsListPage {
       if (!params) return of(null);
 
       return this.newsGalleryService.delete_all(params).pipe(
-        map(r => {
-          if (!r.isSuccess) throw new Error(r.message);
-          return r.data;
-        }),
+        map(r => r),
         tap(() => {
           this.deleteNewsByIdPayload.set(this.deleteAllGalleryByIdNewsPayload());
           this.deleteAllGalleryByIdNewsPayload.set(null);
@@ -110,10 +106,7 @@ export class NewsListPage {
       if (payloadId === null) return of(null);
 
       return this.newsService.delete(payloadId).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap(() => {
           this.refreshList()
           this.closeDeleteModal();

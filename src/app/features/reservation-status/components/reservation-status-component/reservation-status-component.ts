@@ -20,10 +20,7 @@ export class ReservationStatusComponent {
   private readonly getReservationStatusRX = rxResource({
     stream: () => {    
       return this.reservationStatusService.getAll().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

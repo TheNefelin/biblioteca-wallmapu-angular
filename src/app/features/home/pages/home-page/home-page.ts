@@ -60,10 +60,7 @@ export class HomePage {
       this.errorMessage.set(null);
 
       return this.newsService.getAll({ page: 1, limit: 4, search: '' }).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data.data;
-        }),
+        map(response => response.data),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -102,9 +99,8 @@ export class HomePage {
 
       return this.editionService.getAllPagination(params).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.totalPages.set(response.data.pages);
-          return response.data.data;
+          this.totalPages.set(response.pages);
+          return response.data;
         }),
         catchError(err => {
           this.handleError(err);

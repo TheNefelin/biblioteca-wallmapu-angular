@@ -20,10 +20,7 @@ export class UserStatsComponents {
   private readonly statRX = rxResource({
     stream: () => {
       return this.statService.getUserStats().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

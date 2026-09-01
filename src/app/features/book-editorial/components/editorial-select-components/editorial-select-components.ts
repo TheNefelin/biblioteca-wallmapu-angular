@@ -25,10 +25,7 @@ export class EditorialSelectComponents {
   private readonly editorialRX = rxResource({
     stream: () => {
       return this.editorialService.getAll().pipe(
-        map((res) => {
-          if (!res.isSuccess) throw new Error(res.message);
-          return res.data;
-        }),
+        map((res) => res),
         catchError(() => of([])),
       );
     },

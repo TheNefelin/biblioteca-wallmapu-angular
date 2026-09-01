@@ -23,10 +23,7 @@ export class UserRoleSelectComponents {
   private readonly userRoleRX = rxResource({
     stream: () => {    
       return this.userRoleService.getAll().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

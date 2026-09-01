@@ -113,10 +113,7 @@ export class CopyFormPage {
       this.errorMessage.set(null);
 
       return this.bookService.getById(id_book).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -133,10 +130,7 @@ export class CopyFormPage {
       this.errorMessage.set(null);
 
       return this.editionService.getById(id_edition).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -153,10 +147,7 @@ export class CopyFormPage {
       this.errorMessage.set(null);
 
       return this.copyService.getAllByEditionId(id_edition).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -176,9 +167,8 @@ export class CopyFormPage {
 
       return request$.pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Ejemplar guardado correctamente');
+          return response;
         }),
         tap(copy => {
           this.getCopyPayload.set(copy.id_copy);

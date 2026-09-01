@@ -87,13 +87,11 @@ export class NotificationBadgeState {
     }
 
     try {
-      const response = await firstValueFrom(
+      const count = await firstValueFrom(
         this.notificationService.getUnreadCount()
-          .pipe(catchError(() => of({ isSuccess: true, data: 0 } as any)))
+          .pipe(catchError(() => of(0)))
       );
-      if (response.isSuccess) {
-        this.unreadCount.set(response.data);
-      }
+      this.unreadCount.set(count);
     } catch {
       // handled by catchError above
     }

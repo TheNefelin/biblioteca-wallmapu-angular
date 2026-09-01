@@ -41,10 +41,7 @@ export class NewsDetailPage {
       return this.newsService.getById(
         params
       ).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);

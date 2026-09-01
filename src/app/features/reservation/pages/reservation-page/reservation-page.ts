@@ -113,10 +113,7 @@ export class ReservationPage {
       if (!id_book) return of(null);
 
       return this.bookService.getById(id_book).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError((err) => {
           this.handleError(err)
           return of(null);
@@ -131,10 +128,7 @@ export class ReservationPage {
       if (!id_book) return of(null);
 
       return this.editionService.getAllByBook(id_book).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError((err) => {
           this.handleError(err)
           return of(null);
@@ -149,10 +143,7 @@ export class ReservationPage {
       if (!id_book) return of(null);
 
       return this.copyService.getAllByBookId(id_book).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError((err) => {
           this.handleError(err)
           return of(null);
@@ -168,9 +159,8 @@ export class ReservationPage {
 
       return this.reservationService.create(id_copy).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Reserva registrada correctamente');
+          return response;
         }),
         tap(() => {
           this.getCopyRX.reload();

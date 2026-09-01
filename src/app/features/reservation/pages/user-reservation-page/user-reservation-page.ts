@@ -64,10 +64,7 @@ export class UserReservationPage {
     stream: ({ params }) => { 
 
       return this.reservationService.getByUserPagination(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -83,9 +80,8 @@ export class UserReservationPage {
 
       return this.reservationService.cancel(id_reservation).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Reserva eliminada correctamente');
+          return response;
         }),
         tap(() => {
           this.reloadReservation();

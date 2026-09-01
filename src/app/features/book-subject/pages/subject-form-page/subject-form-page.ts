@@ -62,10 +62,7 @@ export class SubjectFormPage {
     stream: ({ params }) => {
 
       return this.subjectService.getAllPagination(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -85,9 +82,8 @@ export class SubjectFormPage {
 
       return request$.pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Descriptor guardado correctamente');
+          return response;
         }),
         tap(() => {
           this.onClear();
@@ -108,9 +104,8 @@ export class SubjectFormPage {
 
       return this.subjectService.delete(id_subject).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Descriptor eliminado correctamente');
+          return response;
         }),
         tap(() => {
           this.onClear();

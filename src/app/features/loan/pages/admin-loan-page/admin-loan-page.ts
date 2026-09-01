@@ -66,10 +66,7 @@ export class AdminLoanPage {
     stream: ({ params }) => { 
 
       return this.loanService.getAllPagination(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -85,10 +82,7 @@ export class AdminLoanPage {
       this.errorMessage.set(null);
       
       return this.loanService.getByCopyBarCode(codebar).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -105,9 +99,8 @@ export class AdminLoanPage {
       
       return this.loanService.return(id_copy).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Préstamo registrado correctamente');
+          return response;
         }),
         tap(() => {
           this.onReloadLoan();
@@ -123,10 +116,7 @@ export class AdminLoanPage {
   private readonly updateExpiredLoanRX = rxResource({
     stream: () => {    
       return this.loanService.expire().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         tap(() => {
           this.onReloadLoan();
         }),

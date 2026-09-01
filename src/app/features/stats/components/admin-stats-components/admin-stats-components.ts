@@ -26,10 +26,7 @@ export class AdminStatsComponents {
   private readonly statRX = rxResource({
     stream: () => {    
       return this.statService.getAdminStats().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

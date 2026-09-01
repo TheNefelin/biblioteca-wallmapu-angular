@@ -44,9 +44,8 @@ export class NewsPage {
 
       return this.newsService.getAll(params).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.totalPages.set(response.data.pages);
-          return response.data.data;
+          this.totalPages.set(response.pages);
+          return response.data;
         }),
         catchError(err => {
           this.handleError(err);

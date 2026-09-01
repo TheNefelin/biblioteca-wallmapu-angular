@@ -21,10 +21,7 @@ export class CommuneSelectComponents {
   private readonly communeRX = rxResource({
     stream: () =>
       this.communeService.getAll().pipe(
-        map((res) => {
-          if (!res.isSuccess) throw new Error(res.message);
-          return res.data;
-        }),
+        map((res) => res),
         catchError(() => of([])),
       ),
   });

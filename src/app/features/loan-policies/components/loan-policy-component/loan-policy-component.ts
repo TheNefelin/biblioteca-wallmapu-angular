@@ -23,10 +23,7 @@ export class LoanPolicyComponent {
   private readonly getLoanPolicyRX = rxResource({
     stream: () => {    
       return this.loanPoliciesService.getDefault().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);

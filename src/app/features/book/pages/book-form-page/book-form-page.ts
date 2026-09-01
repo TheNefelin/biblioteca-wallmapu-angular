@@ -100,8 +100,7 @@ export class BookFormPage {
 
       return this.bookService.getById(idBook).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
+          return response;
         }),
         tap((book) => {
           if (!book) {
@@ -127,9 +126,8 @@ export class BookFormPage {
 
       return request$.pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set(this.isEditMode() ? 'Modificado correctamente' : 'Guardado correctamente');
+          return response;
         }),
         tap((book) => {
           this.getBookPayload.set(book.id_book);
@@ -150,9 +148,8 @@ export class BookFormPage {
 
       return this.authorStepService.delete(params).pipe(
         map(res => {
-          if (!res.isSuccess) throw new Error(res.message);
-          this.successMessage.set(res.message)
-          return res.data;
+          this.successMessage.set('Eliminado correctamente');
+          return res;
         }),
         tap((res) => {
           this.getBookRX.reload();
@@ -172,9 +169,8 @@ export class BookFormPage {
 
       return this.subjectStepService.delete(params).pipe(
         map(res => {
-          if (!res.isSuccess) throw new Error(res.message);
-          this.successMessage.set(res.message)
-          return res.data;
+          this.successMessage.set('Eliminado correctamente');
+          return res;
         }),
         tap(() => {
           this.getBookRX.reload();
@@ -194,8 +190,7 @@ export class BookFormPage {
 
       return this.editionService.getAllDetailByBook(idBook).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
+          return response;
         }),
         catchError(err => {
           this.handleError(err);
@@ -214,9 +209,8 @@ export class BookFormPage {
 
       return request$.delete(id_edition).pipe(
         map(res => {
-          if (!res.isSuccess) throw new Error(res.message);
-          this.successMessage.set(res.message);
-          return res.data;
+          this.successMessage.set('Eliminado correctamente');
+          return res;
         }),
         tap(() => {
           this.getBookRX.reload();

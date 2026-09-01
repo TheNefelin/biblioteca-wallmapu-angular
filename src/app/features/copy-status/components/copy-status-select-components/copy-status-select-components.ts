@@ -22,10 +22,7 @@ export class CopyStatusSelectComponents {
   private readonly getCopyStatusRX = rxResource({
     stream: () => {    
       return this.copyStatusService.getAll().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

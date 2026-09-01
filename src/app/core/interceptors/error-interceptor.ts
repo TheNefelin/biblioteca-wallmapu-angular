@@ -11,7 +11,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       const statusCode = error.status;
-      const message = error.error?.message || error.message || 'Error inesperado';
+      const message = error.error?.detail || error.error?.message || error.message || 'Error inesperado';
 
       if (!modalService.isOpen()) {
         if (statusCode === 401) {

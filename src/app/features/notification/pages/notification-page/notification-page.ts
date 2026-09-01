@@ -51,10 +51,7 @@ export class NotificationPage {
     stream: ({ params }) => { 
 
       return this.notificationService.getAllPagination(params).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -72,9 +69,8 @@ export class NotificationPage {
 
       return this.notificationService.create(params).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Notificación enviada correctamente');
+          return response;
         }),
         tap(() => {
           this.cleanFormTrigger.update(e => e + 1);

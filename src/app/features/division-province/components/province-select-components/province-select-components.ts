@@ -23,10 +23,7 @@ export class ProvinceSelectComponents {
   private readonly provinceRX = rxResource({
     stream: () => {    
       return this.provinceService.getAll().pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           return of(null);
         })

@@ -1,5 +1,4 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseModel } from '@core/models/api-response-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiResponseService } from '@core/services/api-response-service';
@@ -13,37 +12,37 @@ export class FormatService {
   private ApiResponseService = inject(ApiResponseService)
   private readonly endpoint = 'format';
 
-  getAllPagination(params: PaginationRequestModel<null>): Observable<ApiResponseModel<PaginationResponseModel<FormatModel[]>>> {
+  getAllPagination(params: PaginationRequestModel<null>): Observable<PaginationResponseModel<FormatModel[]>> {
     let path = `?page=${params.page}&limit=${params.limit}`
     
     if (params.search && params.search.trim() != '')
       path = `${path}&search=${params.search}`
    
-    return this.ApiResponseService.getAll<ApiResponseModel<PaginationResponseModel<FormatModel[]>>>(
+    return this.ApiResponseService.getAll<PaginationResponseModel<FormatModel[]>>(
       `${this.endpoint}/pagination${path}`
     );
   }
   
-  getAll(): Observable<ApiResponseModel<FormatModel[]>> {
-    return this.ApiResponseService.getAll<ApiResponseModel<FormatModel[]>>(
+  getAll(): Observable<FormatModel[]> {
+    return this.ApiResponseService.getAll<FormatModel[]>(
       `${this.endpoint}/`
     );
   }
 
-  create(item: CreateFormatModel): Observable<ApiResponseModel<FormatModel>> {
-    return this.ApiResponseService.create<ApiResponseModel<FormatModel>, CreateFormatModel>(
+  create(item: CreateFormatModel): Observable<FormatModel> {
+    return this.ApiResponseService.create<FormatModel, CreateFormatModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateFormatModel): Observable<ApiResponseModel<FormatModel>> {
-    return this.ApiResponseService.update<ApiResponseModel<FormatModel>, UpdateFormatModel>(
+  update(id: number, item: UpdateFormatModel): Observable<FormatModel> {
+    return this.ApiResponseService.update<FormatModel, UpdateFormatModel>(
       this.endpoint, id, item
     );
   }
 
-  delete(id: number): Observable<ApiResponseModel<boolean>> {
-    return this.ApiResponseService.delete<ApiResponseModel<boolean>>(
+  delete(id: number): Observable<boolean> {
+    return this.ApiResponseService.delete<boolean>(
       this.endpoint, id
     );
   }  

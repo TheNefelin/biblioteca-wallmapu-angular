@@ -88,10 +88,7 @@ export class UserFormPage {
       if (!id_user) return of(null);
   
       return this.userService.getById(id_user).pipe(
-        map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
-        }),
+        map(response => response),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -111,9 +108,8 @@ export class UserFormPage {
     
         return request$.pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Usuario actualizado correctamente');
+          return response;
         }),
         catchError(err => {
           this.handleError(err);

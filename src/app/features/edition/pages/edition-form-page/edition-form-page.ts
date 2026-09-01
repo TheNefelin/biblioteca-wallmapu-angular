@@ -115,8 +115,7 @@ export class EditionFormPage {
 
       return this.bookService.getById(id_book).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
+          return response;
         }),
         catchError(err => {
           this.handleError(err);
@@ -133,8 +132,7 @@ export class EditionFormPage {
 
       return this.editionService.getById(id_edition).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
+          return response;
         }),
         catchError(err => {
           this.handleError(err);
@@ -155,9 +153,8 @@ export class EditionFormPage {
 
       return request$.pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set(this.isEditMode() ? 'Modificado correctamente' : 'Guardado correctamente');
+          return response;
         }),
         tap(edition => {
           this.getEditionPayload.set(edition.id_edition);
@@ -178,9 +175,8 @@ export class EditionFormPage {
 
       return this.editionImageService.create(file).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Imagen cargada correctamente');
+          return response;
         }),
         tap(url => {
           const base = this.addBaseEditionPayload();
@@ -206,9 +202,8 @@ export class EditionFormPage {
 
       return this.editionImageService.delete(id_edition).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Imagen eliminada correctamente');
+          return response;
         }),
         tap(() => {
           this.getEditionRX.reload();
@@ -228,8 +223,7 @@ export class EditionFormPage {
 
       return this.copyService.getAllByEditionId(id_edition).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          return response.data;
+          return response;
         }),
         catchError(err => {
           this.handleError(err);
@@ -246,9 +240,8 @@ export class EditionFormPage {
       
       return this.copyService.delete(id_copy).pipe(
         map(response => {
-          if (!response.isSuccess) throw new Error(response.message);
-          this.successMessage.set(response.message);
-          return response.data;
+          this.successMessage.set('Eliminado correctamente');
+          return response;
         }),
         tap(() => {
           this.openDeleteModal.set(false);

@@ -16,8 +16,8 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 export class FormatFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly format = input<FormatModel | null>(null);
-  protected readonly onFormSubmit = output<FormatModel>();
-  protected readonly onClear = output<void>();
+  protected readonly submitForm = output<FormatModel>();
+  protected readonly cancelForm = output<void>();
 
   protected readonly errorMessage = signal<string | null>(null); 
   protected readonly actionText = computed<string>(() => this.format() ? 'Modificar Formato' : 'Crear Formato');
@@ -59,9 +59,7 @@ export class FormatFormComponent {
     }
   }
 
-  protected submitForm(event: Event): void {
-    event.preventDefault();
-
+  protected onSaveClick(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
 
@@ -75,9 +73,7 @@ export class FormatFormComponent {
     } as FormatModel;
 
     this.errorMessage.set(null);
-    this.onFormSubmit.emit(submitData);
-
-    this.clear();
+    this.submitForm.emit(submitData);
   }
 
   private validateFormOnSubmit(data: Partial<FormatModel>): string | null {
@@ -88,11 +84,5 @@ export class FormatFormComponent {
       return 'El nombre tiene mas de 100 caracteres';
     
     return null;
-  }
-
-  protected clear(): void {
-    this.formData.set({ name: '' });
-    this.errorMessage.set(null);
-    this.onClear.emit()
   }
 }

@@ -5,16 +5,7 @@
 />
 
 <section class="p-4 grid grid-cols-1 gap-4">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <app-format-form-component
-      [isLoading]="isSaving()"
-      [format]="selectedFormat()"
-      (onClear)="selectedFormat.set(null)"
-      (onFormSubmit)="onFormSubmit($event)"
-    />
-  </div>
-
-  <div class="bg-my-light rounded-md text-my-dark shadow-xl">
+  <div class="bg-my-light rounded-md text-my-dark shadow-xl overflow-x-auto">
     <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
       <div>
         <h2 class="font-bold text-my-purple text-lg">
@@ -27,7 +18,8 @@
 
       <div class="flex gap-2 items-center">
         <app-search-input-component (onInputTextChange)="onSearchFilter($event)" />
-        <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="onRefreshClick()" />
+        <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="reload()" />
+        <app-button-component [icon]="'create'" textBtn="Crear Formato" (clicked)="selectedFormat.set(null); isFormModalOpen.set(true)" />
       </div>
     </header>
 
@@ -74,3 +66,12 @@
     />
   </div>
 </section>
+
+@if (isFormModalOpen()) {
+  <app-format-form-component
+    [isLoading]="isSaving()"
+    [format]="selectedFormat()"
+    (submitForm)="onSubmitForm($event)"
+    (cancelForm)="onClearForm()"
+  />
+}

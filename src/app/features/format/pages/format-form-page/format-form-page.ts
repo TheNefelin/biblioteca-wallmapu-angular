@@ -34,9 +34,9 @@ export class FormatFormPage extends CrudPage<FormatModel> {
   private mutation = inject(MutationService);
   private confirmService = inject(ModalConfirmService);
 
+  protected readonly isFormModalOpen = signal<boolean>(false);
   protected readonly selectedFormat = signal<FormatModel | null>(null);
   protected readonly isSaving = signal<boolean>(false);
-
   protected readonly computedList = computed<FormatModel[]>(() => this.getAllRX.value() ?? []);
 
   protected readonly getAllRX = rxResource({
@@ -54,6 +54,7 @@ export class FormatFormPage extends CrudPage<FormatModel> {
     },
   });
 
+  // Metodos de Herencia CrudPage ------------------------------------------------------------
   protected override reload(): void {
     this.getAllRX.reload();
   }
@@ -62,8 +63,10 @@ export class FormatFormPage extends CrudPage<FormatModel> {
     this.onFilterChange({ search: searchText, limit: this.limit() });
   }
 
+  // Acciones --------------------------------------------------------------------------------
   protected onSelectedFormat(item: FormatModel): void {
     this.selectedFormat.set(item);
+    this.isFormModalOpen.set(true);
 
     window.scrollTo({
       top: 0,
@@ -71,7 +74,12 @@ export class FormatFormPage extends CrudPage<FormatModel> {
     });
   }
 
-  protected onFormSubmit(form: FormatModel): void {
+  protected onClearForm(): void {
+    this.selectedFormat.set(null);
+    this.isFormModalOpen.set(false);
+  }
+  
+  protected onSubmitForm(form: FormatModel): void {
     const id = form.id_format;
     const payload: CreateFormatModel | UpdateFormatModel = id > 0
       ? { id_format: id, name: form.name }
@@ -88,7 +96,7 @@ export class FormatFormPage extends CrudPage<FormatModel> {
           : `Formato: ${form.name} creado correctamente`,
         errorMsg: id > 0 ? 'Error al modificar el Formato' : 'Error al crear el Formato',
         onSuccess: () => {
-          this.selectedFormat.set(null);
+          this.onClearForm();
           this.reload();
         },
       }

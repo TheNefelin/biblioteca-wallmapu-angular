@@ -119,13 +119,13 @@
           <app-format-select-component 
             class="flex-1" 
             [clearTrigger]="formatClearTrigger()"
-            (onNewSelectedFormat)="addFormat($event)"
+            (newSelectedFormat)="addFormat($event)"
           />
           <app-button-create-component (clicked)="navigateToFormat()"/>
         </div>
         <app-format-selected-list-component 
           [formatList]="formData().formats" 
-          (onDelete)="deleteFormat($event)"
+          (deleteFormat)="deleteFormat($event)"
         />
       </div>
     </div>

@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormatModel } from '@features/format/models/format-model';
 import { FormatService } from '@features/format/services/format-service';
 import { SelectItem, SearchSelectComponent } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-format-select-component',
@@ -13,7 +13,7 @@ import { catchError, map, of } from 'rxjs';
 export class FormatSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
-  readonly onNewSelectedFormat = output<FormatModel | null>();
+  readonly newSelectedFormat = output<FormatModel | null>();
   readonly clearTrigger = input<number>(0);
 
   private readonly formatService = inject(FormatService);
@@ -21,7 +21,6 @@ export class FormatSelectComponent {
   private readonly formatRX = rxResource({
     stream: () => {
       return this.formatService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       );
     },
@@ -37,11 +36,11 @@ export class FormatSelectComponent {
   protected onSelectionChange(item: SelectItem): void {
     const author = this.computedFormatList().find(a => a.id_format === item.id);
     if (author) {
-      this.onNewSelectedFormat.emit(author);
+      this.newSelectedFormat.emit(author);
     }
   }
 
   protected onCleared(): void {
-    this.onNewSelectedFormat.emit(null);
+    this.newSelectedFormat.emit(null);
   }
 }

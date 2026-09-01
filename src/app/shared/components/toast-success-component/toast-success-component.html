@@ -1,9 +1,7 @@
 @if (toasts().length) {
   <div class="toast toast-end">
     @for (toast of toasts(); track toast.id) {
-      <div class="alert text-white cursor-pointer"
-           [class.alert-success]="toast.type === 'success'"
-           [class.alert-info]="toast.type === 'info'"
+      <div class="alert bg-info text-my-light font-bold cursor-pointer"
            role="button"
            tabindex="0"
            (click)="close(toast.id)"

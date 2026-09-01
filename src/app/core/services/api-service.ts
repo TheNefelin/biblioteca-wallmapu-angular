@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { environment } from '@environments/environment';
 import { Observable } from 'rxjs';
 
@@ -13,23 +14,32 @@ export class ApiService {
     return `${this.apiUrl}/${parts.join('/')}`;
   }
 
-  getAll<T>(namespace: string, resource: string): Observable<T> {
-    return this.http.get<T>(this.path(namespace, resource));
+  getAllPagination<T>(endpoint: string, params: PaginationRequestModel<null>): Observable<T> {
+    let path = `?page=${params.page}&limit=${params.limit}`
+    
+    if (params.search && params.search.trim() != '')
+      path = `${path}&search=${params.search}`
+
+    return this.http.get<T>(`${this.apiUrl}/${endpoint}/pagination${path}`);
   }
 
-  getById<T>(namespace: string, resource: string, id: number | string): Observable<T> {
-    return this.http.get<T>(`${this.path(namespace, resource)}/${id}`);
+  getAll<T>(endpoint: string): Observable<T> {
+    return this.http.get<T>(endpoint);
   }
 
-  create<T, TBody>(namespace: string, resource: string, body: TBody): Observable<T> {
-    return this.http.post<T>(this.path(namespace, resource), body);
+  getById<T>(endpoint: string, id: number | string): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}/${endpoint}/${id}`);
   }
 
-  update<T, TBody>(namespace: string, resource: string, id: number | string, body: TBody): Observable<T> {
-    return this.http.put<T>(`${this.path(namespace, resource)}/${id}`, body);
+  create<T, TBody>(endpoint: string, body: TBody): Observable<T> {
+    return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body);
   }
 
-  delete<T>(namespace: string, resource: string, id: number | string): Observable<T> {
-    return this.http.delete<T>(`${this.path(namespace, resource)}/${id}`);
+  update<T, TBody>(endpoint: string, id: number | string, body: TBody): Observable<T> {
+    return this.http.put<T>(`${this.apiUrl}/${endpoint}/${id}`, body);
+  }
+
+  delete<T>(endpoint: string, id: number | string): Observable<T> {
+    return this.http.delete<T>(`${this.apiUrl}/${endpoint}/${id}`);
   }
 }

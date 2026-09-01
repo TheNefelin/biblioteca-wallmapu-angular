@@ -15,14 +15,17 @@
   </section>
 } @else {
 
-  @if(editionDetailList().length == 0) {
+  @if(editionDetailList().length === 0) {
     <app-book-not-found-page/>
   } @else {
 
     <div class="flex gap-8 flex-wrap px-4 py-8 mx-auto justify-center max-w-7xl">
       @for(item of editionDetailList(); track item.id_edition) {
-         <article 
-          (click)="navigateTo.emit(item)"
+         <article
+          role="button"
+          tabindex="0"
+          (click)="navigate(item)"
+          (keydown)="onKeydown($event, item)"
           class="flex flex-col group w-72 sm:w-56 bg-my-light shadow-sm cursor-pointer shadow-my-light hover:shadow-2xl transition-all duration-300 rounded-2xl"
         >
           <figure class="relative overflow-hidden aspect-7/10 rounded-t-2xl">

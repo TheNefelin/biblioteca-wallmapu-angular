@@ -7,10 +7,10 @@
 <app-edition-form-components 
   [isLoading]="isLoading()"
   [editionFormVM]="editionFormVMComputed()"
-  (onDeleteImage)="deleteImage($event)"
-  (onFormSubmit)="formSubmit($event)"
-  (onNavigateToEditorial)="navigateToEditorial()"
-  (onNavigateToFormat)="navigateToFormat()"
+  (deleteImage)="deleteImage($event)"
+  (formSubmit)="formSubmit($event)"
+  (navigateToEditorial)="navigateToEditorial()"
+  (navigateToFormat)="navigateToFormat()"
 />
 
 <div class="px-4 grid gap-4">

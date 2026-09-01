@@ -17,14 +17,14 @@ export class EditionListComponents {
   readonly editionDetailList = input.required<EditionDetailModel[]>();
   readonly isLoading = input.required<boolean>();
   
-  readonly onEdit = output<EditionDetailModel>();
-  readonly onDelete = output<EditionDetailModel>();
+  readonly edit = output<EditionDetailModel>();
+  readonly delete = output<EditionDetailModel>();
 
-  protected edit(item: EditionDetailModel): void {
-    this.onEdit.emit(item);
+  protected onEdit(item: EditionDetailModel): void {
+    this.edit.emit(item);
   }
 
-  protected delete(item: EditionDetailModel): void {
-    this.onDelete.emit(item);
+  protected onDelete(item: EditionDetailModel): void {
+    this.delete.emit(item);
   }
 }

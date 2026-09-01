@@ -25,22 +25,22 @@ export class EditionSearchComponent {
   readonly textTitle = input<string | null>(null);
   readonly textDescription = input<string | null>(null);
   readonly searchPlaceholder = input<string | null>(null);
-  readonly onSearchChange = output<string>();
-  readonly onAuthorIdSelected = output<number>();
-  readonly onFormatIdSelected = output<number>();
-  readonly onEditorialIdSelected = output<number>();
-  readonly onGenreIdSelected = output<number>();
-  readonly onSubjectIdSelected = output<number>();
+  readonly searchChange = output<string>();
+  readonly authorIdSelected = output<number>();
+  readonly formatIdSelected = output<number>();
+  readonly editorialIdSelected = output<number>();
+  readonly genreIdSelected = output<number>();
+  readonly subjectIdSelected = output<number>();
 
   protected readonly searchText = signal<string>('');
   protected readonly clearTrigger = signal<number>(0);
 
-  protected searchChange(event: Event) {
+  protected onSearchChange(event: Event) {
     this.searchText.set((event.target as HTMLInputElement).value);
   }
 
   private readonly emitSearch = effect(() => {
-    this.onSearchChange.emit(this.searchDebounced());
+    this.searchChange.emit(this.searchDebounced());
   });
 
   private readonly searchDebounced = toSignal(
@@ -54,30 +54,30 @@ export class EditionSearchComponent {
   protected onClear(): void {
     this.clearTrigger.update(v => v + 1);
     this.searchText.set('');
-    this.onAuthorIdSelected.emit(0);
-    this.onFormatIdSelected.emit(0);
-    this.onEditorialIdSelected.emit(0);
-    this.onGenreIdSelected.emit(0);
-    this.onSubjectIdSelected.emit(0);
+    this.authorIdSelected.emit(0);
+    this.formatIdSelected.emit(0);
+    this.editorialIdSelected.emit(0);
+    this.genreIdSelected.emit(0);
+    this.subjectIdSelected.emit(0);
   }
 
   protected authorSelected(item: AuthorModel | null) {
-    this.onAuthorIdSelected.emit(item?.id_author ?? 0)
+    this.authorIdSelected.emit(item?.id_author ?? 0)
   }
 
   protected formatSelected(item: FormatModel | null): void {
-    this.onFormatIdSelected.emit(item?.id_format ?? 0)
+    this.formatIdSelected.emit(item?.id_format ?? 0)
   }
 
   protected subjectSelected(item: SubjectModel | null): void {
-    this.onSubjectIdSelected.emit(item?.id_subject ?? 0)
+    this.subjectIdSelected.emit(item?.id_subject ?? 0)
   }
 
   protected editorialSelected(id: number) {
-    this.onEditorialIdSelected.emit(id)
+    this.editorialIdSelected.emit(id)
   }
 
   protected genreSelected(id: number) {
-    this.onGenreIdSelected.emit(id)
+    this.genreIdSelected.emit(id)
   }
 }

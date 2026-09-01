@@ -26,10 +26,10 @@ import { FormatModel } from '@features/format/models/format-model';
 export class EditionFormComponents {
   readonly isLoading = input<boolean>(false);
   readonly editionFormVM = input<EditionFormVM | null>();
-  protected readonly onFormSubmit = output<EditionFormVM>();
-  protected readonly onDeleteImage = output<number>();
-  protected readonly onNavigateToEditorial = output<void>();
-  protected readonly onNavigateToFormat = output<void>();
+  protected readonly formSubmit = output<EditionFormVM>();
+  protected readonly deleteImage = output<number>();
+  protected readonly navigateToEditorial = output<void>();
+  protected readonly navigateToFormat = output<void>();
 
   protected readonly formatClearTrigger = signal<number>(0);
   protected readonly errorMessage = signal<string | null>(null);
@@ -161,7 +161,7 @@ export class EditionFormComponents {
     reader.readAsDataURL(file);
   }
 
-  protected formSubmit(event: Event): void {
+  protected onSubmit(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -180,7 +180,7 @@ export class EditionFormComponents {
     } as EditionFormVM;
 
     this.errorMessage.set(null);
-    this.onFormSubmit.emit(submitData);
+    this.formSubmit.emit(submitData);
   }
 
   private validateFormOnSubmit(data: Partial<EditionFormVM>): string | null {
@@ -196,15 +196,15 @@ export class EditionFormComponents {
     return null;
   }
 
-  protected navigateToEditorial(): void {
-    this.onNavigateToEditorial.emit();
+  protected onNavigateToEditorial(): void {
+    this.navigateToEditorial.emit();
   }
 
-  protected navigateToFormat(): void {
-    this.onNavigateToFormat.emit();
+  protected onNavigateToFormat(): void {
+    this.navigateToFormat.emit();
   }
 
-  protected deleteImage(id_edition: number): void {
-    this.onDeleteImage.emit(id_edition)
+  protected onDeleteImage(id_edition: number): void {
+    this.deleteImage.emit(id_edition)
   }
 }

@@ -16,4 +16,15 @@ export class EditionCardListComponent {
   readonly isLoading = input<boolean>(false);
   readonly editionDetailList = input<EditionDetailModel[]>([]);
   protected readonly navigateTo = output<EditionDetailModel>();
+
+  protected navigate(item: EditionDetailModel): void {
+    this.navigateTo.emit(item);
+  }
+
+  protected onKeydown(event: KeyboardEvent, item: EditionDetailModel): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.navigate(item);
+    }
+  }
 }

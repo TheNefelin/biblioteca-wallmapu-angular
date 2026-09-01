@@ -2,9 +2,9 @@
   <h2 class="text-3xl font-bold text-my-purple tracking-tight">{{ textTitle() ?? 'Sin textTitle' }}</h2>
   <p class="text-my-green mt-2">{{ textDescription() ?? 'Sin Descripción' }}</p>
 
-  <label class="label mt-4 mb-1">
+  <span class="label mt-4 mb-1">
     <span class="label-text text-sm font-semibold">Buscar</span>
-  </label>
+  </span>
   <label class="input w-full focus-within:border-my-green focus-within:outline-none">
     <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
@@ -16,16 +16,16 @@
     <input type="search" class="grow" 
       [placeholder]="searchPlaceholder() ?? 'buscar...'"
       [value]="searchText()"
-      (input)="searchChange($event)"
-      (search)="searchChange($event)"
+      (input)="onSearchChange($event)"
+      (search)="onSearchChange($event)"
     />
   </label>
 
   <section class="flex gap-4 flex-wrap items-end mt-4">
     <div>
-      <label class="label mb-1 grid">
+      <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por autor</span>
-      </label>
+      </span>
       <app-author-select-components 
         [clearTrigger]="clearTrigger()"
         (onNewSelectedAuthor)="authorSelected($event)"
@@ -33,18 +33,18 @@
     </div>   
     
     <div>
-      <label class="label mb-1 grid">
+      <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por Formato</span>
-      </label>
+      </span>
       <app-format-select-component
         [clearTrigger]="clearTrigger()" 
         (newSelectedFormat)="formatSelected($event)"/>
     </div>
     
     <div>
-      <label class="label mb-1 grid">
+      <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por descriptor</span>
-      </label>
+      </span>
       <app-subject-select-components 
         [clearTrigger]="clearTrigger()"
         (onNewSelectedSubject)="subjectSelected($event)"
@@ -52,9 +52,9 @@
     </div>
 
     <div>
-      <label class="label mb-1 grid">
+      <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por editorial</span>
-      </label>
+      </span>
       <app-editorial-select-components 
         [clearTrigger]="clearTrigger()"
         (newSelectedId)="editorialSelected($event)"
@@ -62,9 +62,9 @@
     </div>
 
     <div>
-      <label class="label mb-1 grid">
+      <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por género</span>
-      </label>
+      </span>
       <app-genre-select-components 
         [clearTrigger]="clearTrigger()"
         (newSelectedId)="genreSelected($event)"

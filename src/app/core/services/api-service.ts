@@ -9,22 +9,26 @@ export class ApiService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
-  private path(namespace: string, resource: string): string {
-    const parts = [namespace, resource].filter(p => p && p.length > 0);
-    return `${this.apiUrl}/${parts.join('/')}`;
-  }
-
-  getAllPagination<T>(endpoint: string, params: PaginationRequestModel<null>): Observable<T> {
+  getAllPagination<T, F = null>(endpoint: string, params: PaginationRequestModel<F>): Observable<T> {
     let path = `?page=${params.page}&limit=${params.limit}`
-    
-    if (params.search && params.search.trim() != '')
+
+    if (params.search && params.search.trim() !== '')
       path = `${path}&search=${params.search}`
+
+    if (params.filter) {
+      const filter = params.filter as Record<string, unknown>;
+      for (const [key, value] of Object.entries(filter)) {
+        if (value === null || value === undefined || value === '') continue;
+        if (typeof value === 'number' && value <= 0) continue;
+        path = `${path}&${key}=${value}`;
+      }
+    }
 
     return this.http.get<T>(`${this.apiUrl}/${endpoint}/pagination${path}`);
   }
 
   getAll<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(endpoint);
+    return this.http.get<T>(`${this.apiUrl}/${endpoint}`);
   }
 
   getById<T>(endpoint: string, id: number | string): Observable<T> {

@@ -1,6 +1,6 @@
 <div class="w-full max-w-7xl p-4 mx-auto">
   <form class="fieldset bg-my-light rounded-box border p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
-    (submit)="formSubmit($event)">
+    (submit)="onSubmit($event)">
   
     <fieldset class="fieldset flex flex-col">  
       <div class="relative group overflow-hidden rounded-md shadow-lg">
@@ -20,7 +20,7 @@
               <button 
                 type="button"
                 class="text-sm text-my-light px-2 py-1 rounded bg-my-pink hover:bg-my-pink/90 text-my-ligh cursor-pointer"
-                (click)="deleteImage(editionFormVM()?.id_edition ?? 0)"
+                (click)="onDeleteImage(editionFormVM()?.id_edition ?? 0)"
               >
                 Eliminar
               </button>
@@ -30,7 +30,7 @@
       </div>
 
       @if (formData().isNewImg) {
-        <label class="label font-semibold">Cargar Portada del Libro</label>
+        <span class="label font-semibold">Cargar Portada del Libro</span>
 
         <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
           <span class="font-bold text-">Elegir Imagen</span>
@@ -52,10 +52,11 @@
       </div>
 
       <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">Edición: (1ra Edición; 2da Edición... 5ta Edición)</label>
+        <label for="editionInput" class="label font-semibold mb-1">Edición: (1ra Edición; 2da Edición... 5ta Edición)</label>
         <input
           [disabled]="isLoading()"
           #titleEdition
+          id="editionInput"
           type="text" class="input validator w-full" placeholder="Edición del Libro"
           [value]="formData().edition"
           (input)="updateEdition($any($event.target).value, titleEdition)"
@@ -64,10 +65,11 @@
       </fieldset>
 
       <fieldset class="fieldset">
-        <label class="label font-semibold mb-1">ISBN</label>
+        <label for="isbnInput" class="label font-semibold mb-1">ISBN</label>
         <input
           [disabled]="isLoading()"
           #isbnInput
+          id="isbnInput"
           type="text" class="input validator w-full uppercase" placeholder="Código isbn"
           [value]="formData().isbn"
           (input)="updateISBN($any($event.target).value, isbnInput)"
@@ -77,10 +79,11 @@
 
       <div class="flex gap-x-4 flex-wrap">
         <fieldset class="fieldset">
-          <label class="label font-semibold mb-1">Paginas</label>
+          <label for="pagesInput" class="label font-semibold mb-1">Paginas</label>
           <input
             [disabled]="isLoading()"
             #pagesInput
+            id="pagesInput"
             type="text" class="input validator max-w-20" placeholder="Paginas" required
             [value]="formData().pages"
             (input)="updatePages($any($event.target).value, pagesInput)"
@@ -89,10 +92,11 @@
         </fieldset>   
   
         <fieldset class="fieldset">
-          <label class="label font-semibold mb-1">Año de publicación</label>
+          <label for="yearInput" class="label font-semibold mb-1">Año de publicación</label>
           <input
             [disabled]="isLoading()"
             #yearInput
+            id="yearInput"
             type="text" class="input validator max-w-20" placeholder="Año" required
             [value]="formData().publication_year"
             (input)="updateYear($any($event.target).value, yearInput)"
@@ -101,27 +105,27 @@
         </fieldset>
 
         <fieldset class="fieldset">
-          <label class="label font-semibold mb-1">Editorial</label>
+          <span class="label font-semibold mb-1">Editorial</span>
           <div class="flex gap-2">
             <app-editorial-select-components 
               [selectedId]="formData().editorial_id ?? 0" 
               (newSelectedId)="updateEditorial($event)" 
             /> 
-            <app-button-create-component (clicked)="navigateToEditorial()"/>
+            <app-button-create-component (clicked)="onNavigateToEditorial()"/>
           </div>
         </fieldset>
       </div>
 
       <div>
         <div class="divider text-base-content/40">Formatos</div>
-        <label class="label font-semibold">Seleccionar Formato/s</label>
+        <span class="label font-semibold">Seleccionar Formato/s</span>
         <div class="my-2 flex gap-2">
           <app-format-select-component 
             class="flex-1" 
             [clearTrigger]="formatClearTrigger()"
             (newSelectedFormat)="addFormat($event)"
           />
-          <app-button-create-component (clicked)="navigateToFormat()"/>
+          <app-button-create-component (clicked)="onNavigateToFormat()"/>
         </div>
         <app-format-selected-list-component 
           [formatList]="formData().formats" 
@@ -134,7 +138,7 @@
       <app-loading-component/>
     } @else {
     <button class="btn btn-lg bg-my-purple hover:bg-my-purple/80 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
-      {{ formData().id_edition == 0 ? 'Crear Edición' : 'Modificar Edición' }}
+      {{ formData().id_edition === 0 ? 'Crear Edición' : 'Modificar Edición' }}
     </button>  
     }
   </form>

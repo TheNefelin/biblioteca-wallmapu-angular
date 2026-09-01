@@ -24,12 +24,12 @@
     [textTitle]="'La lectura nos abre las puertas del mundo'"
     [textDescription]="'Revisa nuestro catálogo de libros y elige el que quieras leer.'"
     [searchPlaceholder]="'Buscar por Título o ISBN...'"
-    (onSearchChange)="searchText($event)"
-    (onAuthorIdSelected)="onAuthorIdSelected($event)"
-    (onFormatIdSelected)="onFormatIdSelected($event)"
-    (onEditorialIdSelected)="onEditorialIdSelected($event)"
-    (onGenreIdSelected)="onGenreIdSelected($event)"
-    (onSubjectIdSelected)="onSubjectIdSelected($event)"
+    (searchChange)="searchText($event)"
+    (authorIdSelected)="onAuthorIdSelected($event)"
+    (formatIdSelected)="onFormatIdSelected($event)"
+    (editorialIdSelected)="onEditorialIdSelected($event)"
+    (genreIdSelected)="onGenreIdSelected($event)"
+    (subjectIdSelected)="onSubjectIdSelected($event)"
   />
 </div>
 

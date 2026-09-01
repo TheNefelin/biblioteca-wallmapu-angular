@@ -38,8 +38,8 @@
 <app-edition-list-components 
   [isLoading]="isLoading()"
   [editionDetailList]="computedEditionList()"
-  (onEdit)="editEdition($event)"
-  (onDelete)="deleteEdition($event)"
+  (edit)="editEdition($event)"
+  (delete)="deleteEdition($event)"
 />
 
 <app-modal-delete-component

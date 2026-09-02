@@ -27,11 +27,11 @@ describe('CopyService', () => {
   });
 
   describe('getAllByEditionId', () => {
-    it('debería hacer GET a apiUrl/copy/detail/edition/{id}', () => {
+    it('debería hacer GET a apiUrl/copy/edition/{id}', () => {
       service.getAllByEditionId(9).subscribe();
 
       const req = httpMock.expectOne(r => r.method === 'GET');
-      expect(req.request.url).toContain('/api/copy/detail/edition/9');
+      expect(req.request.url).toContain('/api/copy/edition/9');
       req.flush([]);
     });
   });
@@ -48,7 +48,7 @@ describe('CopyService', () => {
 
   describe('create', () => {
     it('debería hacer POST a apiUrl/copy con el payload', () => {
-      const payload = { signature_topography: 'ABCdef-c0-2026', edition_id: 9, copy_number: 1 };
+      const payload = { signature_topography: 'ABCdef-c0-2026', edition_id: 9, copy_number: 1, status_id: 1 };
       service.create(payload).subscribe();
 
       const req = httpMock.expectOne(r => r.method === 'POST');

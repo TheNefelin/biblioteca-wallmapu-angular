@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-signature-manual-components',
-  imports: [],
+  imports: [ButtonComponent],
   templateUrl: './signature-manual-components.html',
 })
 export class SignatureManualComponents {
-  protected onClick(event: Event): void {
-    event.preventDefault();
-  }
+  protected readonly closeHelpModal = output<void>();
 }

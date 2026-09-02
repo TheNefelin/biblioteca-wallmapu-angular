@@ -13,38 +13,20 @@
   (navigateToFormat)="navigateToFormat()"
 />
 
-<div class="px-4 grid gap-4">
-  @if(successMessage()) {
-    <app-message-success-component [message]="successMessage()" />
-  }
-
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()"/> 
-  }
-</div>
-
-@if (isEditMode()) {
-  <div class="m-4 flex justify-end">
-    <app-button-create-component
-      [textBtn]="'Crear Copia'"
-      (clicked)="onCreateCopy()"
-    />
-  </div>  
-}
-
 <app-copy-list-for-edition-components
-  [isLoading]="isLoading()"
-  [copyList]="computedCopyList()"
-  (edit)="onEditEdition($event)"
+  [isLoading]="copy.isLoading()"
+  [copyList]="copy.dataList()"
+  (refresh)="onReloadCopy()"
+  (create)="onCreateCopy()"
+  (edit)="onEditCopy($event)"
   (delete)="onDeleteCopy($event)"
 />
 
-<app-modal-action-component
-  [isLoading]="isLoading()"
-  [isOpen]="openDeleteModal()"
-  [textTitle]="'Eliminar Copia'"
-  [textContent]="'¿Estás seguro que deseas eliminar la Copia?'"
-  [textName]="selectedCopyToDelete()?.signature_topography + ' - Copia N°: ' + selectedCopyToDelete()?.copy_number"
-  (onConfirm)="confirmDelete()"
-  (onModalClose)="closeDeleteModal()"
-/>
+@if (copy.showForm()) {
+  <app-copy-form-components
+    [isSaving]="isSaving()"
+    [copy]="copy.selectedItem()"
+    (cancelForm)="copy.showForm.set(false)"
+    (submitForm)="submitCopyForm($event)"
+  />
+}

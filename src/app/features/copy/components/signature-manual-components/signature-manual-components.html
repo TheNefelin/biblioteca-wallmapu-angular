@@ -1,99 +1,92 @@
-<!-- You can open the modal using ID.showModal() method -->
-<button
-  (click)="onClick($event)"
-  class="btn bg-my-pink hover:bg-my-pink/80 text-my-light" onclick="my_modal_5.showModal()">Como Generar Firma</button>
-<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold text-my-green">Como Generar Firma Topografica</h3>
-    <p class="py-4 text-sm font-bold text-my-purple">Formato: AAAttt-[sub]-[cN]-[año]</p>
-    <p class="text-sm text-my-dark/80">
-      <span class="font-bold text-my-purple">- AAA: </span>
-      3 letras del apellido del autor, en mayúscula.
-    </p>
-    <p class="text-sm text-my-dark/80">
-      <span class="font-bold text-my-purple">- ttt: </span>
-      3 letras del título, en minúscula (sin artículos).
-    </p>
-    <p class="text-sm text-my-dark/80">
-      <span class="font-bold text-my-purple">- sub: </span>
-      3 letras del subtítulo si hay títulos similares.
-    </p>
-    <p class="text-sm text-my-dark/80">
-      <span class="font-bold text-my-purple">- cN: </span>
-      número de copia desde la segunda (-c1, -c2, etc.).
-    </p>
-    <p class="text-sm text-my-dark/80">
-      <span class="font-bold text-my-purple">- año: </span>
-      agregar si existe otra edición del mismo título.
-    </p>
+<dialog class="modal modal-bottom sm:modal-middle modal-open">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold text-my-green">Como Generar Firma Topografica</h3>
+      <p class="py-4 text-sm font-bold text-my-purple">Formato: AAAttt-[sub]-[cN]-[año]</p>
+      <p class="text-sm text-my-dark/80">
+        <span class="font-bold text-my-purple">- AAA: </span>
+        3 letras del apellido del autor, en mayúscula.
+      </p>
+      <p class="text-sm text-my-dark/80">
+        <span class="font-bold text-my-purple">- ttt: </span>
+        3 letras del título, en minúscula (sin artículos).
+      </p>
+      <p class="text-sm text-my-dark/80">
+        <span class="font-bold text-my-purple">- sub: </span>
+        3 letras del subtítulo si hay títulos similares.
+      </p>
+      <p class="text-sm text-my-dark/80">
+        <span class="font-bold text-my-purple">- cN: </span>
+        número de copia desde la segunda (-c1, -c2, etc.).
+      </p>
+      <p class="text-sm text-my-dark/80">
+        <span class="font-bold text-my-purple">- año: </span>
+        agregar si existe otra edición del mismo título.
+      </p>
 
-    <p class="py-4 text-sm font-bold text-my-purple">Ejemplos:</p>
-    <div>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">1. </span>
-        Marcela Paz – Diario secreto de Papelucho, copia 1, año 1968
-      </p>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">Firma: </span>
-        PAZdia
-      </p>  
+      <p class="py-4 text-sm font-bold text-my-purple">Ejemplos:</p>
+      <div>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">1. </span>
+          Marcela Paz – Diario secreto de Papelucho, copia 1, año 1968
+        </p>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">Firma: </span>
+          PAZdia
+        </p>
+      </div>
+      <div class="pt-4">
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">2. </span>
+          Marcela Paz – Diario secreto de Papelucho, copia 1, año 1968
+        </p>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">Firma: </span>
+          PAZdia-c1
+        </p>
+      </div>
+      <div class="pt-4">
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">3. </span>
+          Marcela Paz – Diario secreto de Papelucho, copia 1, año 2017
+        </p>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">Firma: </span>
+          PAZdia-2017
+        </p>
+      </div>
+      <div class="pt-4">
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">4. </span>
+          Papelucho Historiador
+        </p>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">Firma: </span>
+          PAZpaphis
+        </p>
+      </div>
+      <div class="pt-4">
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">5. </span>
+          Papelucho Casi Huérfano
+        </p>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">Firma: </span>
+          PAZpapcas
+        </p>
+      </div>
+      <div class="pt-4">
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">6. </span>
+          Papelucho Mi Hermano Hippie
+        </p>
+        <p class="text-sm text-my-dark/80">
+          <span class="font-bold text-my-purple">Firma: </span>
+          PAZpapher
+        </p>
+      </div>
+
+      <div class="modal-action">
+        <app-button-component [icon]="'cancel'" [textBtn]="'Cerrar'" (clicked)="closeHelpModal.emit()"/>
+      </div>
     </div>
-    <div class="pt-4">
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">2. </span>
-        Marcela Paz – Diario secreto de Papelucho, copia 1, año 1968
-      </p>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">Firma: </span>
-        PAZdia-c1
-      </p>  
-    </div>
-    <div class="pt-4">
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">3. </span>
-        Marcela Paz – Diario secreto de Papelucho, copia 1, año 2017
-      </p>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">Firma: </span>
-        PAZdia-2017
-      </p>  
-    </div>
-    <div class="pt-4">
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">4. </span>
-        Papelucho Historiador
-      </p>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">Firma: </span>
-        PAZpaphis
-      </p>  
-    </div>
-    <div class="pt-4">
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">5. </span>
-        Papelucho Casi Huérfano
-      </p>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">Firma: </span>
-        PAZpapcas
-      </p>  
-    </div>    
-    <div class="pt-4">
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">6. </span>
-        Papelucho Mi Hermano Hippie
-      </p>
-      <p class="text-sm text-my-dark/80">
-        <span class="font-bold text-my-purple">Firma: </span>
-        PAZpapher
-      </p>  
-    </div>   
-    
-    <div class="modal-action">
-      <form method="dialog">
-        <!-- if there is a button in form, it will close the modal -->
-        <button class="btn bg-my-purple hover:bg-my-purple/80 text-my-light">Cerrar</button>
-      </form>
-    </div>
-  </div>
-</dialog>
+  </dialog>

@@ -77,10 +77,6 @@ export const routes: Routes = [
         loadChildren: () => import('@features/edition/edition.routes').then(m => m.EDITION_ROUTES),
       },
       {
-        path: 'copy',
-        loadChildren: () => import('@features/copy/copy.routes').then(m => m.COPY_ROUTES),
-      },
-      {
         path: 'news',
         loadChildren: () => import('@features/news/news.routes').then(m => m.NEWS_ROUTES),
       },

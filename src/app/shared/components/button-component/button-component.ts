@@ -11,7 +11,9 @@ export type ButtonIcon =
   | 'save'
   | 'goto'
   | 'barcode'
-  | 'notification';
+  | 'notification'
+  | 'help'
+  | 'download';
 
 @Component({
   selector: 'app-button-component',

@@ -1,7 +1,7 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
-import { CopyDetailModel, CopyModel, CreateCopyModel, UpdateCopyModel } from '@features/copy/models/copy-model';
+import { CopyDetailModel, CopyModel, SaveCopyModel } from '@features/copy/models/copy-model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +10,9 @@ export class CopyService {
   private apiService = inject(ApiService)
   private readonly endpoint = 'copy';
 
-  getAllByEditionId(id_edition: number): Observable<CopyDetailModel[]> {
-    return this.apiService.getById<CopyDetailModel[]>(
-      `${this.endpoint}/detail/edition`, id_edition
+  getAllByEditionId(id_edition: number): Observable<CopyModel[]> {
+    return this.apiService.getById<CopyModel[]>(
+      `${this.endpoint}/edition`, id_edition
     );
   }
 
@@ -22,14 +22,14 @@ export class CopyService {
     );
   }  
 
-  create(item: CreateCopyModel): Observable<CopyModel> {
-    return this.apiService.create<CopyModel, CreateCopyModel>(
+  create(item: SaveCopyModel): Observable<CopyModel> {
+    return this.apiService.create<CopyModel, SaveCopyModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateCopyModel): Observable<CopyModel> {
-    return this.apiService.update<CopyModel, UpdateCopyModel>(
+  update(id: number, item: SaveCopyModel): Observable<CopyModel> {
+    return this.apiService.update<CopyModel, SaveCopyModel>(
       this.endpoint, id, item
     );
   }

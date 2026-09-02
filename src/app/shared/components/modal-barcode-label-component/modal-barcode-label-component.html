@@ -1,30 +1,31 @@
-@if (isOpen()) {
-  <div class="modal modal-open" role="dialog">
-    <div class="modal-box bg-my-light">
-      
-      <h3 class="text-lg font-bold text-my-pink">
-        Etiqueta
-      </h3>
+<div class="modal modal-open" role="dialog">
+  <div class="modal-box bg-my-light grid gap-2">
+    <h3 class="text-lg font-bold text-my-pink">Etiqueta</h3>
 
-      <section class="border-2 p-4 grid justify-center">
+    <div>
+      <app-button-component [icon]="'download'" [textBtn]="'Descarga'" (clicked)="downloadLabel()" />
+      <section class="border-2 grid justify-center">
         <img [src]="labelUrl()" alt="Etiqueta" class="mx-auto" />
       </section>
-
-      <section class="border-2 p-4 grid justify-center mt-2">
+    </div>
+    
+    <div>
+      <app-button-component [icon]="'download'" [textBtn]="'Descarga'" (clicked)="downloadCombined()" />
+      <section class="border-2 grid justify-center">
         <img [src]="combinedUrl()" alt="Combinada" class="mx-auto" />
       </section>
-
-      <section class="border-2 p-4 grid justify-center mt-2">
+    </div>
+  
+    <div>
+      <app-button-component [icon]="'download'" [textBtn]="'Descarga'" (clicked)="downloadRow()" />
+      <section class="border-2 grid justify-center">
         <img [src]="rowUrl()" alt="Fila" class="mx-auto" />
       </section>
-
-      <div class="modal-action flex-wrap gap-2">
-        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light" (click)="downloadLabel()">Descarga 1</button>
-        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light" (click)="downloadCombined()">Descarga 2</button>
-        <button class="btn bg-my-green hover:bg-my-green/80 text-my-light" (click)="downloadRow()">Descarga 3</button>
-        <button class="btn" (click)="onModalClose.emit()">Cerrar</button> 
-      </div>
-
     </div>
+    
+    <div class="modal-action">
+      <app-button-component [icon]="'cancel'" [textBtn]="'Cerrar'" (click)="closeModal.emit()" />
+    </div>
+    
   </div>
-}
+</div>

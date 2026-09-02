@@ -1,10 +1,11 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, effect, input, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
 import { FormatSelectedListComponent } from "@features/format/components/format-selected-list-component/format-selected-list-component";
 import { FormatModel } from '@features/format/models/format-model';
@@ -12,12 +13,13 @@ import { FormatModel } from '@features/format/models/format-model';
 @Component({
   selector: 'app-edition-form-components',
   imports: [
+    FormsModule,
     DatePipe,
     NgOptimizedImage,
     LoadingComponent,
     EditorialSelectComponents,
     MessageErrorComponent,
-    ButtonCreateComponent,
+    ButtonComponent,
     FormatSelectComponent,
     FormatSelectedListComponent
 ],
@@ -161,10 +163,7 @@ export class EditionFormComponents {
     reader.readAsDataURL(file);
   }
 
-  protected onSubmit(event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-
+  protected onSubmit(): void {
     this.errorMessage.set(null);
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);

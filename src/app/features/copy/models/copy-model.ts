@@ -5,18 +5,9 @@ export interface SaveCopyModel {
   status_id: number;
 }
 
-export interface CreateCopyModel {
-  signature_topography: string;
-  edition_id: number;
-  copy_number: number;
-}
-
-export interface UpdateCopyModel extends CreateCopyModel {
+export interface CopyModel extends SaveCopyModel {
+  status_name: string;
   id_copy: number;
-  status_id: number;
-}
-
-export interface CopyModel extends UpdateCopyModel {
   barcode: string;
   created_at: string;
   updated_at: string;

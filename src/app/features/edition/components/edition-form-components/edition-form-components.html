@@ -1,6 +1,6 @@
 <div class="w-full max-w-7xl p-4 mx-auto">
-  <form class="fieldset bg-my-light rounded-box border p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
-    (submit)="onSubmit($event)">
+  <form class="fieldset bg-my-light rounded-box p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
+    (ngSubmit)="onSubmit()">
   
     <fieldset class="fieldset flex flex-col">  
       <div class="relative group overflow-hidden rounded-md shadow-lg">
@@ -17,13 +17,7 @@
         @if (!formData().isNewImg) {
           <div class="absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div class="absolute top-4 right-4">
-              <button 
-                type="button"
-                class="text-sm text-my-light px-2 py-1 rounded bg-my-pink hover:bg-my-pink/90 text-my-ligh cursor-pointer"
-                (click)="onDeleteImage(editionFormVM()?.id_edition ?? 0)"
-              >
-                Eliminar
-              </button>
+              <app-button-component [icon]="'delete'" [textBtn]="'Eliminar'" (clicked)="onDeleteImage(editionFormVM()?.id_edition ?? 0)"/>
             </div>
           </div>
         }
@@ -111,7 +105,7 @@
               [selectedId]="formData().editorial_id ?? 0" 
               (newSelectedId)="updateEditorial($event)" 
             /> 
-            <app-button-create-component (clicked)="onNavigateToEditorial()"/>
+            <app-button-component [icon]="'create'" (clicked)="onNavigateToEditorial()"/>
           </div>
         </fieldset>
       </div>
@@ -125,7 +119,7 @@
             [clearTrigger]="formatClearTrigger()"
             (newSelectedFormat)="addFormat($event)"
           />
-          <app-button-create-component (clicked)="onNavigateToFormat()"/>
+          <app-button-component [icon]="'create'" (clicked)="onNavigateToFormat()"/>
         </div>
         <app-format-selected-list-component 
           [formatList]="formData().formats" 
@@ -137,9 +131,7 @@
     @if (isLoading()) {
       <app-loading-component/>
     } @else {
-    <button class="btn btn-lg bg-my-purple hover:bg-my-purple/80 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
-      {{ formData().id_edition === 0 ? 'Crear Edición' : 'Modificar Edición' }}
-    </button>  
+      <app-button-component [icon]="'save'" [textBtn]="formData().id_edition === 0 ? 'Crear Edición' : 'Modificar Edición'" />
     }
   </form>
 

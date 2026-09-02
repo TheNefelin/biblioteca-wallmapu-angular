@@ -1,53 +1,78 @@
-<ul class="list bg-base-100 rounded-box shadow-md m-4">
-  <li class="p-4 pb-2 opacity-60 tracking-wide">Copias / Ejemplares</li>
+<section class="p-4 grid grid-cols-1 gap-4">
+  <div class="bg-my-light rounded-md text-my-dark shadow-xl overflow-x-auto">
+    <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
+      <div>
+        <h2 class="font-bold text-my-purple text-lg">
+          Gestión de Copias
+        </h2>
+        <p class="text-sm text-my-dark/50">
+          Lista de Copias
+        </p>
+      </div>
 
-  @if (isLoading()) {
-    <section class="mx-auto p-4">
-      <app-loading-component/>
-    </section>
-  } @else {
-  
-    @for (item of copyList(); track item.id_copy) {
-      <li class="list-row">
-        <div class="relative overflow-hidden size-20">
-          <div>ID: {{ item.id_copy }}</div>
-          <div>Copia N°: {{ item.copy_number }}</div>
+      <div class="flex gap-2 items-center">
+        <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="refresh.emit()" />
+        <app-button-component [icon]="'create'" textBtn="Crear Copia" (clicked)="create.emit()" />
+      </div>
+    </header>
+
+    <div class="overflow-x-auto">
+      @if (isLoading()) {
+        <div class="p-4 flex justify-center">
+          <app-loading-component/>
         </div>
-        
-        <div>
-          <div class="text-xs uppercase font-semibold opacity-60">
-            <span>{{ item.created_at | date:'yyyy-MM-dd' }}</span>
-            <span class="hidden md:inline"> - {{ item.created_at | date:'HH:mm:ss' }}</span>
-          </div>
+      } @else {
+        <table class="table w-full text-center py-4">
+          <thead class="uppercase">
+            <tr>
+              <th>Id Copia</th>
+              <th>Firma / Nro. Copia</th>
+              <th>Estado</th>
+              <th>Creación / Modificación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
 
-          <p class="font-bold text-my-purple">{{ item.signature_topography }}</p>
-          
-          @if (item?.status_id === 1) {
-            <div class="text-my-purple">
-              <span class="font-bold">Estado: </span>
-              <span>{{ item?.status_name }}</span>
-            </div>
-          } @else {
-            <div class="text-my-pink">
-              <span class="font-bold">Estado: </span>
-              <span>{{ item?.status_name }}</span>
-            </div>
-          }
+          <tbody class="[&>tr>td]:align-middle">
+            @for (item of copyList(); track item.id_copy) {
+              <tr class="hover:bg-my-purple/10 text-my-purple">
+                <td>{{ item.id_copy }}</td>
+                <td>
+                  <div>{{ item.signature_topography }}</div>
+                  <div class="font-bold">Copia N°: {{ item.copy_number }}</div>
+                </td>
+                <td class="text-my-light">
+                  @if (item?.status_id === 1) {
+                    <div class="bg-my-purple p-1">
+                      {{ item.status_name }}                      
+                    </div>
+                  } @else {
+                    <div class="bg-my-pink p-1">
+                      {{ item.status_name }}
+                    </div>
+                  }
+                </td>
+                <td>
+                  <div>{{ item.created_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
+                  <div>{{ item.updated_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
+                </td>
+                <td class="flex justify-center gap-2">
+                  <app-button-component [icon]="'barcode'" (clicked)="onSelectedBarcode(item.barcode)" />
+                  <app-button-component [icon]="'edit'" (clicked)="edit.emit(item)" />
+                  <app-button-component [icon]="'delete'" (clicked)="delete.emit(item)" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</section>
 
-        </div>
-      
-        <button
-          (click)="delete.emit(item)"
-          class="btn bg-my-pink text-my-light">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
-        </button>
-      
-        <button
-          (click)="edit.emit(item)" 
-          class="btn bg-my-green text-my-light">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z"/></svg>
-        </button>
-      </li>
-    }
-  }  
-</ul>
+@if (openModal()) {
+  <app-modal-barcode-label-component 
+    [barcode]="selectedBarcode()"
+    (closeModal)="openModal.set(false)"
+  />
+}

@@ -1,9 +1,10 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 import BwipJs from 'bwip-js/browser';
+import { ButtonComponent } from "../button-component/button-component";
 
 @Component({
   selector: 'app-modal-barcode-label-component',
-  imports: [],
+  imports: [ButtonComponent],
   templateUrl: './modal-barcode-label-component.html',
 })
 export class ModalBarcodeLabelComponent {
@@ -11,9 +12,8 @@ export class ModalBarcodeLabelComponent {
   private readonly SITE_NAME = 'Wallmapu de Mesana';
   private readonly SITE_URL = 'https://wallmapumesana.cl';
 
-  readonly isOpen = input.required<boolean>();
   readonly barcode = input<string | null>(null);
-  readonly onModalClose = output<void>();
+  readonly closeModal = output<void>();
 
   protected readonly labelUrl = signal<string | null>(null);
   protected readonly combinedUrl = signal<string | null>(null);

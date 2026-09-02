@@ -1,50 +1,60 @@
 import { Component, input, linkedSignal, output, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { CopyStatusSelectComponents } from "@features/copy-status/components/copy-status-select-components/copy-status-select-components";
-import { SignatureManualComponents } from "../signature-manual-components/signature-manual-components";
-import { CopyModel } from '@features/copy/models/copy-model';
+import { SignatureManualComponents } from "@features/copy/components/signature-manual-components/signature-manual-components";
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { CopyModel, SaveCopyModel } from '@features/copy/models/copy-model';
+import { DatePipe } from '@angular/common';
+import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
   selector: 'app-copy-form-components',
   imports: [
-    FormsModule,
-    LoadingComponent,
-    MessageErrorComponent,
+    DatePipe,
+    ButtonComponent,
     CopyStatusSelectComponents,
-    SignatureManualComponents
-],
+    SignatureManualComponents,
+    LoadingComponent,
+    MessageErrorComponent
+  ],
   templateUrl: './copy-form-components.html',
 })
 export class CopyFormComponents {
-  readonly isLoading = input<boolean>(true);
-  readonly copyModel = input<CopyModel | null>(null);
-  readonly formSubmit = output<CopyModel>();
+  readonly isSaving = input<boolean>(false);
+  readonly copy = input<CopyModel | null>(null);
+  protected readonly submitForm = output<SaveCopyModel>();
+  protected readonly cancelForm = output<void>();
 
-  protected readonly toggleStatus = signal<boolean>(true);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly showHelpModal = signal<boolean>(false);
 
-  protected readonly formData = linkedSignal<CopyModel | null, CopyModel>({
-    source: this.copyModel,
-    computation: (item) => item ?? {
-      id_copy: 0,
-      signature_topography: '',
-      edition_id: 0,
-      copy_number: 0,
-      status_id: 1,
-      barcode: '',
-      created_at: '',
-      updated_at: '',
-    },
+  protected openHelpModal(): void {
+    this.showHelpModal.set(true);
+  }
+
+  protected closeHelpModal(): void {
+    this.showHelpModal.set(false);
+  }
+
+  protected readonly formData = linkedSignal<SaveCopyModel>(() => {
+    const payload = this.copy();
+
+    return {
+      signature_topography: payload?.signature_topography ?? '',
+      edition_id: payload?.edition_id ?? 0,
+      copy_number: payload?.copy_number ?? 0,
+      status_id: payload?.status_id ?? 1,
+    }
   });
 
   protected updateTopography(value: string, input: HTMLInputElement) {
     this.updateField('signature_topography', value, input);
+    this.errorMessage.set(null);
   }
 
   protected updateCopyNumber(value: string, input: HTMLInputElement) {
     this.updateField('copy_number', value, input);
+    this.errorMessage.set(null);
   }
 
   protected updateStatus(value: number) {
@@ -52,7 +62,7 @@ export class CopyFormComponents {
     this.errorMessage.set(null);
   }
 
-  private updateField<K extends keyof CopyModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof SaveCopyModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -64,7 +74,7 @@ export class CopyFormComponents {
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof CopyModel, value: string): string | number | null {
+  private sanitize(key: keyof SaveCopyModel, value: string): string | number | null {
     switch (key){
       case 'signature_topography':
         if (value.length > 50) return null;
@@ -88,10 +98,10 @@ export class CopyFormComponents {
     }
 
     this.errorMessage.set(null);
-    this.formSubmit.emit(data);
+    this.submitForm.emit(data);
   }
 
-  private validateFormOnSubmit(data: CopyModel): string | null {
+  private validateFormOnSubmit(data: SaveCopyModel): string | null {
     if (data.copy_number == null)
       return 'El número de copia es requerido';
 
@@ -99,10 +109,5 @@ export class CopyFormComponents {
       return 'El número de copia debe ser mayor a 0';
 
     return null;
-  }
-
-  protected activateStatusBtn(event: Event): void {
-    event.preventDefault();
-    this.toggleStatus.update(value => !value);
   }
 }

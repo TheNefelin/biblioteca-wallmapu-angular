@@ -1,58 +1,65 @@
-<form (ngSubmit)="onSubmit()" class="fieldset bg-my-light rounded-box shadow-xl p-6 grid">
-  <div class="fieldset">
-    <span class="label font-semibold mb-1">Estado:</span>
-    <div class="flex flex-row gap-2">
-      <app-copy-status-select-components
-        [selectedId]="copyModel()?.status_id ?? 1"
-        (newSelectedId)="updateStatus($event)"
-        [disabled]="toggleStatus()"
-      />
+<dialog class="modal modal-bottom modal-open sm:modal-middle">
+  <div class="modal-box overflow-visible grid">
 
-      @if (formData().id_copy !== 0) {
-        <button
-          (click)="activateStatusBtn($event)" 
-          class="btn bg-my-green text-my-light">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z"/></svg>
-        </button>
-      }
-    </div>
-  </div>
-
-  <fieldset class="fieldset">
-    <label for="topographyInput" class="label font-semibold mb-1">Firma Topografica:</label>
-    <input
-      #topographyInput
-      id="topographyInput"
-      type="text" class="input w-full" placeholder="ABCdef-c0-2026" 
-      [value]="formData().signature_topography"
-      (input)="updateTopography($any($event.target).value, topographyInput)"
-    />
-    <app-signature-manual-components />
-  </fieldset>
-  
-  <fieldset class="fieldset">
-    <label for="copynumberInput" class="label font-semibold mb-1">Numero de Copia:</label>
-    <input
-      #copynumberInput
-      id="copynumberInput"
-      type="text" class="input validator w-full" placeholder="0" required 
-      [value]="formData().copy_number"
-      (input)="updateCopyNumber($any($event.target).value, copynumberInput)"
-    />
-    <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
-  </fieldset> 
-
-  @if (isLoading()) {
-    <app-loading-component/>
-  } @else {
-  <button class="btn btn-md bg-my-purple hover:bg-my-purple/80 text-my-light mt-4 self-start px-6 py-2 rounded-md font-semibold" type="submit">
-    {{ formData().id_copy === 0 ? 'Crear Copia' : 'Modificar Copia' }}
-  </button>  
-  }
-
-  @if (errorMessage()) {
+    <h3 class="card-title text-xl text-my-purple font-bold">{{ copy() ? 'Modificar': 'Crear' }} Copia</h3>
     <div class="py-4">
-      <app-message-error-component [message]="errorMessage()"/>
+      <p class="text-sm text-base-content/60">ID: {{ copy()?.id_copy }}</p>
+      <p class="text-sm text-base-content/60">{{ copy()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Creación</p>
+      <p class="text-sm text-base-content/60">{{ copy()?.updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Modificación</p>  
     </div>
-  }
-</form>
+  
+    @if (errorMessage()) {
+      <app-message-error-component [message]="errorMessage()"/>
+    }
+
+    <form class="grid grid-cols-1">
+      <fieldset class="fieldset">
+        <label for="nameInput" class="label font-semibold mb-1">Estado:</label>
+        <app-copy-status-select-components
+          [selectedId]="formData().status_id"
+          (newSelectedId)="updateStatus($event)"
+        />
+      </fieldset>
+      
+      <fieldset class="fieldset">
+        <label for="nameInput" class="label font-semibold mb-1">Firma Topografica:</label>
+        <input
+          #signatureInput
+          type="text" class="input validator w-full" placeholder="Firma" required 
+          [disabled]="isSaving()"
+          [value]="formData().signature_topography"
+          (input)="updateTopography($any($event.target).value, signatureInput)"
+        />
+        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
+        <app-button-component [icon]="'help'"[textBtn]="'Como Generar Firma'" (clicked)="openHelpModal()" />
+      </fieldset> 
+
+      <fieldset class="fieldset">
+        <label for="copynumberInput" class="label font-semibold mb-1">N° de Copia:</label>
+        <input
+          #copynumberInput
+          id="copynumberInput"
+          type="text" class="input validator w-full" placeholder="0" required 
+          [disabled]="isSaving()"
+          [value]="formData().copy_number"
+          (input)="updateCopyNumber($any($event.target).value, copynumberInput)"
+        />
+        <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
+      </fieldset>         
+      
+      <div class="justify-self-end flex gap-2 items-center pt-4">
+        @if (isSaving()) {
+          <app-loading-component/>
+        } @else {
+          <app-button-component [icon]="'save'" [textBtn]="'Guardar'" (clicked)="onSubmit()" />
+          <app-button-component [icon]="'cancel'" [textBtn]="'Cancelar'" (clicked)="cancelForm.emit()" />
+        }
+      </div>
+    </form>
+    
+  </div>
+</dialog>
+
+@if (showHelpModal()) {
+  <app-signature-manual-components (closeHelpModal)="closeHelpModal()"/>
+}

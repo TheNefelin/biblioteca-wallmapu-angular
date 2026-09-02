@@ -1,16 +1,14 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { Component, computed, input, linkedSignal, output, signal } from '@angular/core';
 import { EditorialModel } from '@features/book-editorial/models/editorial-model';
-import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   selector: 'app-editorial-form-component',
   imports: [
     DatePipe,
-    ButtonClearComponent,
-    ButtonCreateComponent,
+    ButtonComponent,
     LoadingComponent,
   ],
   templateUrl: './editorial-form-component.html',
@@ -18,22 +16,20 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 export class EditorialFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly editorial = input<EditorialModel | null>(null);
-  protected readonly onFormSubmit = output<EditorialModel>();
-  protected readonly onClear = output<void>();
+  protected readonly submitForm = output<EditorialModel>();
+  protected readonly cancelForm = output<void>();
 
-  protected readonly errorMessage = signal<string | null>(null); 
+  protected readonly errorMessage = signal<string | null>(null);
   protected readonly actionText = computed<string>(() => this.editorial() ? 'Modificar Editorial' : 'Crear Editorial');
-  protected readonly formData = signal<Partial<EditorialModel>>({});
 
-  private readonly updateFormEffect = effect(() => {
-    const item = this.editorial();
-    
-    if (!item) {
-      this.formData.set({ name: '' });
-      return;
-    }
-
-    this.formData.set({ ...item });
+  protected readonly formData = linkedSignal<EditorialModel | null, EditorialModel>({
+    source: this.editorial,
+    computation: (item) => item ?? {
+      id_editorial: 0,
+      name: '',
+      created_at: '',
+      updated_at: '',
+    },
   });
 
   protected updateName(value: string, input: HTMLInputElement) {
@@ -44,9 +40,9 @@ export class EditorialFormComponent {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
-      if (input) input.value = this.formData()[key] as string ?? ''; 
+      if (input) input.value = this.formData()[key] as string ?? '';
       return;
-    } 
+    }
 
     this.formData.update(data => ({ ...data, [key]: sanitized }));
   }
@@ -55,15 +51,13 @@ export class EditorialFormComponent {
     switch (key){
       case 'name':
         if (value.length > 100) return null;
-        return value;       
+        return value;
       default:
         return value;
     }
   }
 
-  protected submitForm(event: Event): void {
-    event.preventDefault();
-
+  protected onSaveClick(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
 
@@ -72,29 +66,17 @@ export class EditorialFormComponent {
       return;
     }
 
-    const submitData: EditorialModel = {
-      ...data
-    } as EditorialModel;
-
     this.errorMessage.set(null);
-    this.onFormSubmit.emit(submitData);
-
-    this.clear();
+    this.submitForm.emit(data);
   }
 
-  private validateFormOnSubmit(data: Partial<EditorialModel>): string | null {
+  private validateFormOnSubmit(data: EditorialModel): string | null {
     if (data.name == null)
       return 'El nombre es requerido';
 
     if (data.name.length > 100)
       return 'El nombre tiene mas de 100 caracteres';
-    
-    return null;
-  }
 
-  protected clear(): void {
-    this.formData.set({ name: '' });
-    this.errorMessage.set(null);
-    this.onClear.emit()
+    return null;
   }
 }

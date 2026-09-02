@@ -65,6 +65,11 @@ export class CopyFormPage {
   protected readonly computedEdition = computed<EditionModel | null>(() => this.getEditionRX.value() ?? null);
 
   private readonly copyService = inject(CopyService);
+  private readonly copy = {
+    savePayload: signal<CopyDetailModel | null>(null),
+    isSaving: signal<boolean>(false),
+    showForm: signal<boolean>(false),
+  }  
   private readonly getCopyByEditionPayload = signal<number | null>(this.editionId());
   private readonly isSaving = signal<boolean>(false);
   protected readonly computedCopyList = computed<CopyDetailModel[]>(() => this.getCopyByEditionRX.value() ?? []);

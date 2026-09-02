@@ -1,3 +1,10 @@
+export interface SaveCopyModel {
+  signature_topography: string;
+  edition_id: number;
+  copy_number: number;
+  status_id: number;
+}
+
 export interface CreateCopyModel {
   signature_topography: string;
   edition_id: number;

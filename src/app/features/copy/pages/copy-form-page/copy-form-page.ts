@@ -1,14 +1,11 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { CopyFormComponents } from "@features/copy/components/copy-form-components/copy-form-components";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, of, tap } from 'rxjs';
 import { CopyService } from '@features/copy/services/copy-service';
 import { CopyDetailModel, CopyModel, CreateCopyModel, UpdateCopyModel } from '@features/copy/models/copy-model';
 import { BookService } from '@features/book/services/book-service';
@@ -16,8 +13,8 @@ import { EditionService } from '@features/edition/services/edition-service';
 import { BookModel } from '@features/book/models/book-model';
 import { EditionModel } from '@features/edition/models/edition-model';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { extractErrorMessage } from '@core/utils/error-handler';
 import { CopyListComponents } from "@features/copy/components/copy-list-components/copy-list-components";
+import { MutationService } from '@core/services/mutation-service';
 
 @Component({
   selector: 'app-copy-form-page',
@@ -26,8 +23,6 @@ import { CopyListComponents } from "@features/copy/components/copy-list-componen
     NgOptimizedImage,
     SectionHeaderComponent,
     CopyFormComponents,
-    MessageSuccessComponent,
-    MessageErrorComponent,
     CopyListComponents
   ],
   templateUrl: './copy-form-page.html',
@@ -35,6 +30,7 @@ import { CopyListComponents } from "@features/copy/components/copy-list-componen
 export class CopyFormPage {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly mutation = inject(MutationService);
 
   readonly bookId = toSignal(
     this.activatedRoute.paramMap.pipe(
@@ -57,8 +53,8 @@ export class CopyFormPage {
     { initialValue: 0 }
   );
 
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
+  // SERVICES -------------------------------------------------------
+  // ----------------------------------------------------------------
 
   private readonly bookService = inject(BookService)
   private readonly getBookPayload = signal<number | null>(this.bookId());
@@ -70,24 +66,23 @@ export class CopyFormPage {
 
   private readonly copyService = inject(CopyService);
   private readonly getCopyByEditionPayload = signal<number | null>(this.editionId());
-  private readonly getCopyPayload = signal<number | null>(this.copyId());
-  private readonly saveCopyPayload = signal<CreateCopyModel | UpdateCopyModel | null>(null);
+  private readonly isSaving = signal<boolean>(false);
   protected readonly computedCopyList = computed<CopyDetailModel[]>(() => this.getCopyByEditionRX.value() ?? []);
   protected readonly selectedCopy = computed<CopyModel | null>(() => {
     const id = this.copyId();
     const list = this.computedCopyList();
     if (id <= 0 || !list.length) return null;
-  
+
     const item = list.find(e => e.id_copy === id);
     if (!item) return null;
-  
+
     return { ...item } as CopyModel;
   });
 
   private readonly validateSelectedCopyEffect = effect(() => {
     const id = this.copyId();
     const list = this.computedCopyList();
-    
+
     if (id > 0 && list.length > 0) {
       const exists = list.some(c => c.id_copy === id);
       if (!exists) {
@@ -95,27 +90,23 @@ export class CopyFormPage {
       }
     }
   });
-  
+
   protected readonly isLoading = computed<boolean>(() =>
     [
       this.getBookRX,
       this.getEditionRX,
       this.getCopyByEditionRX,
-      this.saveCopyRX,
     ].some(r => r.isLoading())
   );
 
   private readonly getBookRX = rxResource({
     params: () => this.getBookPayload(),
     stream: ({ params: id_book }) => {
-      if (!id_book || id_book == 0) return of(null);
-      this.successMessage.set(null);
-      this.errorMessage.set(null);
+      if (!id_book || id_book === 0) return of(null);
 
       return this.bookService.getById(id_book).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
+          console.error('[CopyService::CopyFormPage] getBook:', err);
           return of(null);
         })
       );
@@ -125,14 +116,11 @@ export class CopyFormPage {
   private readonly getEditionRX = rxResource({
     params: () => this.getEditionPayload(),
     stream: ({ params: id_edition }) => {
-      if (!id_edition || id_edition == 0) return of(null);
-      this.successMessage.set(null);
-      this.errorMessage.set(null);
+      if (!id_edition || id_edition === 0) return of(null);
 
       return this.editionService.getById(id_edition).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
+          console.error('[EditionService::CopyFormPage] getEdition:', err);
           return of(null);
         })
       );
@@ -142,40 +130,11 @@ export class CopyFormPage {
   private readonly getCopyByEditionRX = rxResource({
     params: () => this.getCopyByEditionPayload(),
     stream: ({ params: id_edition }) => {
-      if (!id_edition || id_edition == 0) return of(null);
-      this.successMessage.set(null);
-      this.errorMessage.set(null);
+      if (!id_edition || id_edition === 0) return of(null);
 
       return this.copyService.getAllByEditionId(id_edition).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    }
-  });
-
-  private readonly saveCopyRX = rxResource({
-    params: () => this.saveCopyPayload(),
-    stream: ({ params }) => {
-      if (!params) return of(null);
-      
-      const request$ = 'id_copy' in params && params.id_copy > 0
-        ? this.copyService.update(params.id_copy, params)
-        : this.copyService.create(params);
-
-      return request$.pipe(
-        map(response => {
-          this.successMessage.set('Ejemplar guardado correctamente');
-          return response;
-        }),
-        tap(copy => {
-          this.getCopyPayload.set(copy.id_copy);
-          this.getCopyByEditionRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
+          console.error('[CopyService::CopyFormPage] getCopyByEdition:', err);
           return of(null);
         })
       );
@@ -194,7 +153,8 @@ export class CopyFormPage {
     const edition_id = this.getEditionPayload()
     if (!edition_id) return
 
-    const payload: CreateCopyModel | UpdateCopyModel = form.id_copy > 0
+    const id = form.id_copy;
+    const payload: CreateCopyModel | UpdateCopyModel = id > 0
     ? {
         id_copy: form.id_copy,
         signature_topography: form.signature_topography,
@@ -208,15 +168,22 @@ export class CopyFormPage {
         copy_number: form.copy_number,
       };
 
-    this.saveCopyPayload.set(payload);
+    this.mutation.run(
+      id > 0
+        ? this.copyService.update(id, payload as UpdateCopyModel)
+        : this.copyService.create(payload as CreateCopyModel),
+      { isSaving: this.isSaving },
+      {
+        successMsg: id > 0 ? 'Ejemplar modificado correctamente' : 'Ejemplar guardado correctamente',
+        errorMsg: id > 0 ? 'Error al modificar el Ejemplar' : 'Error al guardar el Ejemplar',
+        onSuccess: () => {
+          this.getCopyByEditionRX.reload();
+        },
+      }
+    );
   }
 
   protected navigateBack(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), this.editionId())]); 
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), this.editionId())]);
   }
 }

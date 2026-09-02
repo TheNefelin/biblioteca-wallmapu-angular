@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, input, output, signal } from '@angular/core';
 import { CopyDetailModel } from '@features/copy/models/copy-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { ButtonBarcodeComponent } from "@shared/components/button-barcode-component/button-barcode-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { ModalBarcodeLabelComponent } from "@shared/components/modal-barcode-label-component/modal-barcode-label-component";
 
 @Component({
@@ -10,7 +10,7 @@ import { ModalBarcodeLabelComponent } from "@shared/components/modal-barcode-lab
   imports: [
     DatePipe,
     LoadingComponent,
-    ButtonBarcodeComponent,
+    ButtonComponent,
     ModalBarcodeLabelComponent
   ],
   templateUrl: './copy-list-components.html',
@@ -18,7 +18,7 @@ import { ModalBarcodeLabelComponent } from "@shared/components/modal-barcode-lab
 export class CopyListComponents {
   readonly isLoading = input.required<boolean>();
   readonly copyList = input.required<CopyDetailModel[]>();
-  readonly onSelectCopy = output<number>();
+  readonly selectCopy = output<number>();
 
   protected isModalOpen = signal<boolean>(false);
   protected readonly selectedBarcode = signal<string | null>(null);

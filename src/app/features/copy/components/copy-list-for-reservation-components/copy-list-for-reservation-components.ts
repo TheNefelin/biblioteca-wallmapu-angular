@@ -14,5 +14,5 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 export class CopyListForReservationComponents {
   readonly isLoading = input<boolean>(false);
   readonly copyDetailList = input<CopyDetailModel[]>([])
-  protected readonly onSelectedCopy = output<CopyDetailModel>();
+  protected readonly selectedCopy = output<CopyDetailModel>();
 }

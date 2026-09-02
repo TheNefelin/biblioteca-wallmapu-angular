@@ -1,4 +1,5 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { CopyStatusSelectComponents } from "@features/copy-status/components/copy-status-select-components/copy-status-select-components";
@@ -8,6 +9,7 @@ import { CopyModel } from '@features/copy/models/copy-model';
 @Component({
   selector: 'app-copy-form-components',
   imports: [
+    FormsModule,
     LoadingComponent,
     MessageErrorComponent,
     CopyStatusSelectComponents,
@@ -18,17 +20,23 @@ import { CopyModel } from '@features/copy/models/copy-model';
 export class CopyFormComponents {
   readonly isLoading = input<boolean>(true);
   readonly copyModel = input<CopyModel | null>(null);
-  readonly onFormSubmit = output<CopyModel>();  
-  
+  readonly formSubmit = output<CopyModel>();
+
   protected readonly toggleStatus = signal<boolean>(true);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly formData = signal<Partial<CopyModel>>({ id_copy: 0 });  
-  
-  private readonly updateEffect = effect(() => {
-    const item = this.copyModel();
-    if (!item) return;
 
-    this.formData.set(item);
+  protected readonly formData = linkedSignal<CopyModel | null, CopyModel>({
+    source: this.copyModel,
+    computation: (item) => item ?? {
+      id_copy: 0,
+      signature_topography: '',
+      edition_id: 0,
+      copy_number: 0,
+      status_id: 1,
+      barcode: '',
+      created_at: '',
+      updated_at: '',
+    },
   });
 
   protected updateTopography(value: string, input: HTMLInputElement) {
@@ -40,39 +48,37 @@ export class CopyFormComponents {
   }
 
   protected updateStatus(value: number) {
-    this.updateField('status_id', value.toString());
+    this.formData.update(data => ({ ...data, status_id: value }));
+    this.errorMessage.set(null);
   }
 
   private updateField<K extends keyof CopyModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
-      if (input) input.value = this.formData()[key] as string ?? ''; // ✅ Forzar el valor anterior de vuelta en el DOM
-      return; // valor inválido, no actualiza
-    } 
+      if (input) input.value = this.formData()[key] as string ?? '';
+      return;
+    }
 
     this.formData.update(data => ({ ...data, [key]: sanitized }));
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof CopyModel, value: string): string | number  | null {
+  private sanitize(key: keyof CopyModel, value: string): string | number | null {
     switch (key){
       case 'signature_topography':
         if (value.length > 50) return null;
-        return value;    
+        return value;
       case 'copy_number':
         if (!/^[0-9]*$/.test(value)) return null;
         if (value.length > 2) return null;
-        return Number(value);   
+        return Number(value);
       default:
         return value;
     }
   }
 
-  protected formSubmit(event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-
+  protected onSubmit(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
 
@@ -81,21 +87,17 @@ export class CopyFormComponents {
       return;
     }
 
-    const submitData: CopyModel = {
-      ...data
-    } as CopyModel;
-
     this.errorMessage.set(null);
-    this.onFormSubmit.emit(submitData);
+    this.formSubmit.emit(data);
   }
 
-  private validateFormOnSubmit(data: Partial<CopyModel>): string | null {
+  private validateFormOnSubmit(data: CopyModel): string | null {
     if (data.copy_number == null)
       return 'El número de copia es requerido';
 
     if (data.copy_number <= 0)
       return 'El número de copia debe ser mayor a 0';
-    
+
     return null;
   }
 

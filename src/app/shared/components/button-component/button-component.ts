@@ -25,7 +25,9 @@ export class ButtonComponent {
   protected readonly clicked = output<void>();
 
   protected btnClick(event: Event): void {
-    event.preventDefault();
+    // El botón genérico no previene el default; el comportamiento del click
+    // (submit, dialog, enlace) lo gestiona el consumidor vía `type="button"` y su propio handler.
+    // event.preventDefault();
     this.clicked.emit();
   }
 }

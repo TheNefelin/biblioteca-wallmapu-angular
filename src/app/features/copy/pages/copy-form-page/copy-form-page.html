@@ -41,22 +41,12 @@
   <app-copy-form-components
     [isLoading]="isLoading()"
     [copyModel]="selectedCopy()"
-    (onFormSubmit)="formSubmit($event)"
+    (formSubmit)="formSubmit($event)"
   />
 </section>
 
 <app-copy-list-components
   [isLoading]="isLoading()"
   [copyList]="computedCopyList()"
-  (onSelectCopy)="selectCopy($event)"
+  (selectCopy)="selectCopy($event)"
 />
-
-<section class="p-4 grid gap-4">
-  @if(successMessage()){
-    <app-message-success-component [message]="successMessage()" />
-  }
-  
-  @if(errorMessage()) {
-    <app-message-error-component [message]="errorMessage()" />
-  }
-</section>

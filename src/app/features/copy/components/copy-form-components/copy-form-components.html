@@ -1,6 +1,6 @@
-<form (submit)="formSubmit($event)" class="fieldset bg-my-light rounded-box shadow-xl p-6 grid">
+<form (ngSubmit)="onSubmit()" class="fieldset bg-my-light rounded-box shadow-xl p-6 grid">
   <div class="fieldset">
-    <label class="label font-semibold mb-1">Estado:</label>
+    <span class="label font-semibold mb-1">Estado:</span>
     <div class="flex flex-row gap-2">
       <app-copy-status-select-components
         [selectedId]="copyModel()?.status_id ?? 1"
@@ -8,7 +8,7 @@
         [disabled]="toggleStatus()"
       />
 
-      @if (formData().id_copy != 0) {
+      @if (formData().id_copy !== 0) {
         <button
           (click)="activateStatusBtn($event)" 
           class="btn bg-my-green text-my-light">
@@ -19,22 +19,24 @@
   </div>
 
   <fieldset class="fieldset">
-    <label class="label font-semibold mb-1">Firma Topografica:</label>
+    <label for="topographyInput" class="label font-semibold mb-1">Firma Topografica:</label>
     <input
       #topographyInput
+      id="topographyInput"
       type="text" class="input w-full" placeholder="ABCdef-c0-2026" 
-      [value]="formData().signature_topography ?? ''"
+      [value]="formData().signature_topography"
       (input)="updateTopography($any($event.target).value, topographyInput)"
     />
     <app-signature-manual-components />
   </fieldset>
   
   <fieldset class="fieldset">
-    <label class="label font-semibold mb-1">Numero de Copia:</label>
+    <label for="copynumberInput" class="label font-semibold mb-1">Numero de Copia:</label>
     <input
       #copynumberInput
+      id="copynumberInput"
       type="text" class="input validator w-full" placeholder="0" required 
-      [value]="formData().copy_number ?? ''"
+      [value]="formData().copy_number"
       (input)="updateCopyNumber($any($event.target).value, copynumberInput)"
     />
     <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -44,7 +46,7 @@
     <app-loading-component/>
   } @else {
   <button class="btn btn-md bg-my-purple hover:bg-my-purple/80 text-my-light mt-4 self-start px-6 py-2 rounded-md font-semibold" type="submit">
-    {{ formData().id_copy == 0 ? 'Crear Copia' : 'Modificar Copia' }}
+    {{ formData().id_copy === 0 ? 'Crear Copia' : 'Modificar Copia' }}
   </button>  
   }
 

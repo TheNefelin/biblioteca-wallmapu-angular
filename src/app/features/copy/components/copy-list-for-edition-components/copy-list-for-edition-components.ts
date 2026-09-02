@@ -14,6 +14,6 @@ import { LoadingComponent } from '@shared/components/loading-component/loading-c
 export class CopyListForEditionComponents {
   readonly copyList = input.required<CopyDetailModel[]>();
   readonly isLoading = input.required<boolean>();
-  readonly onEdit = output<CopyDetailModel>();
-  readonly onDelete = output<CopyDetailModel>();
+  readonly edit = output<CopyDetailModel>();
+  readonly delete = output<CopyDetailModel>();
 }

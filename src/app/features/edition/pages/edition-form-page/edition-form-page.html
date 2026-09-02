@@ -35,8 +35,8 @@
 <app-copy-list-for-edition-components
   [isLoading]="isLoading()"
   [copyList]="computedCopyList()"
-  (onEdit)="onEditEdition($event)"
-  (onDelete)="onDeleteCopy($event)"
+  (edit)="onEditEdition($event)"
+  (delete)="onDeleteCopy($event)"
 />
 
 <app-modal-action-component

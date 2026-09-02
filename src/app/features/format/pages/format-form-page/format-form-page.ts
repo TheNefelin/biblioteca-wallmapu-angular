@@ -67,11 +67,6 @@ export class FormatFormPage extends CrudPage<FormatModel> {
   protected onSelectedFormat(item: FormatModel): void {
     this.selectedFormat.set(item);
     this.isFormModalOpen.set(true);
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
   }
 
   protected onClearForm(): void {

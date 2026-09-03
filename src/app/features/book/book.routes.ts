@@ -17,7 +17,7 @@ export const  BOOK_ROUTES: Routes = [
     data: { roles: [Role.Admin]},
   },
   {
-    path: 'form/:id_book',
+    path: ':id_book',
     component: BookFormPage,
     canActivate: [authGuard],
     data: { roles: [Role.Admin]},

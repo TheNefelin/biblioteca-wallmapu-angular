@@ -1,6 +1,7 @@
 <button
   type="button"
-  (click)="btnClick($event)"
+  [disabled]="disabled()"
+  (click)="clicked.emit()"
   class="btn"
   [class.bg-my-pink]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification'"
   [class.bg-my-green]="icon() === 'edit' || icon() === 'goto'"

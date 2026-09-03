@@ -50,13 +50,10 @@ export const ROUTES_CONSTANTS = {
       },
       BOOK: {
         ROOT: '/admin/book/list',
-        FORM: (bookId: number) => `/admin/book/form/${bookId}`,
+        FORM: (bookId: number) => `/admin/book/${bookId}`,
       },
       EDITION: {
-        FORM: (bookId: number, editionId: number) => `/admin/edition/form/${editionId}/book/${bookId}`,
-      },
-      COPY: {
-        FORM: (bookId: number, editionId: number) => `/admin/copy/book/${bookId}/edition/${editionId}/copy/form`,
+        FORM: (bookId: number, editionId: number) => `/admin/book/${bookId}/edition/${editionId}`,
       },
       NEWS: {
         ROOT: '/admin/news',

@@ -17,7 +17,7 @@
         @if (formData().cover_image) {
           <div class="absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div class="absolute top-4 right-4">
-              <app-button-component [icon]="'delete'" [textBtn]="'Eliminar'" (clicked)="onDeleteImage(editionModel()?.id_edition ?? 0)"/>
+              <app-button-component [icon]="'delete'" [textBtn]="'Eliminar'" [disabled]="isLoading()" (clicked)="onDeleteImage(editionModel()?.id_edition ?? 0)"/>
             </div>
           </div>
         }
@@ -48,10 +48,10 @@
       <fieldset class="fieldset">
         <label for="editionInput" class="label font-semibold mb-1">Edición: (1ra Edición; 2da Edición... 5ta Edición)</label>
         <input
-          [disabled]="isLoading()"
           #titleEdition
           id="editionInput"
           type="text" class="input validator w-full" placeholder="Edición del Libro"
+          [disabled]="isLoading()"
           [value]="formData().edition"
           (input)="updateEdition($any($event.target).value, titleEdition)"
         />
@@ -61,10 +61,10 @@
       <fieldset class="fieldset">
         <label for="isbnInput" class="label font-semibold mb-1">ISBN</label>
         <input
-          [disabled]="isLoading()"
           #isbnInput
           id="isbnInput"
           type="text" class="input validator w-full uppercase" placeholder="Código isbn"
+          [disabled]="isLoading()"
           [value]="formData().isbn"
           (input)="updateISBN($any($event.target).value, isbnInput)"
         />
@@ -75,10 +75,10 @@
         <fieldset class="fieldset">
           <label for="pagesInput" class="label font-semibold mb-1">Paginas</label>
           <input
-            [disabled]="isLoading()"
             #pagesInput
             id="pagesInput"
             type="text" class="input validator max-w-20" placeholder="Paginas" required
+            [disabled]="isLoading()"
             [value]="formData().pages"
             (input)="updatePages($any($event.target).value, pagesInput)"
           />
@@ -88,10 +88,10 @@
         <fieldset class="fieldset">
           <label for="yearInput" class="label font-semibold mb-1">Año de publicación</label>
           <input
-            [disabled]="isLoading()"
             #yearInput
             id="yearInput"
             type="text" class="input validator max-w-20" placeholder="Año" required
+            [disabled]="isLoading()"
             [value]="formData().publication_year"
             (input)="updateYear($any($event.target).value, yearInput)"
           />

@@ -42,19 +42,17 @@ describe('FormatFormComponent', () => {
       expect(spy).toHaveBeenCalledWith({ name: 'Tapa Dura' } as FormatModel);
     });
 
-    it('debería setear errorMessage cuando el nombre es null', () => {
+    it('no debería emitir submitForm cuando el nombre es null', () => {
       const spy = vi.spyOn(component['submitForm'], 'emit');
       component['formData'].set({});
       component['onSaveClick']();
-      expect(component['errorMessage']()).toBe('El nombre es requerido');
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('debería setear errorMessage cuando el nombre supera los 100 caracteres', () => {
+    it('no debería emitir submitForm cuando el nombre supera los 100 caracteres', () => {
       const spy = vi.spyOn(component['submitForm'], 'emit');
       component['formData'].set({ name: 'x'.repeat(101) });
       component['onSaveClick']();
-      expect(component['errorMessage']()).toBe('El nombre tiene mas de 100 caracteres');
       expect(spy).not.toHaveBeenCalled();
     });
   });

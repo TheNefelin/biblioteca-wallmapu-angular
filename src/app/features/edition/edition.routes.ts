@@ -5,7 +5,7 @@ import { Role } from "@shared/constants/roles-enum";
 
 export const  EDITION_ROUTES: Routes = [
   {
-    path: 'form/:editionId/book/:bookId',
+    path: ':editionId',
     component: EditionFormPage,
     canActivate: [authGuard],
     data: { roles: [Role.Admin]},

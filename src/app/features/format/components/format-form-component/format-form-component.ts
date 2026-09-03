@@ -19,7 +19,6 @@ export class FormatFormComponent {
   protected readonly submitForm = output<FormatModel>();
   protected readonly cancelForm = output<void>();
 
-  protected readonly errorMessage = signal<string | null>(null); 
   protected readonly actionText = computed<string>(() => this.format() ? 'Modificar Formato' : 'Crear Formato');
   protected readonly formData = signal<Partial<FormatModel>>({});
 
@@ -64,7 +63,6 @@ export class FormatFormComponent {
     const error = this.validateFormOnSubmit(data);
 
     if (error) {
-      this.errorMessage.set(error);
       return;
     }
 
@@ -72,7 +70,6 @@ export class FormatFormComponent {
       ...data
     } as FormatModel;
 
-    this.errorMessage.set(null);
     this.submitForm.emit(submitData);
   }
 

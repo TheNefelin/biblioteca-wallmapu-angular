@@ -24,12 +24,6 @@ export class ButtonComponent {
   readonly icon = input<ButtonIcon>('create');
   readonly textBtn = input<string>('');
   readonly isOpen = input<boolean>(true);
+  readonly disabled = input<boolean>(false);
   protected readonly clicked = output<void>();
-
-  protected btnClick(event: Event): void {
-    // El botón genérico no previene el default; el comportamiento del click
-    // (submit, dialog, enlace) lo gestiona el consumidor vía `type="button"` y su propio handler.
-    // event.preventDefault();
-    this.clicked.emit();
-  }
 }

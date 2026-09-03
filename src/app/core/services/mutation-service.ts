@@ -2,10 +2,10 @@ import { Injectable, inject, type WritableSignal } from '@angular/core';
 import { finalize, type Observable } from 'rxjs';
 import { ToastSuccessService } from '@core/services/toast-success-service';
 
-export interface MutationOptions {
+export interface MutationOptions<T = unknown> {
   successMsg: string;
   errorMsg: string;
-  onSuccess?: () => void;
+  onSuccess?: (result?: T) => void;
   onClose?: () => void;
   onFinalize?: () => void;
 }
@@ -19,7 +19,7 @@ export class MutationService {
   run<T>(
     action: Observable<T>,
     state: { isSaving: WritableSignal<boolean> },
-    options: MutationOptions,
+    options: MutationOptions<T>,
   ): void {
     let succeeded = false;
     state.isSaving.set(true);
@@ -30,10 +30,10 @@ export class MutationService {
         options.onFinalize?.();
       })
     ).subscribe({
-      next: () => {
+      next: (result) => {
         succeeded = true;
         this.successService.show(options.successMsg);
-        options.onSuccess?.();
+        options.onSuccess?.(result);
       },
       error: (err) => {
         console.error(`[${options.errorMsg}]:`, err);

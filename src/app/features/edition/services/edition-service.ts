@@ -1,7 +1,7 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
-import { CreateEditionModel, EditionDetailModel, EditionFilterModel, EditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
+import { EditionDetailModel, EditionFilterModel, EditionModel, SaveEditionModel } from '@features/edition/models/edition-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 
@@ -36,14 +36,14 @@ export class EditionService {
     );
   }
 
-  create(item: CreateEditionModel): Observable<EditionModel> {
-    return this.apiService.create<EditionModel, CreateEditionModel>(
+  create(item: SaveEditionModel): Observable<EditionModel> {
+    return this.apiService.create<EditionModel, SaveEditionModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateEditionModel): Observable<EditionModel> {
-    return this.apiService.update<EditionModel, UpdateEditionModel>(
+  update(id: number, item: SaveEditionModel): Observable<EditionModel> {
+    return this.apiService.update<EditionModel, SaveEditionModel>(
       this.endpoint, id, item
     );
   }

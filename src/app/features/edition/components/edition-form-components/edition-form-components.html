@@ -14,16 +14,16 @@
           />
         </figure>
 
-        @if (!formData().isNewImg) {
+        @if (formData().cover_image) {
           <div class="absolute inset-0 bg-linear-to-b from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div class="absolute top-4 right-4">
-              <app-button-component [icon]="'delete'" [textBtn]="'Eliminar'" (clicked)="onDeleteImage(editionFormVM()?.id_edition ?? 0)"/>
+              <app-button-component [icon]="'delete'" [textBtn]="'Eliminar'" (clicked)="onDeleteImage(editionModel()?.id_edition ?? 0)"/>
             </div>
           </div>
         }
       </div>
 
-      @if (formData().isNewImg) {
+      @if (!formData().cover_image) {
         <span class="label font-semibold">Cargar Portada del Libro</span>
 
         <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
@@ -35,14 +35,14 @@
         
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>  
       }
-     </fieldset>
+    </fieldset>
   
     <div>
       <div class="py-4 text-my-purple">
-        <p>ID Libro: {{ editionFormVM()?.book_id }}</p>
-        <p>ID Edición: {{ editionFormVM()?.id_edition }}</p>
-        <p>{{ editionFormVM()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
-        <p>{{ editionFormVM()?.updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
+        <p>ID Libro: {{ editionModel()?.book_id }}</p>
+        <p>ID Edición: {{ editionModel()?.id_edition }}</p>
+        <p>{{ editionModel()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha creación</p>
+        <p>{{ editionModel()?.updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha modificacion</p>
       </div>
 
       <fieldset class="fieldset">
@@ -102,7 +102,7 @@
           <span class="label font-semibold mb-1">Editorial</span>
           <div class="flex gap-2">
             <app-editorial-select-components 
-              [selectedId]="formData().editorial_id ?? 0" 
+              [selectedId]="formData().editorial_id" 
               (newSelectedId)="updateEditorial($event)" 
             /> 
             <app-button-component [icon]="'create'" (clicked)="onNavigateToEditorial()"/>
@@ -122,22 +122,22 @@
           <app-button-component [icon]="'create'" (clicked)="onNavigateToFormat()"/>
         </div>
         <app-format-selected-list-component 
-          [formatList]="formData().formats" 
+          [formatList]="formFormat()" 
           (deleteFormat)="deleteFormat($event)"
         />
       </div>
     </div>
 
-    @if (isLoading()) {
-      <app-loading-component/>
-    } @else {
-      <app-button-component [icon]="'save'" [textBtn]="formData().id_edition === 0 ? 'Crear Edición' : 'Modificar Edición'" />
-    }
-  </form>
-
-  @if (errorMessage()) {
-    <div class="py-4">
-      <app-message-error-component [message]="errorMessage()"/>
+    <div>
+      @if (errorMessage()) {
+        <app-message-error-component [message]="errorMessage()"/>
+      }
+  
+      @if (isLoading()) {
+        <app-loading-component/>
+      } @else {
+        <app-button-component [icon]="'save'" [textBtn]="editionModel()?.id_edition === 0 ? 'Crear Edición' : 'Modificar Edición'" (clicked)="onSubmit()" />
+      }
     </div>
-  }
+  </form>
 </div>

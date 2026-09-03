@@ -1,14 +1,14 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
 import { FormatSelectedListComponent } from "@features/format/components/format-selected-list-component/format-selected-list-component";
 import { FormatModel } from '@features/format/models/format-model';
+import { EditionModel, SaveEditionModel } from '@features/edition/models/edition-model';
 
 @Component({
   selector: 'app-edition-form-components',
@@ -27,23 +27,30 @@ import { FormatModel } from '@features/format/models/format-model';
 })
 export class EditionFormComponents {
   readonly isLoading = input<boolean>(false);
-  readonly editionFormVM = input<EditionFormVM | null>();
-  protected readonly formSubmit = output<EditionFormVM>();
+  readonly editionModel = input<EditionModel | null>();
+  protected readonly formSubmit = output<{ id: number, data: SaveEditionModel, img: File | null }>();
   protected readonly deleteImage = output<number>();
   protected readonly navigateToEditorial = output<void>();
   protected readonly navigateToFormat = output<void>();
 
   protected readonly formatClearTrigger = signal<number>(0);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly formData = signal<Partial<EditionFormVM>>({});
 
-  private readonly updateEffect = effect(() => {
-    const edition = this.editionFormVM();
-    if (!edition) return;
+  protected readonly formFile = signal<File | null>(null)
+  protected readonly formFormat = linkedSignal<FormatModel[]>(() => this.editionModel()?.formats ?? []);
+  protected readonly formData = linkedSignal<SaveEditionModel>(() => {
+    const data = this.editionModel();
 
-    this.formData.set({
-      ...edition,
-    });
+    return {
+      edition: data?.edition ?? '',
+      isbn: data?.isbn ?? '',
+      publication_year: data?.publication_year ?? 2026,
+      pages: data?.pages ?? 0,
+      cover_image: data?.cover_image ?? null,
+      book_id: data?.book_id ?? 0,
+      editorial_id: data?.editorial_id ?? 0,
+      format_ids: [],
+    }
   });
   
   protected updateEdition(value: string, input: HTMLInputElement) {
@@ -70,30 +77,21 @@ export class EditionFormComponents {
     if (!item) return;
     if (!item.id_format || item.id_format=== 0) return;
 
-    this.formData.update(data => {
-      const exists = data.formats?.some(a => a.id_format === item.id_format);
+    this.formFormat.update(data => {
+      const exists = data?.some(e => e === item);
       if (exists) return data;
-    
-      return {
-        ...data,
-        formats: [...data.formats || [], item]
-      };
+
+      return [...data, item]
     });
 
     this.formatClearTrigger.update(e => e + 1);
   }
 
   protected deleteFormat(item: FormatModel): void {
-    console.log(item)
-    this.formData.update(data => {
-      return {
-        ...data,
-        formats: data.formats?.filter(s => s.id_format !== item.id_format) || []
-      };
-    });
+    this.formFormat.update(data => data.filter(e => e !== item));
   }
 
-  private updateField<K extends keyof EditionFormVM>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof SaveEditionModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -105,7 +103,7 @@ export class EditionFormComponents {
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof EditionFormVM, value: string): string | number  | null {
+  private sanitize(key: keyof SaveEditionModel, value: string): string | number  | null {
     switch (key){
       case 'edition':
         if (value.length > 50) return null;
@@ -152,11 +150,10 @@ export class EditionFormComponents {
     const reader = new FileReader();
 
     reader.onload = () => {
+      this.formFile.set(file);
       this.formData.update(e => ({
         ...e,
-        file: file,
         cover_image: reader.result as string,
-        isNewImg: true,
       }));
     };
 
@@ -173,25 +170,30 @@ export class EditionFormComponents {
       return;
     }
 
-    const submitData: EditionFormVM = {
-      ...this.editionFormVM(),
-      ...data
-    } as EditionFormVM;
+    const submitData: SaveEditionModel = {
+      ...data,
+      format_ids: this.formFormat().map(e => e.id_format) ?? [],
+    } as SaveEditionModel;
 
     this.errorMessage.set(null);
-    this.formSubmit.emit(submitData);
+    
+    this.formSubmit.emit({
+      id: this.editionModel()?.id_edition ?? 0,
+      data: submitData,
+      img: this.formFile(),
+    });
   }
 
-  private validateFormOnSubmit(data: Partial<EditionFormVM>): string | null {
+  private validateFormOnSubmit(data: Partial<SaveEditionModel>): string | null {
     if (data.edition && data.edition.length > 50) return 'La edición no debe superar los 50 caracteres';
-    if (data.isbn && data.isbn.length > 20)    return 'El ISBN no debe superar los 20 caracteres';
-    if (!data.publication_year)   return 'El año es requerido';
+    if (data.isbn && data.isbn.length > 20) return 'El ISBN no debe superar los 20 caracteres';
+    if (!data.publication_year) return 'El año es requerido';
     if (data.publication_year < 1800 || data.publication_year > new Date().getFullYear()) return 'El año debe ser valido';
-    if (!data.pages)              return 'Las paginas son requerido';
+    if (!data.pages) return 'Las paginas son requerido';
     if (data.pages < 24 || data.pages > 10000) return 'La cantidad de paginas debe ser valida';
-    if (!data.editorial_id)       return 'La editorial es requerida';
-    if (data.editorial_id == 0)   return 'La editorial es requerida';
-    if (!data.cover_image)        return 'Debes seleccionar una imagen';
+    if (!data.editorial_id) return 'La editorial es requerida';
+    if (data.editorial_id == 0) return 'La editorial es requerida';
+    if (!data.cover_image) return 'Debes seleccionar una imagen';
     return null;
   }
 
@@ -204,6 +206,14 @@ export class EditionFormComponents {
   }
 
   protected onDeleteImage(id_edition: number): void {
-    this.deleteImage.emit(id_edition)
+    if (this.editionModel()?.cover_image) {
+      this.deleteImage.emit(id_edition)
+    }
+
+    this.formFile.set(null);
+    this.formData.update(e => ({
+      ...e,
+      cover_image: null,
+    }));
   }
 }

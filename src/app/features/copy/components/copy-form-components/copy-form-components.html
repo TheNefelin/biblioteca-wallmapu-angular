@@ -12,9 +12,9 @@
       <app-message-error-component [message]="errorMessage()"/>
     }
 
-    <form class="grid grid-cols-1">
+    <form class="grid grid-cols-1" (ngSubmit)="onSubmit()">
       <fieldset class="fieldset">
-        <label for="nameInput" class="label font-semibold mb-1">Estado:</label>
+        <span class="label font-semibold mb-1">Estado:</span>
         <app-copy-status-select-components
           [selectedId]="formData().status_id"
           (newSelectedId)="updateStatus($event)"
@@ -22,9 +22,10 @@
       </fieldset>
       
       <fieldset class="fieldset">
-        <label for="nameInput" class="label font-semibold mb-1">Firma Topografica:</label>
+        <label for="signatureInput" class="label font-semibold mb-1">Firma Topografica:</label>
         <input
           #signatureInput
+          id="signatureInput"
           type="text" class="input validator w-full" placeholder="Firma" required 
           [disabled]="isSaving()"
           [value]="formData().signature_topography"

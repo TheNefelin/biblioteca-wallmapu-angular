@@ -6,25 +6,27 @@
 
 <app-edition-form-components 
   [isLoading]="isLoading()"
-  [editionFormVM]="editionFormVMComputed()"
+  [editionModel]="edition()"
   (deleteImage)="deleteImage($event)"
-  (formSubmit)="formSubmit($event)"
+  (formSubmit)="submitEditionForm($event)"
   (navigateToEditorial)="navigateToEditorial()"
   (navigateToFormat)="navigateToFormat()"
 />
 
-<app-copy-list-for-edition-components
-  [isLoading]="copy.isLoading()"
-  [copyList]="copy.dataList()"
-  (refresh)="onReloadCopy()"
-  (create)="onCreateCopy()"
-  (edit)="onEditCopy($event)"
-  (delete)="onDeleteCopy($event)"
-/>
+@if (editionId()) {
+  <app-copy-list-for-edition-components
+    [isLoading]="copy.isLoading()"
+    [copyList]="copy.dataList()"
+    (refresh)="onReloadCopy()"
+    (create)="onCreateCopy()"
+    (edit)="onEditCopy($event)"
+    (delete)="onDeleteCopy($event)"
+  />
+}
 
 @if (copy.showForm()) {
   <app-copy-form-components
-    [isSaving]="isSaving()"
+    [isSaving]="copy.isSaving()"
     [copy]="copy.selectedItem()"
     (cancelForm)="copy.showForm.set(false)"
     (submitForm)="submitCopyForm($event)"

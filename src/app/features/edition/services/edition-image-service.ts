@@ -9,7 +9,7 @@ export class EditionImageService {
   private apiService = inject(ApiService)
   private readonly endpoint = 'edition-image';
 
-  create(file: File): Observable<string> {
+  upload(file: File): Observable<string> {
     const formData = new FormData();
     formData.append('file', file);
 

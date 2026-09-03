@@ -1,4 +1,5 @@
 import { Component, input, linkedSignal, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { CopyStatusSelectComponents } from "@features/copy-status/components/copy-status-select-components/copy-status-select-components";
 import { SignatureManualComponents } from "@features/copy/components/signature-manual-components/signature-manual-components";
@@ -10,6 +11,7 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
 @Component({
   selector: 'app-copy-form-components',
   imports: [
+    FormsModule,
     DatePipe,
     ButtonComponent,
     CopyStatusSelectComponents,

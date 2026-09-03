@@ -20,7 +20,11 @@
         <tbody>
           @for (copy of copyDetailList(); track copy.id_copy) {
             <tr 
+              tabindex="0"
+              role="button"
               (click)="selectedCopy.emit(copy)"
+              (keydown.enter)="selectedCopy.emit(copy)"
+              (keydown.space)="selectedCopy.emit(copy)"
               class="hover:bg-my-dark/10 cursor-pointer">
               <td>
                 <div class="flex items-center gap-3">

@@ -26,10 +26,10 @@ describe('EditionImageService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('create', () => {
+  describe('upload', () => {
     it('debería hacer POST a apiUrl/edition-image con FormData', () => {
       const file = new File(['data'], 'cover.png', { type: 'image/png' });
-      service.create(file).subscribe();
+      service.upload(file).subscribe();
 
       const req = httpMock.expectOne(r => r.method === 'POST');
       expect(req.request.url).toContain('/api/edition-image');

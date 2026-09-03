@@ -7,8 +7,7 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { EditionFormComponents } from "@features/edition/components/edition-form-components/edition-form-components";
 import { EditionImageService } from '@features/edition/services/edition-image-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CreateEditionModel, UpdateEditionModel } from '@features/edition/models/edition-model';
-import { EditionFormVM } from '@features/edition/models/vm.edition-form-model';
+import { EditionModel, SaveEditionModel } from '@features/edition/models/edition-model';
 import { CopyService } from '@features/copy/services/copy-service';
 import { CopyModel, SaveCopyModel } from '@features/copy/models/copy-model';
 import { BookService } from '@features/book/services/book-service';
@@ -49,59 +48,48 @@ export class EditionFormPage {
   );
 
   // SERVICES -------------------------------------------------------------------------
+  protected readonly isLoading = computed<boolean>(() =>
+    [
+      this.getBookRX,
+      this.getEditionRX,
+    ].some(r => r.isLoading())
+  );
 
   private readonly bookService = inject(BookService);
-  private readonly getBookPayload = signal<number | null>(this.bookId());
-  protected readonly computedBook = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
+  protected readonly book = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
 
   private readonly editionService = inject(EditionService);
-  private readonly getEditionPayload = signal<number | null>(this.editionId());
+  protected readonly edition = computed<EditionModel | null>(() => {
+    const data = this.getEditionRX.value()
+    if (!data) return null
+
+    return {
+      ...data,
+      book_id: this.bookId(),
+    }
+  });
+
+  private readonly editionImageService = inject(EditionImageService);
+  protected readonly isSavingImage = signal<boolean>(false);
 
   private readonly copyService = inject(CopyService)
   protected readonly copy = {
     selectedItem: signal<CopyModel | null>(null),
+    dataList: computed<CopyModel[]>(() => this.getCopyByEditionRX.value() ?? []),
     isLoading: computed<boolean>(() => this.getCopyByEditionRX.isLoading()),
+    isSaving: signal<boolean>(false),
     showForm: signal<boolean>(false),
-    dataList: computed<CopyModel[]>(() => this.getCopyByEditionRX.value() ?? [])
   }
 
-  private readonly editionImageService = inject(EditionImageService);
-  protected readonly isSaving = signal<boolean>(false);
-
-  protected readonly isEditMode = computed<boolean>(() => !!this.getEditionPayload())
+  protected readonly isEditMode = computed<boolean>(() => !! this.edition())
   protected readonly title = computed<string>(() =>
     this.isEditMode()
-    ? `Modificar Edición de: ${ this.computedBook()?.title }`
-    : `Crear Edición para: ${ this.computedBook()?.title }`
+    ? `Modificar Edición de: ${ this.book()?.title }`
+    : `Crear Edición para: ${ this.book()?.title }`
   )
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getEditionRX,
-      this.getCopyByEditionRX,
-    ].some(r => r.isLoading())
-  );
-  protected readonly editionFormVMComputed = computed<EditionFormVM>(() => {
-    const edition = this.getEditionRX.value();
-
-    return {
-      id_edition: edition?.id_edition ?? this.editionId(),
-      book_id: edition?.book_id ?? this.bookId(),
-      edition: edition?.edition ?? '',
-      isbn: edition?.isbn ?? '',
-      publication_year: edition?.publication_year ?? 0,
-      pages: edition?.pages ?? 0,
-      cover_image: edition?.cover_image ?? null,
-      editorial_id: edition?.editorial_id ?? 0,
-      formats: edition?.formats ?? [],
-      created_at: edition?.created_at ?? '',
-      updated_at: edition?.updated_at ?? '',
-      file: null,
-      isNewImg: !edition?.cover_image,
-    };
-  });
 
   private readonly getBookRX = rxResource({
-    params: () => this.getBookPayload(),
+    params: () => this.bookId(),
     stream: ({ params: id_book }) => {
       if (!id_book || id_book === 0) return of(null);
 
@@ -115,7 +103,7 @@ export class EditionFormPage {
   });
 
   private readonly getEditionRX = rxResource({
-    params: () => this.getEditionPayload(),
+    params: () => this.editionId(),
     stream: ({ params: id_edition }) => {
       if (!id_edition || id_edition === 0) return of(null);
 
@@ -143,27 +131,21 @@ export class EditionFormPage {
   });
 
   // Edition Acctions ----------------------------------------------------------------------
-  protected formSubmit(form: EditionFormVM): void {
-    const basePayload = {
-      ...form,
-      format_ids: form.formats.map(e => e.id_format),
-    }
+  protected submitEditionForm(form: { id: number, data: SaveEditionModel, img: File | null }): void {
+    const id = form.id;
+    const img = form.img;
+    const payload = { ...form.data };
+    payload.book_id = this.bookId();
 
-    const payload: CreateEditionModel | UpdateEditionModel = basePayload.id_edition === 0
-      ? (basePayload as CreateEditionModel)
-      : (basePayload as UpdateEditionModel);
-
-    const id = basePayload.id_edition;
-
-    const request$ = basePayload.file
-      ? this.editionImageService.create(basePayload.file).pipe(
+    const request$ = img
+      ? this.editionImageService.upload(img).pipe(
           switchMap(url => this.saveEdition(id, { ...payload, cover_image: url }))
         )
       : this.saveEdition(id, payload);
 
     this.mutation.run(
       request$,
-      { isSaving: this.isSaving },
+      { isSaving: this.isSavingImage },
       {
         successMsg: this.isEditMode() ? 'Edición modificada correctamente' : 'Edición guardada correctamente',
         errorMsg: this.isEditMode() ? 'Error al modificar la Edición' : 'Error al guardar la Edición',
@@ -174,16 +156,16 @@ export class EditionFormPage {
     );
   }
 
-  private saveEdition(id: number, payload: CreateEditionModel | UpdateEditionModel) {
+  private saveEdition(id: number, payload: SaveEditionModel) {
     return id > 0
-      ? this.editionService.update(id, payload as UpdateEditionModel)
-      : this.editionService.create(payload as CreateEditionModel);
+      ? this.editionService.update(id, payload)
+      : this.editionService.create(payload);
   }
 
   protected deleteImage(id_edition: number): void {
     this.mutation.run(
       this.editionImageService.delete(id_edition),
-      { isSaving: this.isSaving },
+      { isSaving: this.isSavingImage },
       {
         successMsg: 'Imagen eliminada correctamente',
         errorMsg: 'Error al eliminar la Imagen',
@@ -218,7 +200,7 @@ export class EditionFormPage {
 
     this.mutation.run(
       this.copyService.delete(item.id_copy),
-      { isSaving: this.isSaving },
+      { isSaving: this.copy.isSaving },
       {
         successMsg: 'Copia eliminada correctamente',
         errorMsg: 'Error al eliminar la Copia',
@@ -229,16 +211,15 @@ export class EditionFormPage {
 
   protected submitCopyForm(item: SaveCopyModel): void {
     const id = this.copy.selectedItem()?.id_copy ?? 0
-    const payload = item;
     if (!item) return;
 
-    item.edition_id = this.editionId();
+    const payload: SaveCopyModel = { ...item, edition_id: this.editionId() };
 
     this.mutation.run(
       id > 0
         ? this.copyService.update(id, payload)
         : this.copyService.create(payload),
-      { isSaving: this.isSaving },
+      { isSaving: this.copy.isSaving },
       {
         successMsg: id > 0
           ? `Copia N°: ${payload.copy_number} - (${payload.signature_topography}) modificado correctamente`

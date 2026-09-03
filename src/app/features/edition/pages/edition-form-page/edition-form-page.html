@@ -5,7 +5,7 @@
 />
 
 <app-edition-form-components 
-  [isLoading]="isLoading()"
+  [isLoading]="isLoading() || isSavingImage()"
   [editionModel]="edition()"
   (deleteImage)="deleteImage($event)"
   (formSubmit)="submitEditionForm($event)"

@@ -1,7 +1,7 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from '@features/book-author/models/author-model';
 import { Observable } from 'rxjs';
 
@@ -9,40 +9,35 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthorService {
-  private ApiResponseService = inject(ApiResponseService)
+  private apiService = inject(ApiService)
   private readonly endpoint = 'author';
 
   getAllPagination(params: PaginationRequestModel<null>): Observable<PaginationResponseModel<AuthorModel[]>> {
-    let path = `?page=${params.page}&limit=${params.limit}`
-    
-    if (params.search && params.search.trim() != '')
-      path = `${path}&search=${params.search}`
-   
-    return this.ApiResponseService.getAll<PaginationResponseModel<AuthorModel[]>>(
-      `${this.endpoint}/pagination${path}`
+    return this.apiService.getAllPagination<PaginationResponseModel<AuthorModel[]>>(
+      this.endpoint, params
     );
   }
-  
+
   getAll(): Observable<AuthorModel[]> {
-    return this.ApiResponseService.getAll<AuthorModel[]>(
-      `${this.endpoint}/`
+    return this.apiService.getAll<AuthorModel[]>(
+      this.endpoint
     );
   }
 
   create(item: CreateAuthorModel): Observable<AuthorModel> {
-    return this.ApiResponseService.create<AuthorModel, CreateAuthorModel>(
+    return this.apiService.create<AuthorModel, CreateAuthorModel>(
       this.endpoint, item
     );
   }
 
   update(id: number, item: UpdateAuthorModel): Observable<AuthorModel> {
-    return this.ApiResponseService.update<AuthorModel, UpdateAuthorModel>(
+    return this.apiService.update<AuthorModel, UpdateAuthorModel>(
       this.endpoint, id, item
     );
   }
 
   delete(id: number): Observable<boolean> {
-    return this.ApiResponseService.delete<boolean>(
+    return this.apiService.delete<boolean>(
       this.endpoint, id
     );
   }

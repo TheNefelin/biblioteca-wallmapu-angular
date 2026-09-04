@@ -1,39 +1,34 @@
-import { Component, computed, effect, input, output, signal } from '@angular/core';
-import { GenreModel } from '@features/book-genre/models/genre-model';
-import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
-import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 import { DatePipe } from '@angular/common';
+import { Component, computed, input, linkedSignal, output } from '@angular/core';
+import { GenreModel } from '@features/book-genre/models/genre-model';
+import { ButtonComponent } from '@shared/components/button-component/button-component';
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   selector: 'app-genre-form-components',
   imports: [
     DatePipe,
-    ButtonClearComponent, 
-    LoadingComponent, 
-    ButtonCreateComponent,
+    ButtonComponent,
+    LoadingComponent,
   ],
   templateUrl: './genre-form-components.html',
 })
 export class GenreFormComponents {
   readonly isLoading = input<boolean>(false);
-  readonly subject = input<GenreModel | null>(null);
-  protected readonly onFormSubmit = output<GenreModel>();
-  protected readonly onClear = output<void>();
+  readonly genre = input<GenreModel | null>(null);
+  protected readonly submitForm = output<GenreModel>();
+  protected readonly cancelForm = output<void>();
 
-  protected readonly errorMessage = signal<string | null>(null); 
-  protected readonly actionText = computed<string>(() => this.subject() ? 'Modificar Género' : 'Crear Género');
-  protected readonly formData = signal<Partial<GenreModel>>({});
+  protected readonly actionText = computed<string>(() => this.genre() ? 'Modificar Género' : 'Crear Género');
 
-  private readonly updateFormEffect = effect(() => {
-    const item = this.subject();
-    
-    if (!item) {
-      this.formData.set({ name: '' });
-      return;
-    }
-
-    this.formData.set({ ...item });
+  protected readonly formData = linkedSignal<GenreModel | null, GenreModel>({
+    source: this.genre,
+    computation: (item) => item ?? {
+      id_genre: 0,
+      name: '',
+      created_at: '',
+      updated_at: '',
+    },
   });
 
   protected updateName(value: string, input: HTMLInputElement) {
@@ -44,9 +39,9 @@ export class GenreFormComponents {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
-      if (input) input.value = this.formData()[key] as string ?? ''; 
+      if (input) input.value = this.formData()[key] as string ?? '';
       return;
-    } 
+    }
 
     this.formData.update(data => ({ ...data, [key]: sanitized }));
   }
@@ -55,46 +50,30 @@ export class GenreFormComponents {
     switch (key){
       case 'name':
         if (value.length > 100) return null;
-        return value;       
+        return value;
       default:
         return value;
     }
   }
 
-  protected submitForm(event: Event): void {
-    event.preventDefault();
-
+  protected onSaveClick(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
 
     if (error) {
-      this.errorMessage.set(error);
       return;
     }
 
-    const submitData: GenreModel = {
-      ...data
-    } as GenreModel;
-
-    this.errorMessage.set(null);
-    this.onFormSubmit.emit(submitData);
-
-    this.clear();
+    this.submitForm.emit(data);
   }
 
-  private validateFormOnSubmit(data: Partial<GenreModel>): string | null {
+  private validateFormOnSubmit(data: GenreModel): string | null {
     if (data.name == null)
       return 'El nombre es requerido';
 
     if (data.name.length > 100)
       return 'El nombre tiene mas de 100 caracteres';
-    
-    return null;
-  }
 
-  protected clear(): void {
-    this.formData.set({ name: '' });
-    this.errorMessage.set(null);
-    this.onClear.emit()
+    return null;
   }
 }

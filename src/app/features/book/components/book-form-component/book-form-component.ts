@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { GenreSelectComponents } from "@features/book-genre/components/genre-select-components/genre-select-components";
 import { AuthorSelectComponents } from "@features/book-author/components/author-select-components/author-select-components";
@@ -75,7 +75,8 @@ export class BookFormComponent {
     });
   }
 
-  protected addSubject(item: SubjectModel) {
+  protected addSubject(item: SubjectModel | null) {
+    if (!item) return;
     if (!item.id_subject || item.id_subject === 0) return;
     
     this.formData.update(data => {
@@ -122,6 +123,8 @@ export class BookFormComponent {
         authors: data.authors?.filter(s => s.id_author !== item.id_author) || []
       };
     });
+
+    this.onDeleteAuthor.emit(item);
   }
 
   protected deleteSubject(item: SubjectModel): void {
@@ -131,6 +134,8 @@ export class BookFormComponent {
         subjects: data.subjects?.filter(s => s.id_subject !== item.id_subject) || []
       };
     });
+
+    this.onDeleteSubject.emit(item);
   }
 
   protected formSubmit(event: Event): void {

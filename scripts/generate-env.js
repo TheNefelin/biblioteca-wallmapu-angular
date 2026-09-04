@@ -7,7 +7,7 @@ const content = `export const environment = {
   production: true,
   apiUrl: ${JSON.stringify(apiUrl)},
   googleClientId: ${JSON.stringify(googleClientId)},
-  version: '1.0.267',
+  version: '1.1.0',
 };
 `;
 

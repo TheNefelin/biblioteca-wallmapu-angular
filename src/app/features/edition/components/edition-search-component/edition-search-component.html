@@ -28,7 +28,7 @@
       </span>
       <app-author-select-components 
         [clearTrigger]="clearTrigger()"
-        (onNewSelectedAuthor)="authorSelected($event)"
+        (newSelectedAuthor)="authorSelected($event)"
       />
     </div>   
     
@@ -47,7 +47,7 @@
       </span>
       <app-subject-select-components 
         [clearTrigger]="clearTrigger()"
-        (onNewSelectedSubject)="subjectSelected($event)"
+        (newSelectedSubject)="subjectSelected($event)"
       />
     </div>
 

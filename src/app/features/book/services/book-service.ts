@@ -1,5 +1,5 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
 import { BookDetailModel, BookModel, CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
@@ -9,40 +9,35 @@ import { PaginationResponseModel } from '@core/models/pagination-response-model'
   providedIn: 'root',
 })
 export class BookService {
-  private ApiResponseService = inject(ApiResponseService)
+  private apiService = inject(ApiService)
   private readonly endpoint = 'books';
 
-  getAllPagination(params: PaginationRequestModel): Observable<PaginationResponseModel<BookDetailModel[]>> {
-    let path = `?page=${params.page}&limit=${params.limit}`
-    
-    if (params.search && params.search.trim() != '')
-      path = `${path}&search=${params.search}`
-  
-    return this.ApiResponseService.getAll<PaginationResponseModel<BookDetailModel[]>>(
-      `${this.endpoint}/pagination${path}`
+  getAllPagination(params: PaginationRequestModel<null>): Observable<PaginationResponseModel<BookDetailModel[]>> {
+    return this.apiService.getAllPagination<PaginationResponseModel<BookDetailModel[]>>(
+      this.endpoint, params
     );
   }
 
   getById(id: number): Observable<BookModel | null> {
-    return this.ApiResponseService.getById<BookModel | null>(
+    return this.apiService.getById<BookModel | null>(
       this.endpoint, id
     );
   }
 
   create(item: CreateBookModel): Observable<BookModel> {
-    return this.ApiResponseService.create<BookModel, CreateBookModel>(
+    return this.apiService.create<BookModel, CreateBookModel>(
       this.endpoint, item
     );
   }  
 
   update(id: number, item: UpdateBookModel): Observable<BookModel> {
-    return this.ApiResponseService.update<BookModel, UpdateBookModel>(
+    return this.apiService.update<BookModel, UpdateBookModel>(
       this.endpoint, id, item
     );
   }
 
   delete(id: number): Observable<boolean> {
-    return this.ApiResponseService.delete<boolean>(
+    return this.apiService.delete<boolean>(
       this.endpoint, id
     );
   }

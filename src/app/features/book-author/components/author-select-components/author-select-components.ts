@@ -15,7 +15,7 @@ import { catchError, map, of } from 'rxjs';
 export class AuthorSelectComponents {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
-  readonly onNewSelectedAuthor = output<AuthorModel | null>();
+  readonly newSelectedAuthor = output<AuthorModel | null>();
   readonly clearTrigger = input<number>(0);
 
   private readonly authorService = inject(AuthorService);
@@ -39,11 +39,11 @@ export class AuthorSelectComponents {
   protected onSelectionChange(item: SelectItem): void {
     const author = this.authorComputedList().find(a => a.id_author === item.id);
     if (author) {
-      this.onNewSelectedAuthor.emit(author);
+      this.newSelectedAuthor.emit(author);
     }
   }
 
   protected onCleared(): void {
-    this.onNewSelectedAuthor.emit(null);
+    this.newSelectedAuthor.emit(null);
   }
 }

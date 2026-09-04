@@ -3,12 +3,12 @@
     <app-section-header-component 
       [title]="'Libros'" 
       [searchPlaceholder]="'Buscar Libro'"
-      (searchChange)="searchText($event)"
+      (searchChange)="onSearchFilter($event)"
     />
 
     <div class="flex justify-between m-4">
       <app-button-refresh-component 
-        (clicked)="refreshList()"
+        (clicked)="reload()"
       />
     
       <app-button-create-component 
@@ -17,21 +17,11 @@
       />
     </div>
 
-  <div class="px-4">
-    @if (successMessage()) {
-      <app-message-success-component [message]="successMessage()"/>
-    }
-    
-    @if (errorMessage()) {
-      <app-message-error-component [message]="errorMessage()"/>
-    }
-  </div>
-
     <app-book-list-component 
-      [isLoading]="isLoading()"
+      [isLoading]="getAllRX.isLoading()"
       [bookList]="bookComputedList()"
-      (onEdit)="onEdit($event)"
-      (onDelete)="onDelete($event)"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
     />
   </div>
 
@@ -42,13 +32,3 @@
     (nextPage)="nextPage()" 
   />
 </section>
-
-<app-modal-action-component
-  [isOpen]="openDeleteModal()"
-  [isLoading]="isLoading()"
-  [textTitle]="'Eliminar Libro'"
-  [textContent]="'¿Estás seguro de que deseas eliminar el libro?'"
-  [textName]="selectedBookToDelete()?.title"
-  (onConfirm)="confirmDelete()"
-  (onModalClose)="closeDeleteModal()"
-/>

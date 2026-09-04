@@ -6,8 +6,7 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { BookSubjectStepModel } from '@features/book-subject-step/models/book-subject-step-model';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { catchError, map, of, tap } from 'rxjs';
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { catchError, map, of } from 'rxjs';
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { BookAuthorStepService } from '@features/book-author-step/services/book-author-step-service';
 import { BookAuthorStepModel } from '@features/book-author-step/models/book-author-step-model';
@@ -17,28 +16,26 @@ import { EditionListComponents } from "@features/edition/components/edition-list
 import { EditionService } from '@features/edition/services/edition-service';
 import { BookModel, CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
 import { BookFormVM } from '@features/book/models/vm.book-form';
-import { ModalDeleteComponent } from "@shared/components/modal-delete-component/modal-delete-component";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
 import { EditionDetailModel } from '@features/edition/models/edition-model';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
-import { extractErrorMessage } from '@core/utils/error-handler';
+import { MutationService } from '@core/services/mutation-service';
+import { ModalConfirmService } from '@core/services/modal-confirm-service';
 
 @Component({
   selector: 'app-book-form-page',
   imports: [
     SectionHeaderComponent,
     BookFormComponent,
-    MessageErrorComponent,
     EditionListComponents,
-    ModalDeleteComponent,
-    MessageSuccessComponent,
     ButtonCreateComponent
-],
+  ],
   templateUrl: './book-form-page.html',
 })
 export class BookFormPage {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly mutation = inject(MutationService);
+  private readonly confirmService = inject(ModalConfirmService);
 
   readonly routeId = toSignal(
     this.activatedRoute.paramMap.pipe(
@@ -64,33 +61,22 @@ export class BookFormPage {
 
   protected readonly isEditMode = computed<boolean>(() => this.getBookPayload() > 0);
   protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isLoading = computed<boolean>(() => 
+  protected readonly isLoading = computed<boolean>(() =>
     [
       this.getBookRX,
-      this.saveBookRX,
-      this.deleteSubjectStepRX,
-      this.deleteAuthorStepRX,
       this.getEditionRX,
-      this.deleteEditionRX,
     ].some(r => r.isLoading())
   );
+  protected readonly isSaving = signal<boolean>(false);
 
   private readonly bookService = inject(BookService);
   protected readonly bookDetailComputed = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
   private readonly getBookPayload = signal(this.routeId());
-  private readonly saveBookPayload = signal<CreateBookModel | UpdateBookModel | null>(null);
-  protected readonly computedBook = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
 
   private readonly authorStepService = inject(BookAuthorStepService);
-  private readonly deleteAuthorStepPayload = signal<BookAuthorStepModel | null>(null);
-
   private readonly subjectStepService = inject(BookSubjectStepService);
-  private readonly deleteSubjectStepPayload = signal<BookSubjectStepModel | null>(null);
-  
   private readonly editionService = inject(EditionService);
-  private readonly deleteEditionPayload = signal<number | null>(null);
+
   protected readonly computedEditionList = computed<EditionDetailModel[]>(() => this.getEditionRX.value() ?? []);
 
   private readonly getBookRX = rxResource({
@@ -99,84 +85,9 @@ export class BookFormPage {
       if (!idBook) return of(null);
 
       return this.bookService.getById(idBook).pipe(
-        map(response => {
-          return response;
-        }),
-        tap((book) => {
-          if (!book) {
-            this.getBookPayload.set(0);
-          }
-        }),
+        map(response => response),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    }
-  });
-
-  private readonly saveBookRX = rxResource({
-    params: () => this.saveBookPayload(),
-    stream: ({ params }) => {
-      if (!params) return of(null);
-
-      const request$ = 'id_book' in params && params.id_book > 0
-        ? this.bookService.update(params.id_book, params)
-        : this.bookService.create(params);
-
-      return request$.pipe(
-        map(response => {
-          this.successMessage.set(this.isEditMode() ? 'Modificado correctamente' : 'Guardado correctamente');
-          return response;
-        }),
-        tap((book) => {
-          this.getBookPayload.set(book.id_book);
-          this.getBookRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    }
-  });
-
-  private readonly deleteAuthorStepRX = rxResource({
-    params: () => this.deleteAuthorStepPayload(),
-    stream: ({ params }) => {
-      if (!params) return of(null);
-
-      return this.authorStepService.delete(params).pipe(
-        map(res => {
-          this.successMessage.set('Eliminado correctamente');
-          return res;
-        }),
-        tap((res) => {
-          this.getBookRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    }
-  });
-
-  private readonly deleteSubjectStepRX = rxResource({
-    params: () => this.deleteSubjectStepPayload(),
-    stream: ({ params }) => {
-      if (!params) return of(null);
-
-      return this.subjectStepService.delete(params).pipe(
-        map(res => {
-          this.successMessage.set('Eliminado correctamente');
-          return res;
-        }),
-        tap(() => {
-          this.getBookRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
+          console.error('[BookService::BookFormPage] getBook:', err);
           return of(null);
         })
       );
@@ -189,35 +100,9 @@ export class BookFormPage {
       if (!idBook) return of(null);
 
       return this.editionService.getAllDetailByBook(idBook).pipe(
-        map(response => {
-          return response;
-        }),
+        map(response => response),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    }
-  });
-
-  private readonly deleteEditionRX = rxResource({
-    params: () => this.deleteEditionPayload(),
-    stream: ({ params: id_edition }) => {
-      if (!id_edition) return of(null);
-      
-      const request$ = this.editionService;
-
-      return request$.delete(id_edition).pipe(
-        map(res => {
-          this.successMessage.set('Eliminado correctamente');
-          return res;
-        }),
-        tap(() => {
-          this.getBookRX.reload();
-          this.selectedEditionToDelete.set(null);
-        }),
-        catchError(err => {
-          this.handleError(err);
+          console.error('[EditionService::BookFormPage] getEdition:', err);
           return of(null);
         })
       );
@@ -225,33 +110,87 @@ export class BookFormPage {
   });
 
   protected deleteAuthor(item: AuthorModel) {
-    this.deleteAuthorStepPayload.set({
+    if (!this.isEditMode()) return;
+
+    const payload: BookAuthorStepModel = {
       id_book: this.bookFormVM().id_book,
       id_author: item.id_author
-    });
+    };
+
+    this.mutation.run(
+      this.authorStepService.delete(payload),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Autor eliminado correctamente',
+        errorMsg: 'Error al eliminar el Autor',
+        onSuccess: () => this.getBookRX.reload(),
+      }
+    );
   }
 
   protected deleteSubject(item: SubjectModel) {
-    this.deleteSubjectStepPayload.set({
+    if (!this.isEditMode()) return;
+
+    const payload: BookSubjectStepModel = {
       id_book: this.bookFormVM().id_book,
       id_subject: item.id_subject
-    });
+    };
+
+    this.mutation.run(
+      this.subjectStepService.delete(payload),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Descriptor eliminado correctamente',
+        errorMsg: 'Error al eliminar el Descriptor',
+        onSuccess: () => this.getBookRX.reload(),
+      }
+    );
   }
 
   protected formSubmit(form: BookFormVM): void {
-    this.errorMessage.set(null);
-    
     const basePayload = {
       ...form,
       author_ids: form.authors.map(e => e.id_author),
       subject_ids: form.subjects.map(e => e.id_subject),
     }
 
-    const payload: CreateBookModel | UpdateBookModel = basePayload.id_book === 0
+    const id = basePayload.id_book;
+
+    const payload: CreateBookModel | UpdateBookModel = id === 0
       ? (basePayload as CreateBookModel)
       : (basePayload as UpdateBookModel);
 
-    this.saveBookPayload.set(payload);
+    this.mutation.run(
+      id === 0
+        ? this.bookService.create(payload as CreateBookModel)
+        : this.bookService.update(id, payload as UpdateBookModel),
+      { isSaving: this.isSaving },
+      {
+        successMsg: this.isEditMode() ? 'Libro modificado correctamente' : 'Libro creado correctamente',
+        errorMsg: this.isEditMode() ? 'Error al modificar el Libro' : 'Error al crear el Libro',
+        onSuccess: () => this.getBookRX.reload(),
+      }
+    );
+  }
+
+  protected async onDeleteEdition(item: EditionDetailModel): Promise<void> {
+    if (!item) return;
+
+    const confirmed = await this.confirmService.confirm({
+      title: 'Eliminar Edición',
+      message: `Estás seguro que deseas eliminar la edición?`,
+    });
+    if (!confirmed) return;
+
+    this.mutation.run(
+      this.editionService.delete(item.id_edition),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Edición eliminada correctamente',
+        errorMsg: 'Error al eliminar la Edición',
+        onSuccess: () => this.getBookRX.reload(),
+      }
+    );
   }
 
   protected navigateGoBack(): void {
@@ -271,37 +210,10 @@ export class BookFormPage {
   }
 
   protected onCreateEdition(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookFormVM().id_book, 0)]); 
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookFormVM().id_book, 0)]);
   }
 
   protected editEdition(item: EditionDetailModel): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookFormVM().id_book, item.id_edition)]);
-  }
-
-  // onDelete --------------------------------------------------------
-  protected readonly openDeleteModal = signal<boolean>(false);
-  readonly selectedEditionToDelete = signal<EditionDetailModel | null>(null);
-  
-  protected deleteEdition(item: EditionDetailModel): void {
-    if (!item) return;
-    this.selectedEditionToDelete.set(item);
-    this.openDeleteModal.set(true);
-  }
-
-  confirmDelete() {
-    const selectedBookToDelete = this.selectedEditionToDelete();
-    if (!selectedBookToDelete) return;
-    this.deleteEditionPayload.set(selectedBookToDelete.id_edition);
-    this.openDeleteModal.set(false);
-  } 
-
-  closeDeleteModal() {
-    this.openDeleteModal.set(false);
-  }
-  // -----------------------------------------------------------------
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
   }
 }

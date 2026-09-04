@@ -1,5 +1,5 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
 import { CreateGenreModel, GenreModel, UpdateGenreModel } from '@features/book-genre/models/genre-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
@@ -9,40 +9,35 @@ import { PaginationResponseModel } from '@core/models/pagination-response-model'
   providedIn: 'root',
 })
 export class GenreService {
-  private ApiResponseService = inject(ApiResponseService)
+  private apiService = inject(ApiService)
   private readonly endpoint = 'genre';
 
   getAllPagination(params: PaginationRequestModel<null>): Observable<PaginationResponseModel<GenreModel[]>> {
-    let path = `?page=${params.page}&limit=${params.limit}`
-    
-    if (params.search && params.search.trim() != '')
-      path = `${path}&search=${params.search}`
-   
-    return this.ApiResponseService.getAll<PaginationResponseModel<GenreModel[]>>(
-      `${this.endpoint}/pagination${path}`
+    return this.apiService.getAllPagination<PaginationResponseModel<GenreModel[]>>(
+      this.endpoint, params
     );
   }
-  
+
   getAll(): Observable<GenreModel[]> {
-    return this.ApiResponseService.getAll<GenreModel[]>(
-      `${this.endpoint}/`
+    return this.apiService.getAll<GenreModel[]>(
+      this.endpoint
     );
   }
 
   create(item: CreateGenreModel): Observable<GenreModel> {
-    return this.ApiResponseService.create<GenreModel, CreateGenreModel>(
+    return this.apiService.create<GenreModel, CreateGenreModel>(
       this.endpoint, item
     );
   }
 
   update(id: number, item: UpdateGenreModel): Observable<GenreModel> {
-    return this.ApiResponseService.update<GenreModel, UpdateGenreModel>(
+    return this.apiService.update<GenreModel, UpdateGenreModel>(
       this.endpoint, id, item
     );
   }
 
   delete(id: number): Observable<boolean> {
-    return this.ApiResponseService.delete<boolean>(
+    return this.apiService.delete<boolean>(
       this.endpoint, id
     );
   }  

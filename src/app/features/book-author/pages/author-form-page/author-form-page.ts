@@ -1,204 +1,122 @@
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { catchError, map, of } from 'rxjs';
+import { AuthorFormComponents } from '@features/book-author/components/author-form-components/author-form-components';
 import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from '@features/book-author/models/author-model';
 import { AuthorService } from '@features/book-author/services/author-service';
-import { catchError, finalize, map, of, tap } from 'rxjs';
-import { AuthorListComponents } from "@features/book-author/components/author-list-components/author-list-components";
-import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { AuthorFormComponents } from "@features/book-author/components/author-form-components/author-form-components";
-import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
-import { extractErrorMessage } from '@core/utils/error-handler';
+import { MutationService } from '@core/services/mutation-service';
+import { ModalConfirmService } from '@core/services/modal-confirm-service';
+import { CrudPage } from '@shared/base/crud-page';
+import { ButtonComponent } from '@shared/components/button-component/button-component';
+import { LoadingComponent } from '@shared/components/loading-component/loading-component';
+import { PaginationComponent } from '@shared/components/pagination-component/pagination-component';
+import { SearchInputComponent } from '@shared/components/search-input-component/search-input-component';
+import { SectionHeaderComponent } from '@shared/components/section-header-component/section-header-component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-author-form-page',
   imports: [
-    AuthorListComponents,
+    DatePipe,
     SectionHeaderComponent,
-    MessageSuccessComponent,
-    MessageErrorComponent,
     AuthorFormComponents,
-    ModalActionComponent,
+    SearchInputComponent,
+    LoadingComponent,
+    PaginationComponent,
+    ButtonComponent,
   ],
   templateUrl: './author-form-page.html',
 })
-export class AuthorFormPage {
+export class AuthorFormPage extends CrudPage<AuthorModel> {
   private location = inject(Location);
+  private service = inject(AuthorService);
+  private mutation = inject(MutationService);
+  private confirmService = inject(ModalConfirmService);
 
+  protected readonly isFormModalOpen = signal<boolean>(false);
   protected readonly selectedAuthor = signal<AuthorModel | null>(null);
-  protected readonly selectedAuthorToDelete = signal<AuthorModel | null>(null);
-  protected readonly isModalOpen = signal<boolean>(false);
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
+  protected readonly isSaving = signal<boolean>(false);
+  protected readonly computedList = computed<AuthorModel[]>(() => this.getAllRX.value() ?? []);
 
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getAuthorRX,
-      this.saveAuthorRX,
-      this.deleteAuthorRX,
-    ].some(e => e.isLoading())
-  );
-
-  private readonly authorService = inject(AuthorService);
-  private readonly saveAuthorPayload = signal<CreateAuthorModel | UpdateAuthorModel | null>(null);
-  private readonly deleteAuthorPayload = signal<number | null>(null);
-  private readonly getAuthorPayload = computed<PaginationRequestModel<null>>(() => {
-    return {
-      page: this.currentPage(),
-      limit: this.limit(),
-      search: this.search(),
-    }
-  });
-  protected readonly computedPaginationAuthorList = computed<PaginationResponseModel<AuthorModel[]> | null>(() => this.getAuthorRX.value() ?? null);
-
-  private readonly getAuthorRX = rxResource({
-    params: () => this.getAuthorPayload(),
-    stream: ({ params }) => {
-
-      return this.authorService.getAllPagination(params).pipe(
-        map(response => response),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-  
-  private readonly saveAuthorRX = rxResource({
-    params: () => this.saveAuthorPayload(),
+  protected readonly getAllRX = rxResource({
+    params: () => this.getAllPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      
-      const request$ = 'id_author' in params && params.id_author > 0
-        ? this.authorService.update(params.id_author, params)
-        : this.authorService.create(params);
 
-      return request$.pipe(
-        map(response => {
-          this.successMessage.set('Guardado correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.onClear();
-          this.onReload();
-        }),
+      return this.service.getAllPagination(params).pipe(
+        map(response => this.mapPaginated(response)),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
+          console.error('[AuthorService::AuthorFormPage] getAllPagination:', err);
+          return of(this.emptyPaginated());
         })
       );
-    }
+    },
   });
 
-  private readonly deleteAuthorRX = rxResource({
-    params: () => this.deleteAuthorPayload(),
-    stream: ({ params: id_author }) => { 
-      if (!id_author) return of(null);
-
-      return this.authorService.delete(id_author).pipe(
-        map(response => {
-          this.successMessage.set('Eliminado correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.onClear();
-          this.onReload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        }),
-        finalize(() => {
-          this.onCloseModal();
-        }),
-      );
-    },
-  });  
+  // Metodos de Herencia CrudPage ------------------------------------------------------------
+  protected override reload(): void {
+    this.getAllRX.reload();
+  }
 
   protected onSearchFilter(searchText: string): void {
-    this.search.set(searchText);
+    this.onFilterChange({ search: searchText, limit: this.limit() });
   }
-  
+
+  // Acciones --------------------------------------------------------------------------------
   protected onSelectedAuthor(item: AuthorModel): void {
     this.selectedAuthor.set(item);
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    this.isFormModalOpen.set(true);
   }
 
-  protected onFormSubmit(form: AuthorModel): void {
-    const payload: CreateAuthorModel | UpdateAuthorModel = form.id_author > 0
-    ? {
-        id_author: form.id_author,
-        name: form.name,
-      } as UpdateAuthorModel
-    : {
-        name: form.name,
-      } as CreateAuthorModel;
-
-    this.saveAuthorPayload.set(payload);
-  }
-
-  protected onDeleteAuthor(item: AuthorModel): void {
-    this.onOpenModal();
-    this.selectedAuthorToDelete.set(item);
-  }
-
-  protected onOpenModal(): void {
-    this.isModalOpen.set(true);
-  }
-
-  protected onCloseModal(): void {
-    this.isModalOpen.set(false);
-  }
-
-  protected onConfirmModal(): void {
-    if (!this.selectedAuthorToDelete()) return;
-    const id_author = this.selectedAuthorToDelete()?.id_author ?? null
-
-    this.deleteAuthorPayload.set(id_author);
-  }
-
-  protected onClear(): void{
-    this.selectedAuthorToDelete.set(null);
+  protected onClearForm(): void {
     this.selectedAuthor.set(null);
-    this.errorMessage.set(null);
+    this.isFormModalOpen.set(false);
   }
 
-  protected onReload(): void {
-    this.getAuthorRX.reload();
+  protected onSubmitForm(form: AuthorModel): void {
+    const id = form.id_author;
+    const payload: CreateAuthorModel | UpdateAuthorModel = id > 0
+      ? { id_author: id, name: form.name }
+      : { name: form.name };
+
+    this.mutation.run(
+      id > 0
+        ? this.service.update(id, payload as UpdateAuthorModel)
+        : this.service.create(payload as CreateAuthorModel),
+      { isSaving: this.isSaving },
+      {
+        successMsg: id > 0
+          ? `Autor: ${form.name} modificado correctamente`
+          : `Autor: ${form.name} creado correctamente`,
+        errorMsg: id > 0 ? 'Error al modificar el Autor' : 'Error al crear el Autor',
+        onSuccess: () => {
+          this.onClearForm();
+          this.reload();
+        },
+      }
+    );
   }
 
-  protected onNextPage(): void {
-    const totalPages = this.computedPaginationAuthorList()?.pages ?? 1
+  protected async onDelete(item: AuthorModel): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Eliminar Autor',
+      message: `Estás seguro que deseas eliminar el Autor (${item.name})?`,
+    });
+    if (!confirmed) return;
 
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  protected onPrevPage(): void {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+    this.mutation.run(
+      this.service.delete(item.id_author),
+      { isSaving: this.isSaving },
+      {
+        successMsg: `Autor: ${item.name} eliminado correctamente`,
+        errorMsg: 'Error al eliminar el Autor',
+        onSuccess: () => this.reload(),
+      }
+    );
   }
 
   protected navigateBack(): void {
     this.location.back();
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
   }
 }

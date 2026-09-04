@@ -16,7 +16,7 @@ export class SubjectSelectComponents {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
   readonly clearTrigger = input<number>(0);
-  readonly onNewSelectedSubject = output<SubjectModel>();
+  readonly newSelectedSubject = output<SubjectModel | null>();
 
   private readonly subjectService = inject(SubjectService);
 
@@ -39,11 +39,11 @@ export class SubjectSelectComponents {
   protected onSelectionChange(item: SelectItem): void {
     const subject = this.subjectComputedList().find(s => s.id_subject === item.id);
     if (subject) {
-      this.onNewSelectedSubject.emit(subject);
+      this.newSelectedSubject.emit(subject);
     }
   }
 
   protected onCleared(): void {
-    this.onNewSelectedSubject.emit(null as unknown as SubjectModel);
+    this.newSelectedSubject.emit(null);
   }
 }

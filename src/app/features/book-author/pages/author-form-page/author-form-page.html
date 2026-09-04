@@ -1,45 +1,77 @@
-<app-section-header-component 
+<app-section-header-component
   [title]="'Autores'"
   [actionText]="'Volver Atrás'"
   (actionClicked)="navigateBack()"
 />
 
 <section class="p-4 grid grid-cols-1 gap-4">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <app-author-form-components 
-      [isLoading]="isLoading()"
-      [author]="selectedAuthor()"
-      (onClear)="onClear()"
-      (onFormSubmit)="onFormSubmit($event)"      
+  <div class="bg-my-light rounded-md text-my-dark shadow-xl overflow-x-auto">
+    <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
+      <div>
+        <h2 class="font-bold text-my-purple text-lg">
+          Gestión de Autores
+        </h2>
+        <p class="text-sm text-my-dark/50">
+          Lista completa de todos los Autores
+        </p>
+      </div>
+
+      <div class="flex gap-2 items-center">
+        <app-search-input-component (onInputTextChange)="onSearchFilter($event)" />
+        <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="reload()" />
+        <app-button-component [icon]="'create'" textBtn="Crear Autor" (clicked)="selectedAuthor.set(null); isFormModalOpen.set(true)" />
+      </div>
+    </header>
+
+    <div class="overflow-x-auto">
+      @if (getAllRX.isLoading() && !getAllRX.hasValue()) {
+        <div class="p-4 flex justify-center">
+          <app-loading-component/>
+        </div>
+      } @else {
+        <table class="table w-full text-center py-4">
+          <thead class="uppercase">
+            <tr>
+              <th>Id</th>
+              <th>Autor</th>
+              <th>Creación</th>
+              <th>Modificación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody class="[&>tr>td]:align-middle">
+            @for (item of computedList(); track item.id_author) {
+              <tr class="hover:bg-my-purple/10 text-my-purple">
+                <td>{{ item.id_author }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.created_at | date:'yyyy-MM-dd' }}</td>
+                <td>{{ item.updated_at | date:'yyyy-MM-dd' }}</td>
+                <td class="flex justify-center gap-2">
+                  <app-button-component [icon]="'edit'" (clicked)="onSelectedAuthor(item)" />
+                  <app-button-component [icon]="'delete'" (clicked)="onDelete(item)" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <app-pagination-component
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      (prevPage)="prevPage()"
+      (nextPage)="nextPage()"
     />
-  </div>  
-  
-  @if (successMessage()) {
-    <app-message-success-component [message]="successMessage()" />  }
-   
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()" />
-  }
-  
-  <app-author-list-components 
-    [isLoading]="isLoading()"
-    [paginationAuthorList]="computedPaginationAuthorList()"
-    (onReload)="onReload()"
-    (onNextPage)="onNextPage()"
-    (onPrevPage)="onPrevPage()"
-    (onEdit)="onSelectedAuthor($event)"
-    (onDelete)="onDeleteAuthor($event)"
-    (onSearch)="onSearchFilter($event)"
-  />
+  </div>
 </section>
 
-
-<app-modal-action-component 
-  [isOpen]="isModalOpen()"
-  [isLoading]="isLoading()"
-  [textTitle]="'Eliminar Autor'"
-  [textContent]="'¿Estas Seguro que deceas eliminar el Autor?'"
-  [textName]="selectedAuthorToDelete()?.name ?? 'Sin Nombre'"
-  (onModalClose)="onCloseModal()"
-  (onConfirm)="onConfirmModal()"
-/>
+@if (isFormModalOpen()) {
+  <app-author-form-components
+    [isLoading]="isSaving()"
+    [author]="selectedAuthor()"
+    (submitForm)="onSubmitForm($event)"
+    (cancelForm)="onClearForm()"
+  />
+}

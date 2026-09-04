@@ -18,6 +18,6 @@ export class BookListComponent {
   readonly bookList = input.required<BookDetailModel[]>();
   readonly isLoading = input.required<boolean>();
   
-  readonly onEdit = output<BookDetailModel>();
-  readonly onDelete = output<BookDetailModel>();
+  readonly edit = output<BookDetailModel>();
+  readonly delete = output<BookDetailModel>();
 }

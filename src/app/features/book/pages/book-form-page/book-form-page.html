@@ -16,16 +16,6 @@
   (onNavigateToSubject)="navigateToSubject()"
 />
 
-<section class="p-4 pb-0 grid gap-4">
-  @if(successMessage()) {
-    <app-message-success-component [message]="successMessage()"/>
-  }
-
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()"/>
-  } 
-</section>  
-
 @if (isEditMode()) {
   <div class="m-4 flex justify-end">
     <app-button-create-component
@@ -39,14 +29,5 @@
   [isLoading]="isLoading()"
   [editionDetailList]="computedEditionList()"
   (edit)="editEdition($event)"
-  (delete)="deleteEdition($event)"
-/>
-
-<app-modal-delete-component
-  title="Eliminar Copia"
-  [isOpen]="openDeleteModal()"
-  [isLoading]="isLoading()"
-  [itemName]="bookFormVM().title + ' - ' + selectedEditionToDelete()?.edition"
-  (confirm)="confirmDelete()"
-  (cancel)="closeDeleteModal()"
+  (delete)="onDeleteEdition($event)"
 />

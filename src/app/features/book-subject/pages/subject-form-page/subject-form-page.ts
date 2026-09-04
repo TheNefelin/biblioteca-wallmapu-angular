@@ -1,203 +1,122 @@
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { CreateSubjectModel, SubjectModel, UpdateSubjectModel } from '@features/book-subject/models/subject-model';
-import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { SubjectService } from '@features/book-subject/services/subject-service';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, finalize, map, of, tap } from 'rxjs';
-import { SubjectListComponents } from "@features/book-subject/components/subject-list-components/subject-list-components";
-import { SubjectFormComponents } from "@features/book-subject/components/subject-form-components/subject-form-components";
-import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
-import { extractErrorMessage } from '@core/utils/error-handler';
+import { catchError, map, of } from 'rxjs';
+import { SubjectFormComponents } from '@features/book-subject/components/subject-form-components/subject-form-components';
+import { CreateSubjectModel, SubjectModel, UpdateSubjectModel } from '@features/book-subject/models/subject-model';
+import { SubjectService } from '@features/book-subject/services/subject-service';
+import { MutationService } from '@core/services/mutation-service';
+import { ModalConfirmService } from '@core/services/modal-confirm-service';
+import { CrudPage } from '@shared/base/crud-page';
+import { ButtonComponent } from '@shared/components/button-component/button-component';
+import { LoadingComponent } from '@shared/components/loading-component/loading-component';
+import { PaginationComponent } from '@shared/components/pagination-component/pagination-component';
+import { SearchInputComponent } from '@shared/components/search-input-component/search-input-component';
+import { SectionHeaderComponent } from '@shared/components/section-header-component/section-header-component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-subject-form-page',
-  imports: [SectionHeaderComponent,
-    MessageSuccessComponent,
-    MessageErrorComponent,
-    SubjectListComponents,
+  imports: [
+    DatePipe,
+    SectionHeaderComponent,
     SubjectFormComponents,
-    ModalActionComponent,
+    SearchInputComponent,
+    LoadingComponent,
+    PaginationComponent,
+    ButtonComponent,
   ],
   templateUrl: './subject-form-page.html',
 })
-export class SubjectFormPage {
+export class SubjectFormPage extends CrudPage<SubjectModel> {
   private location = inject(Location);
-  
+  private service = inject(SubjectService);
+  private mutation = inject(MutationService);
+  private confirmService = inject(ModalConfirmService);
+
+  protected readonly isFormModalOpen = signal<boolean>(false);
   protected readonly selectedSubject = signal<SubjectModel | null>(null);
-  protected readonly selectedSubjectToDelete = signal<SubjectModel | null>(null);
-  protected readonly isModalOpen = signal<boolean>(false);
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
-  
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getSubjectRX,
-      this.saveSubjectRX,
-      this.deleteSubjectRX,
-    ].some(e => e.isLoading())
-  );
+  protected readonly isSaving = signal<boolean>(false);
+  protected readonly computedList = computed<SubjectModel[]>(() => this.getAllRX.value() ?? []);
 
-  private readonly subjectService = inject(SubjectService);
-  private readonly saveSubjectPayload = signal<CreateSubjectModel | UpdateSubjectModel | null>(null);
-  private readonly deleteSubjectPayload = signal<number | null>(null);
-  private readonly getSubjectPayload = computed<PaginationRequestModel<null>>(() => {
-    return {
-      page: this.currentPage(),
-      limit: this.limit(),
-      search: this.search(),
-    }
-  });
-  protected readonly computedPaginationSubjectList = computed<PaginationResponseModel<SubjectModel[]> | null>(() => this.getSubjectRX.value() ?? null);
-
-  private readonly getSubjectRX = rxResource({
-    params: () => this.getSubjectPayload(),
-    stream: ({ params }) => {
-
-      return this.subjectService.getAllPagination(params).pipe(
-        map(response => response),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly saveSubjectRX = rxResource({
-    params: () => this.saveSubjectPayload(),
+  protected readonly getAllRX = rxResource({
+    params: () => this.getAllPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
-      
-      const request$ = 'id_subject' in params && params.id_subject > 0
-        ? this.subjectService.update(params.id_subject, params)
-        : this.subjectService.create(params);
 
-      return request$.pipe(
-        map(response => {
-          this.successMessage.set('Descriptor guardado correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.onClear();
-          this.onReload();
-        }),
+      return this.service.getAllPagination(params).pipe(
+        map(response => this.mapPaginated(response)),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
+          console.error('[SubjectService::SubjectFormPage] getAllPagination:', err);
+          return of(this.emptyPaginated());
         })
-      );
-    }
-  });
-
-  private readonly deleteSubjectRX = rxResource({
-    params: () => this.deleteSubjectPayload(),
-    stream: ({ params: id_subject }) => { 
-      if (!id_subject) return of(null);
-
-      return this.subjectService.delete(id_subject).pipe(
-        map(response => {
-          this.successMessage.set('Descriptor eliminado correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.onClear();
-          this.onReload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        }),
-        finalize(() => {
-          this.onCloseModal();
-        }),
       );
     },
   });
 
-  protected onSearchFilter(searchText: string): void {
-    this.search.set(searchText);
+  // Metodos de Herencia CrudPage ------------------------------------------------------------
+  protected override reload(): void {
+    this.getAllRX.reload();
   }
-  
+
+  protected onSearchFilter(searchText: string): void {
+    this.onFilterChange({ search: searchText, limit: this.limit() });
+  }
+
+  // Acciones --------------------------------------------------------------------------------
   protected onSelectedSubject(item: SubjectModel): void {
     this.selectedSubject.set(item);
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    this.isFormModalOpen.set(true);
   }
 
-  protected onFormSubmit(form: SubjectModel): void {
-    const payload: CreateSubjectModel | UpdateSubjectModel = form.id_subject > 0
-    ? {
-        id_subject: form.id_subject,
-        name: form.name,
-      } as UpdateSubjectModel
-    : {
-        name: form.name,
-      } as CreateSubjectModel;
-
-    this.saveSubjectPayload.set(payload);
-  }
-
-  protected onDeleteSubject(item: SubjectModel): void {
-    this.onOpenModal();
-    this.selectedSubjectToDelete.set(item);
-  }
-
-  protected onOpenModal(): void {
-    this.isModalOpen.set(true);
-  }
-
-  protected onCloseModal(): void {
-    this.isModalOpen.set(false);
-  }
-
-  protected onConfirmModal(): void {
-    if (!this.selectedSubjectToDelete()) return;
-    const id_author = this.selectedSubjectToDelete()?.id_subject ?? null
-
-    this.deleteSubjectPayload.set(id_author);
-  }
-  
-  protected onClear(): void{
-    this.selectedSubjectToDelete.set(null);
+  protected onClearForm(): void {
     this.selectedSubject.set(null);
-    this.errorMessage.set(null);
+    this.isFormModalOpen.set(false);
   }
 
-  protected onReload(): void {
-    this.getSubjectRX.reload();
+  protected onSubmitForm(form: SubjectModel): void {
+    const id = form.id_subject;
+    const payload: CreateSubjectModel | UpdateSubjectModel = id > 0
+      ? { id_subject: id, name: form.name }
+      : { name: form.name };
+
+    this.mutation.run(
+      id > 0
+        ? this.service.update(id, payload as UpdateSubjectModel)
+        : this.service.create(payload as CreateSubjectModel),
+      { isSaving: this.isSaving },
+      {
+        successMsg: id > 0
+          ? `Descriptor: ${form.name} modificado correctamente`
+          : `Descriptor: ${form.name} creado correctamente`,
+        errorMsg: id > 0 ? 'Error al modificar el Descriptor' : 'Error al crear el Descriptor',
+        onSuccess: () => {
+          this.onClearForm();
+          this.reload();
+        },
+      }
+    );
   }
 
-  protected onNextPage(): void {
-    const totalPages = this.computedPaginationSubjectList()?.pages ?? 1
+  protected async onDelete(item: SubjectModel): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Eliminar Descriptor',
+      message: `Estás seguro que deseas eliminar el Descriptor (${item.name})?`,
+    });
+    if (!confirmed) return;
 
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  protected onPrevPage(): void {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+    this.mutation.run(
+      this.service.delete(item.id_subject),
+      { isSaving: this.isSaving },
+      {
+        successMsg: `Descriptor: ${item.name} eliminado correctamente`,
+        errorMsg: 'Error al eliminar el Descriptor',
+        onSuccess: () => this.reload(),
+      }
+    );
   }
 
   protected navigateBack(): void {
     this.location.back();
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
   }
 }

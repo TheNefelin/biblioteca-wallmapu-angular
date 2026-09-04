@@ -82,11 +82,15 @@ admin/
             │   ├── models/        → Model + SaveModel (fuente única, nunca duplicar)
             │   ├── services/      → CRUD + uploads
             │   ├── pages/         → {feature}-page/ (lista paginada) + {feature}-form-page/ (form complejo)
-            │   └── components/    → {feature}-form-component/ (modal), {feature}-list-component/ (tabla/grid)
+            │   └── components/    → {feature}-form-component/ (modal), {feature}-list-component/ (tabla/grid),
+            │                       {feature}-select-component/ (select con búsqueda),
+            │                       {feature}-selected-list-component/ (lista de seleccionados con delete)
             └── {feature}.routes.ts
 ```
 
-**Regla**: un feature CRUD = `models/` + `services/` + `pages/` + `components/`. Los componentes se agrupan por feature, nunca en un `components/` global con todo.
+**Regla**: un feature CRUD = `models/` + `services/` + `pages/` + `components/`. Los componentes se agrupan por feature, nunca en un `components/` global con todo. **Nomenclatura singular**: todos los componentes usan `-component` (sin `s`), tanto en nombre de archivo como de clase y selector (`app-x-component`).
+
+**Convención de nombres en pages**: el servicio inyectado se nombra `<feature>Service` (p. ej. `editorialService`, `genreService`) y el rxResource `getAll<Feature>RX` (p. ej. `getAllEditorialRX`). Nunca `service` genérico ni `getAllRX`.
 
 **Diferencia clave de modo:**
 - **[CSR]**: no hay `src/server.ts`; la API se consume desde `environment.apiUrl`. La sesión vive en `localStorage`/`sessionStorage` del navegador.
@@ -131,6 +135,21 @@ export abstract class CrudPage<TModel> {
 - La subclase implementa `reload()` (recarga su `rxResource`) y conserva SUS GETs y mutaciones.
 - **Override**: para cambiar un valor/lógica heredado usar `protected override` (requiere palabra `override` por `noImplicitOverride: true`).
 - Streams `rxResource` **puros**: el side-effect de `totalPages.set()` va en helpers (`mapPaginated`/`emptyPaginated`), nunca dentro del `map` — si no, la paginación queda stale cuando una request falla.
+- **Estado agrupado por feature**: el listado, loading, guardado, modal y item seleccionado se agrupan en un objeto plano con signals/computed. Nunca signals sueltas dispersas.
+
+```ts
+// patrón de estado agrupado en el page
+protected readonly genre = {
+  dataList:    computed<GenreModel[]>(() => this.getAllGenreRX.value() ?? []),
+  isLoading:   computed<boolean>(() => this.getAllGenreRX.isLoading()),
+  isSaving:    signal<boolean>(false),
+  showModal:   signal<boolean>(false),
+  selectedItem: signal<GenreModel | null>(null),
+}
+```
+
+- **Convención de handlers**: los métodos de acción usan `on` + nombre de la acción (`onCreateGenre`, `onEditGenre`, `onDeleteGenre`, `onClearGenreForm`, `onSubmitGenreForm`). `onClear*` cierra el modal y limpia selectedItem. `onSubmit*` desestructura `{ id, data: SaveModel }` del form y delega a `MutationService`.
+- **El form emite `{ id, data: SaveModel }`**: el componente form output `submitForm = output<{ id: number, data: SaveModel }>()`. El id es `0` en creación o `feature.id` en edición. El page extrae `id` y `data` y decide create vs update.
 
 ### 4.3 Mutaciones — `MutationService`
 
@@ -147,20 +166,27 @@ run<T>(action: Observable<T>, state: { isSaving: WritableSignal<boolean> },
 ```
 
 - **`onClose` corre SOLO en éxito**: si la API falla, el modal queda abierto con los datos intactos (el usuario no pierde lo escrito).
-- Estado `isSaving` agrupado por feature (`{ savePayload, isSaving }`), nunca signals planos dispersos.
+- Estado `isSaving` agrupado por feature (p. ej. `{ isSaving: this.genre.isSaving }`), nunca signals planos dispersos.
+- **Delete con `ModalConfirmService`**: antes de borrar, `await this.confirmService.confirm({ title, message })` resuelve `boolean`. Si `false`, se aborta. La mutación de delete pasa el id del item, no el objeto.
 
-### 4.4 Formularios — `linkedSignal` + `clearTrigger`
+### 4.4 Formularios — `linkedSignal`
 
 ```ts
-// esqueleto de form component en modal
-formData = linkedSignal<SaveModel | null, FormState>(() => this.buildEmptyFormState());
-clearTrigger = input<number>(0);
-effect(() => { this.clearTrigger(); this.resetForm(); });
+// patrón real del form component (modal)
+protected readonly formData = linkedSignal<SaveModel | null, SaveModel>({
+  source: this.model,  // input() con el modelo a editar (null = creación)
+  computation: (item) => item ?? { name: '' },  // defaults por campo
+});
+
+protected readonly submitForm = output<{ id: number, data: SaveModel }>();
 ```
 
-- El form reacciona al payload (editar) y se resetea al incrementar `clearTrigger`.
-- Validaciones **locales** con componente de mensaje (`MessageErrorComponent`), nunca toast/modal.
+- `linkedSignal` con `computation` reacciona al cambio del **source** (input del modelo). Cuando `selectedItem` se setea a `null` (cerrar modal), el source cambia y el form resetea a defaults automáticamente — sin `effect()` ni `clearTrigger` para el form data.
+- `clearTrigger` se usa en **select components** (para limpiar la selección visual), no en el form principal.
+- El form emite `{ id, data }`: `id = 0` en creación, `id = feature.id` en edición. El page decide create vs update.
+- Validaciones **locales** con `validateFormOnSubmit()`, nunca toast/modal. Retorna `string | null` (null = válido).
 - Submit con `(ngSubmit)` (no `(submit)`) — previene la recarga por Enter.
+- Template lee fechas/ids del **input** `model()`, no de `formData()`: `<p>ID: {{ model()?.id }}</p>` (no `formData().id`).
 
 ### 4.5 Componentes — outputs y accesibilidad
 
@@ -170,6 +196,39 @@ effect(() => { this.clearTrigger(); this.resetForm(); });
 - **Labels**: usar `<label>` solo cuando hay un control asociado (`for` + `id`, o asociación implícita envolviendo el input). Encabezados de sección → `span`; contenedores sin control → `div` (`label-has-associated-control`).
 - **Interactivos**: elementos clickeables no nativos necesitan `role="button"` + `tabindex="0"` + handler de teclado (`keydown.enter/space`) (`interactive-supports-focus`, `click-events-have-key-events`).
 - **Spinner de carga**: `isLoading() && !hasValue()` para no desmontar la lista en refetch.
+
+### 4.6 Select components, selected-list y resolución de modelos
+
+**Select component** (`{feature}-select-component/`):
+- Emite `number` via `newSelectedId = output<number>()` (el id del item seleccionado, `0` al limpiar).
+- Contiene su propio `rxResource` para cargar la lista de opciones (`getAll()`).
+- Expone `clearTrigger = input<number>(0)` para resetear la selección visual desde el padre.
+- El padre **no recibe el modelo completo** — recibe solo el id.
+
+**Selected-list component** (`{feature}-selected-list-component/`):
+- Recibe la lista de items seleccionados como `input<FeatureModel[]>()`.
+- Emite `delete = output<FeatureModel>()` (sin prefijo `on`).
+- El handler interno `handleDelete` hace `event.preventDefault()` + `event.stopPropagation()` antes de emitir.
+
+**Resolución de modelo en el consumidor** (`book-form-component`, `edition-form-components`):
+- Cuando el select emite un `number`, el consumidor resuelve el modelo completo inyectando el servicio:
+
+```ts
+// book-form-component: resolve id → AuthorModel
+private authorService = inject(AuthorService);
+
+protected addAuthor(id: number): void {
+  if (!id) return;
+  const item = this.allAuthorsRX.value()?.find(a => a.id_author === id);
+  if (!item) return;
+  this.formData.update(data => ({
+    ...data,
+    authors: [...(data.authors ?? []), item]
+  }));
+}
+```
+
+- El `delete` del selected-list delega al page (`onDeleteAuthor`/`onDeleteSubject`) que solo persiste en modo edición (`isEditMode()`). En creación solo actualiza `formData` local (no hay filas puente en BD aún).
 
 ---
 
@@ -235,12 +294,15 @@ Antes de dar una app Angular por terminada:
 - [ ] `MutationService` con `onClose` solo en éxito (el modal no pierde datos al fallar)
 - [ ] Outputs sin prefijo `on` y sin nombres de eventos DOM nativos (`no-output-on-prefix`, `no-output-native`)
 - [ ] `CrudPage<TModel>` para listados paginados; streams `rxResource` puros (`mapPaginated`/`emptyPaginated`)
-- [ ] `linkedSignal` + `clearTrigger` en formularios; `(ngSubmit)` en todos los forms
+- [ ] Estado agrupado por feature (`{ dataList, isLoading, isSaving, showModal, selectedItem }`); handlers `onCreate*`/`onEdit*`/`onDelete*`/`onClear*`/`onSubmit*`
+- [ ] `linkedSignal` con `computation` en forms (reset por source change); `clearTrigger` solo en selects; form emite `{ id, data: SaveModel }`
+- [ ] Select emite `number` (`newSelectedId`); consumidor resuelve `number → Model` via servicio inyectado; selected-list emite `delete`
 - [ ] Labels asociados a controles; elementos interactivos focusables con keydown
 - [ ] Auth consistente: **[CSR]** Bearer de `localStorage`/`sessionStorage`; **[SSR]** por namespace (sessionStorage + sessionSignal reactivo + interceptor con refresh/retry/logout)
 - [ ] Feedback: `ErrorService` (modal, vía interceptor) + `SuccessService` (toast) + `ConfirmService` (promise-based)
 - [ ] Búsquedas con `encodeURIComponent()`; `limit` de paginación acotado
 - [ ] `strict: true`; comillas simples y semicolons uniformes; imports con aliases (`@core/*`, `@shared/*`, `@features/*`)
+- [ ] Nomenclatura singular: `-component` (sin `s`) en archivos, clases y selectores
 - [ ] `pnpm` (nunca `npm`)
 
 ---
@@ -264,3 +326,6 @@ Antes de dar una app Angular por terminada:
 | `getAllPayload` con side-effects en el `map` | Paginación stale al fallar una request |
 | Comillas dobles / imports relativos | Inconsistencia que rompe el lint; usar comillas simples + aliases |
 | Verificar outputs con `OutputEmitterRef` como si fueran funciones | Confundir método handler y output homónimo (colisión de nombres); renombrar el método |
+| Signals sueltas para estado de feature | `dataList`, `isLoading`, `isSaving`, `showModal`, `selectedItem` como signals individuales dispersos → difícil de rastrear; agrupar en un objeto por feature |
+| Select emitiendo `Model \| null` al page | El page recibe el modelo completo innecesariamente; el select debe emitir `number` y el consumidor resuelve via servicio (desacopla select de model) |
+| `templateUrl` apuntando a nombre viejo tras renombrar archivo | El componente compila pero el template no se carga; actualizar `templateUrl` junto con el nombre del archivo |

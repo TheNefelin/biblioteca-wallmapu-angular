@@ -1,14 +1,10 @@
-export interface CreateGenreModel {
+
+export interface SaveGenreModel {
   name: string;
 }
 
-
-export interface UpdateGenreModel extends CreateGenreModel {
+export interface GenreModel extends SaveGenreModel {
   id_genre: number;
-}
-
-
-export interface GenreModel extends UpdateGenreModel{
   created_at: string;
   updated_at: string;
 }

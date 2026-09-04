@@ -1,7 +1,7 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
-import { CreateGenreModel, GenreModel, UpdateGenreModel } from '@features/book-genre/models/genre-model';
+import { GenreModel, SaveGenreModel } from '@features/book-genre/models/genre-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 
@@ -24,14 +24,14 @@ export class GenreService {
     );
   }
 
-  create(item: CreateGenreModel): Observable<GenreModel> {
-    return this.apiService.create<GenreModel, CreateGenreModel>(
+  create(item: SaveGenreModel): Observable<GenreModel> {
+    return this.apiService.create<GenreModel, SaveGenreModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateGenreModel): Observable<GenreModel> {
-    return this.apiService.update<GenreModel, UpdateGenreModel>(
+  update(id: number, item: SaveGenreModel): Observable<GenreModel> {
+    return this.apiService.update<GenreModel, SaveGenreModel>(
       this.endpoint, id, item
     );
   }

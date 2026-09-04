@@ -1,0 +1,62 @@
+<section class="p-4 grid grid-cols-1 gap-4">
+    <div class="bg-my-light rounded-md text-my-dark shadow-xl overflow-x-auto">
+      <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
+        <div>
+          <h2 class="font-bold text-my-purple text-lg">
+            Gestión de Géneros
+          </h2>
+          <p class="text-sm text-my-dark/50">
+            Lista completa de todos los Géneros
+          </p>
+        </div>
+  
+        <div class="flex gap-2 items-center">
+          <app-search-input-component (onInputTextChange)="searchFilter.emit($event)" />
+          <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="reload.emit()" />
+          <app-button-component [icon]="'create'" textBtn="Crear Género" (clicked)="create.emit()" />
+        </div>
+      </header>
+  
+      <div class="overflow-x-auto">
+        @if (isLoading()) {
+          <div class="p-4 flex justify-center">
+            <app-loading-component/>
+          </div>
+        } @else {
+          <table class="table w-full text-center py-4">
+            <thead class="uppercase">
+              <tr>
+                <th>Id</th>
+                <th>Género</th>
+                <th>Creación</th>
+                <th>Modificación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+  
+            <tbody class="[&>tr>td]:align-middle">
+              @for (item of genreList(); track item.id_genre) {
+                <tr class="hover:bg-my-purple/10 text-my-purple">
+                  <td>{{ item.id_genre }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.created_at | date:'yyyy-MM-dd' }}</td>
+                  <td>{{ item.updated_at | date:'yyyy-MM-dd' }}</td>
+                  <td class="flex justify-center gap-2">
+                    <app-button-component [icon]="'edit'" (clicked)="edit.emit(item)" />
+                    <app-button-component [icon]="'delete'" (clicked)="delete.emit(item)" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+  
+      <app-pagination-component
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (prevPage)="prevPage.emit()"
+        (nextPage)="nextPage.emit()"
+      />
+    </div>
+  </section>

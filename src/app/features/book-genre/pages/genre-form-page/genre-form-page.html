@@ -4,7 +4,7 @@
   (actionClicked)="navigateBack()"
 />
 
-<app-genre-list-components 
+<app-genre-list-component 
   [isLoading]="genre.isLoading()"
   [genreList]="genre.dataList()"
   [currentPage]="currentPage()"
@@ -19,7 +19,7 @@
 />
 
 @if (genre.showModal()) {
-  <app-genre-form-components
+  <app-genre-form-component
     [isLoading]="genre.isSaving()"
     [genre]="genre.selectedItem()"
     (submitForm)="onSubmitGenreForm($event)"

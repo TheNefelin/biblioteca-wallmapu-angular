@@ -6,15 +6,15 @@ import { SearchSelectComponent, SelectItem } from '@shared/components/search-sel
 import { catchError, map, of } from 'rxjs';
 
 @Component({
-  selector: 'app-editorial-select-components',
+  selector: 'app-editorial-select-component',
   standalone: true,
   imports: [
     SearchSelectComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './editorial-select-components.html',
+  templateUrl: './editorial-select-component.html',
 })
-export class EditorialSelectComponents {
+export class EditorialSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
   readonly newSelectedId = output<number>();

@@ -7,16 +7,16 @@ import { GenreModel } from '@features/book-genre/models/genre-model';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-genre-list-components',
+  selector: 'app-genre-list-component',
   imports: [
     DatePipe,
     PaginationComponent, 
     ButtonComponent, 
     SearchInputComponent, 
     LoadingComponent],
-  templateUrl: './genre-list-components.html',
+  templateUrl: './genre-list-component.html',
 })
-export class GenreListComponents {
+export class GenreListComponent {
   readonly isLoading = input<boolean>(false);
   readonly genreList = input<GenreModel[]>([]);
   readonly currentPage = input<number>(0);

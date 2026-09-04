@@ -1,23 +1,20 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { AuthorModel } from '@features/book-author/models/author-model';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { GenreSelectComponents } from "@features/book-genre/components/genre-select-components/genre-select-components";
-import { EditorialSelectComponents } from "@features/book-editorial/components/editorial-select-components/editorial-select-components";
-import { AuthorSelectComponents } from "@features/book-author/components/author-select-components/author-select-components";
+import { GenreSelectComponent } from "@features/book-genre/components/genre-select-component/genre-select-component";
+import { EditorialSelectComponent } from "@features/book-editorial/components/editorial-select-component/editorial-select-component";
+import { AuthorSelectComponent } from "@features/book-author/components/author-select-component/author-select-component";
 import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
-import { FormatModel } from '@features/format/models/format-model';
-import { SubjectSelectComponents } from "@features/book-subject/components/subject-select-components/subject-select-components";
-import { SubjectModel } from "@features/book-subject/models/subject-model";
+import { SubjectSelectComponent } from "@features/book-subject/components/subject-select-component/subject-select-component";
 
 @Component({
   selector: 'app-edition-search-component',
   imports: [
-    GenreSelectComponents,
-    EditorialSelectComponents,
-    AuthorSelectComponents,
+    GenreSelectComponent,
+    EditorialSelectComponent,
+    AuthorSelectComponent,
     FormatSelectComponent,
-    SubjectSelectComponents
+    SubjectSelectComponent
   ],
   templateUrl: './edition-search-component.html',
 })
@@ -61,16 +58,16 @@ export class EditionSearchComponent {
     this.subjectIdSelected.emit(0);
   }
 
-  protected authorSelected(item: AuthorModel | null) {
-    this.authorIdSelected.emit(item?.id_author ?? 0)
+  protected authorSelected(id: number) {
+    this.authorIdSelected.emit(id)
   }
 
-  protected formatSelected(item: FormatModel | null): void {
-    this.formatIdSelected.emit(item?.id_format ?? 0)
+  protected formatSelected(id: number): void {
+    this.formatIdSelected.emit(id)
   }
 
-  protected subjectSelected(item: SubjectModel | null): void {
-    this.subjectIdSelected.emit(item?.id_subject ?? 0)
+  protected subjectSelected(id: number): void {
+    this.subjectIdSelected.emit(id)
   }
 
   protected editorialSelected(id: number) {

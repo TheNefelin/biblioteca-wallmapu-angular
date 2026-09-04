@@ -18,7 +18,7 @@
       <fieldset class="fieldset flex flex-col">
         <span class="label font-semibold">Género</span>
         <div class="flex gap-2">
-          <app-genre-select-components class="flex-1" [selectedId]="formData().genre_id" (newSelectedId)="updateGenre($event)" />
+          <app-genre-select-component class="flex-1" [selectedId]="formData().genre_id" (newSelectedId)="updateGenre($event)" />
           <app-button-create-component (clicked)="navigateToGenre()"/>
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
@@ -51,20 +51,20 @@
       <div class="divider text-base-content/40">Autores</div>
       <span class="label font-semibold">Seleccionar Autor/es</span>
       <div class="my-2 flex gap-2">
-        <app-author-select-components class="flex-1" (newSelectedAuthor)="addAuthor($event)" />
+        <app-author-select-component class="flex-1" (newSelectedId)="addAuthor($event)" />
         <app-button-create-component (clicked)="navigateToAuthor()"/>
       </div>
-      <app-author-selected-list-components [authorList]="formData().authors" (onDelete)="deleteAuthor($event)" />
+      <app-author-selected-list-component [authorList]="formData().authors" (delete)="deleteAuthor($event)" />
     </div>
 
     <div>
       <div class="divider text-base-content/40">Descriptores</div>
       <span class="label font-semibold">Descriptor/es</span>
       <div class="my-2 flex gap-2">
-        <app-subject-select-components class="flex-1" (newSelectedSubject)="addSubject($event)" />
+        <app-subject-select-component class="flex-1" (newSelectedId)="addSubject($event)" />
         <app-button-create-component (clicked)="navigateToSubject()"/>
       </div>
-      <app-subject-selected-list-components [subjectList]="formData().subjects" (onDelete)="deleteSubject($event)" />
+      <app-subject-selected-list-component [subjectList]="formData().subjects" (delete)="deleteSubject($event)" />
     </div>
 
     @if (isLoading()) {

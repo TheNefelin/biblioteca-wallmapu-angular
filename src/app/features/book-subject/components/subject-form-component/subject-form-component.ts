@@ -1,41 +1,36 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, linkedSignal, output } from '@angular/core';
-import { AuthorModel } from '@features/book-author/models/author-model';
+import { SaveSubjectModel, SubjectModel } from '@features/book-subject/models/subject-model';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
-  selector: 'app-author-form-components',
+  selector: 'app-subject-form-component',
   imports: [
     DatePipe,
     ButtonComponent,
     LoadingComponent,
   ],
-  templateUrl: './author-form-components.html',
+  templateUrl: './subject-form-component.html',
 })
-export class AuthorFormComponents {
+export class SubjectFormComponent {
   readonly isLoading = input<boolean>(false);
-  readonly author = input<AuthorModel | null>(null);
-  protected readonly submitForm = output<AuthorModel>();
+  readonly subject = input<SubjectModel | null>(null);
+  protected readonly submitForm = output<{ id: number, data: SaveSubjectModel }>();
   protected readonly cancelForm = output<void>();
 
-  protected readonly actionText = computed<string>(() => this.author() ? 'Modificar Autor' : 'Crear Autor');
-
-  protected readonly formData = linkedSignal<AuthorModel | null, AuthorModel>({
-    source: this.author,
-    computation: (item) => item ?? {
-      id_author: 0,
-      name: '',
-      created_at: '',
-      updated_at: '',
-    },
+  protected readonly actionText = computed<string>(() => this.subject() ? 'Modificar Descriptor' : 'Crear Descriptor');
+  protected readonly formData = linkedSignal<SaveSubjectModel | null, SaveSubjectModel>({
+    source: this.subject,
+    computation: (item) => item ?? { name: '' },
   });
 
+  // FORM INPUTS -------------------------------------------------------------------
   protected updateName(value: string, input: HTMLInputElement) {
     this.updateField('name', value, input);
   }
 
-  private updateField<K extends keyof AuthorModel>(key: K, value: string, input?: HTMLInputElement) {
+  private updateField<K extends keyof SaveSubjectModel>(key: K, value: string, input?: HTMLInputElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -46,7 +41,7 @@ export class AuthorFormComponents {
     this.formData.update(data => ({ ...data, [key]: sanitized }));
   }
 
-  private sanitize(key: keyof AuthorModel, value: string): string | null {
+  private sanitize(key: keyof SaveSubjectModel, value: string): string | null {
     switch (key){
       case 'name':
         if (value.length > 100) return null;
@@ -56,6 +51,7 @@ export class AuthorFormComponents {
     }
   }
 
+  // SUBMIT ------------------------------------------------------------------------
   protected onSaveClick(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
@@ -64,10 +60,13 @@ export class AuthorFormComponents {
       return;
     }
 
-    this.submitForm.emit(data);
+    this.submitForm.emit({
+      id: this.subject()?.id_subject ?? 0,
+      data: data,
+    });
   }
 
-  private validateFormOnSubmit(data: AuthorModel): string | null {
+  private validateFormOnSubmit(data: SaveSubjectModel): string | null {
     if (data.name == null)
       return 'El nombre es requerido';
 

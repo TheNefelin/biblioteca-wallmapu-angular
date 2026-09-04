@@ -3,9 +3,9 @@
 
     <h3 class="card-title text-xl text-my-purple font-bold">{{ actionText() }}</h3>
     <div class="py-4">
-      <p class="text-sm text-base-content/60">ID: {{ formData().id_format }}</p>
-      <p class="text-sm text-base-content/60">{{ formData().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Creación</p>
-      <p class="text-sm text-base-content/60">{{ formData().updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Modificación</p>  
+      <p class="text-sm text-base-content/60">ID: {{ format()?.id_format }}</p>
+      <p class="text-sm text-base-content/60">{{ format()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Creación</p>
+      <p class="text-sm text-base-content/60">{{ format()?.updated_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha Modificación</p>  
     </div>
   
     <form class="grid grid-cols-1 gap-4">
@@ -13,9 +13,10 @@
         <label for="nameInput" class="label font-semibold mb-1">Nombre del Formato:</label>
         <input
           #nameInput
+          id="nameInput"
           type="text" class="input validator w-full" placeholder="Nombre..." required 
           [disabled]="isLoading()"
-          [value]="formData().name ?? ''"
+          [value]="formData().name"
           (input)="updateName($any($event.target).value, nameInput)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>

@@ -13,7 +13,7 @@ import { catchError, of } from 'rxjs';
 export class FormatSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
-  readonly newSelectedFormat = output<FormatModel | null>();
+  readonly newSelectedId = output<number>();
   readonly clearTrigger = input<number>(0);
 
   private readonly formatService = inject(FormatService);
@@ -34,13 +34,10 @@ export class FormatSelectComponent {
   });
 
   protected onSelectionChange(item: SelectItem): void {
-    const author = this.computedFormatList().find(a => a.id_format === item.id);
-    if (author) {
-      this.newSelectedFormat.emit(author);
-    }
+    this.newSelectedId.emit(item.id);
   }
 
   protected onCleared(): void {
-    this.newSelectedFormat.emit(null);
+    this.newSelectedId.emit(0);
   }
 }

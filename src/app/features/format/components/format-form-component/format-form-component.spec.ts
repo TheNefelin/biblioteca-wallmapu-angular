@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormatFormComponent } from './format-form-component';
-import { FormatModel } from '@features/format/models/format-model';
+import { FormatModel, SaveFormatModel } from '@features/format/models/format-model';
 
 describe('FormatFormComponent', () => {
   let component: FormatFormComponent;
@@ -39,12 +39,12 @@ describe('FormatFormComponent', () => {
       const spy = vi.spyOn(component['submitForm'], 'emit');
       component['updateName']('Tapa Dura', {} as HTMLInputElement);
       component['onSaveClick']();
-      expect(spy).toHaveBeenCalledWith({ name: 'Tapa Dura' } as FormatModel);
+      expect(spy).toHaveBeenCalledWith({ id: 0, data: { name: 'Tapa Dura' } });
     });
 
     it('no debería emitir submitForm cuando el nombre es null', () => {
       const spy = vi.spyOn(component['submitForm'], 'emit');
-      component['formData'].set({});
+      component['formData'].set({} as SaveFormatModel);
       component['onSaveClick']();
       expect(spy).not.toHaveBeenCalled();
     });

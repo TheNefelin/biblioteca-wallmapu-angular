@@ -6,16 +6,16 @@ import { SearchSelectComponent, SelectItem } from '@shared/components/search-sel
 import { catchError, map, of } from 'rxjs';
 
 @Component({
-  selector: 'app-author-select-components',
+  selector: 'app-author-select-component',
   standalone: true,
   imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './author-select-components.html',
+  templateUrl: './author-select-component.html',
 })
-export class AuthorSelectComponents {
+export class AuthorSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
-  readonly newSelectedAuthor = output<AuthorModel | null>();
+  readonly newSelectedId = output<number>();
   readonly clearTrigger = input<number>(0);
 
   private readonly authorService = inject(AuthorService);
@@ -37,13 +37,10 @@ export class AuthorSelectComponents {
   });
 
   protected onSelectionChange(item: SelectItem): void {
-    const author = this.authorComputedList().find(a => a.id_author === item.id);
-    if (author) {
-      this.newSelectedAuthor.emit(author);
-    }
+    this.newSelectedId.emit(item.id);
   }
 
   protected onCleared(): void {
-    this.newSelectedAuthor.emit(null);
+    this.newSelectedId.emit(0);
   }
 }

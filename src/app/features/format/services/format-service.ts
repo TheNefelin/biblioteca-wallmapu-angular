@@ -2,7 +2,7 @@
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiService } from '@core/services/api-service';
-import { CreateFormatModel, FormatModel, UpdateFormatModel } from '@features/format/models/format-model';
+import { FormatModel, SaveFormatModel } from '@features/format/models/format-model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,14 +24,14 @@ export class FormatService {
     );
   }
 
-  create(item: CreateFormatModel): Observable<FormatModel> {
-    return this.apiService.create<FormatModel, CreateFormatModel>(
+  create(item: SaveFormatModel): Observable<FormatModel> {
+    return this.apiService.create<FormatModel, SaveFormatModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateFormatModel): Observable<FormatModel> {
-    return this.apiService.update<FormatModel, UpdateFormatModel>(
+  update(id: number, item: SaveFormatModel): Observable<FormatModel> {
+    return this.apiService.update<FormatModel, SaveFormatModel>(
       this.endpoint, id, item
     );
   }

@@ -26,9 +26,9 @@
       <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por autor</span>
       </span>
-      <app-author-select-components 
+      <app-author-select-component 
         [clearTrigger]="clearTrigger()"
-        (newSelectedAuthor)="authorSelected($event)"
+        (newSelectedId)="authorSelected($event)"
       />
     </div>   
     
@@ -38,16 +38,16 @@
       </span>
       <app-format-select-component
         [clearTrigger]="clearTrigger()" 
-        (newSelectedFormat)="formatSelected($event)"/>
+        (newSelectedId)="formatSelected($event)"/>
     </div>
     
     <div>
       <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por descriptor</span>
       </span>
-      <app-subject-select-components 
+      <app-subject-select-component 
         [clearTrigger]="clearTrigger()"
-        (newSelectedSubject)="subjectSelected($event)"
+        (newSelectedId)="subjectSelected($event)"
       />
     </div>
 
@@ -55,7 +55,7 @@
       <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por editorial</span>
       </span>
-      <app-editorial-select-components 
+      <app-editorial-select-component 
         [clearTrigger]="clearTrigger()"
         (newSelectedId)="editorialSelected($event)"
       />
@@ -65,7 +65,7 @@
       <span class="label mb-1 grid">
         <span class="label-text text-sm font-semibold">Filtrar por género</span>
       </span>
-      <app-genre-select-components 
+      <app-genre-select-component 
         [clearTrigger]="clearTrigger()"
         (newSelectedId)="genreSelected($event)"
       />

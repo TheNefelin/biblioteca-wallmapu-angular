@@ -1,12 +1,9 @@
-export interface CreateFormatModel {
+export interface SaveFormatModel {
   name: string;
 }
 
-export interface UpdateFormatModel extends CreateFormatModel {
+export interface FormatModel extends SaveFormatModel {
   id_format: number;
-}
-
-export interface FormatModel extends UpdateFormatModel {
   created_at: string;
   updated_at: string;
 }

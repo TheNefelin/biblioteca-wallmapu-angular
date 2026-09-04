@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 import { EditionFormComponents } from './edition-form-components';
 import { EditionModel, SaveEditionModel } from '@features/edition/models/edition-model';
 import { FormatModel } from '@features/format/models/format-model';
+import { FormatService } from '@features/format/services/format-service';
 
 describe('EditionFormComponents', () => {
   let component: EditionFormComponents;
@@ -19,10 +21,18 @@ describe('EditionFormComponents', () => {
     format_ids: [],
   };
 
+  const formatStub: FormatModel[] = [
+    { id_format: 1, name: 'Tapa Dura', created_at: 'x', updated_at: 'x' },
+    { id_format: 5, name: 'Ebook', created_at: 'x', updated_at: 'x' },
+  ];
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EditionFormComponents],
-      providers: [provideHttpClient()],
+      providers: [
+        provideHttpClient(),
+        { provide: FormatService, useValue: { getAll: () => of(formatStub) } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditionFormComponents);
@@ -41,8 +51,9 @@ describe('EditionFormComponents', () => {
 
       const hardFormat = { id_format: 1, name: 'Tapa Dura' } as FormatModel;
       const ebookFormat = { id_format: 5, name: 'Ebook' } as FormatModel;
-      component['addFormat'](hardFormat);
-      component['addFormat'](ebookFormat);
+      component['allFormatsRX'].set(formatStub);
+      component['addFormat'](1);
+      component['addFormat'](5);
       component['deleteFormat'](hardFormat);
       component['onSubmit']();
 

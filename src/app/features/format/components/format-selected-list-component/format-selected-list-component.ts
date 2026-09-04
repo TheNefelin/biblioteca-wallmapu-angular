@@ -8,12 +8,12 @@ import { FormatModel } from '@features/format/models/format-model';
 })
 export class FormatSelectedListComponent {
   readonly formatList = input<FormatModel[]>();
-  readonly deleteFormat = output<FormatModel>();
+  readonly delete = output<FormatModel>();
 
-  protected delete(item: FormatModel, event: MouseEvent): void {
+  protected handleDelete(item: FormatModel, event: MouseEvent): void {
     event.preventDefault();   // evita submit del form si hay
     event.stopPropagation();  // evita que otros listeners en padres se disparen
   
-    this.deleteFormat.emit(item);
+    this.delete.emit(item);
   }
 }

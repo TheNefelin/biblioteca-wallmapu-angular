@@ -2,7 +2,7 @@
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiService } from '@core/services/api-service';
-import { CreateSubjectModel, SubjectModel, UpdateSubjectModel } from '@features/book-subject/models/subject-model';
+import { SaveSubjectModel, SubjectModel } from '@features/book-subject/models/subject-model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,14 +24,14 @@ export class SubjectService {
     );
   }
 
-  create(item: CreateSubjectModel): Observable<SubjectModel> {
-    return this.apiService.create<SubjectModel, CreateSubjectModel>(
+  create(item: SaveSubjectModel): Observable<SubjectModel> {
+    return this.apiService.create<SubjectModel, SaveSubjectModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateSubjectModel): Observable<SubjectModel> {
-    return this.apiService.update<SubjectModel, UpdateSubjectModel>(
+  update(id: number, item: SaveSubjectModel): Observable<SubjectModel> {
+    return this.apiService.update<SubjectModel, SaveSubjectModel>(
       this.endpoint, id, item
     );
   }

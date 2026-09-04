@@ -5,15 +5,15 @@ import { ButtonComponent } from '@shared/components/button-component/button-comp
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
-  selector: 'app-genre-form-components',
+  selector: 'app-genre-form-component',
   imports: [
     DatePipe,
     ButtonComponent,
     LoadingComponent,
   ],
-  templateUrl: './genre-form-components.html',
+  templateUrl: './genre-form-component.html',
 })
-export class GenreFormComponents {
+export class GenreFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly genre = input<GenreModel | null>(null);
   protected readonly cancelForm = output<void>();

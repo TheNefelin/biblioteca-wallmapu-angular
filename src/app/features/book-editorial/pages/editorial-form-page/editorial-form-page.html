@@ -4,74 +4,25 @@
   (actionClicked)="navigateBack()"
 />
 
-<section class="p-4 grid grid-cols-1 gap-4">
-  <div class="bg-my-light rounded-md text-my-dark shadow-xl overflow-x-auto">
-    <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
-      <div>
-        <h2 class="font-bold text-my-purple text-lg">
-          Gestión de Editoriales
-        </h2>
-        <p class="text-sm text-my-dark/50">
-          Lista completa de todas las Editoriales
-        </p>
-      </div>
+<app-editorial-list-component
+  [isLoading]="editorial.isLoading()"
+  [editorialList]="editorial.dataList()"
+  [currentPage]="currentPage()"
+  [totalPages]="totalPages()"
+  (prevPage)="prevPage()"
+  (nextPage)="nextPage()"
+  (searchFilter)="onSearchFilter($event)"
+  (reload)="reload()"
+  (create)="onCreateEditorial()"
+  (edit)="onEditEditorial($event)"
+  (delete)="onDeleteEditorial($event)"
+/>
 
-      <div class="flex gap-2 items-center">
-        <app-search-input-component (onInputTextChange)="onSearchFilter($event)" />
-        <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="reload()" />
-        <app-button-component [icon]="'create'" textBtn="Crear Editorial" (clicked)="selectedEditorial.set(null); isFormModalOpen.set(true)" />
-      </div>
-    </header>
-
-    <div class="overflow-x-auto">
-      @if (getAllRX.isLoading() && !getAllRX.hasValue()) {
-        <div class="p-4 flex justify-center">
-          <app-loading-component/>
-        </div>
-      } @else {
-        <table class="table w-full text-center py-4">
-          <thead class="uppercase">
-            <tr>
-              <th>Id</th>
-              <th>Editorial</th>
-              <th>Creación</th>
-              <th>Modificación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody class="[&>tr>td]:align-middle">
-            @for (item of computedList(); track item.id_editorial) {
-              <tr class="hover:bg-my-purple/10 text-my-purple">
-                <td>{{ item.id_editorial }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.created_at | date:'yyyy-MM-dd' }}</td>
-                <td>{{ item.updated_at | date:'yyyy-MM-dd' }}</td>
-                <td class="flex justify-center gap-2">
-                  <app-button-component [icon]="'edit'" (clicked)="onSelectedEditorial(item)" />
-                  <app-button-component [icon]="'delete'" (clicked)="onDelete(item)" />
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
-    </div>
-
-    <app-pagination-component
-      [currentPage]="currentPage()"
-      [totalPages]="totalPages()"
-      (prevPage)="prevPage()"
-      (nextPage)="nextPage()"
-    />
-  </div>
-</section>
-
-@if (isFormModalOpen()) {
+@if (editorial.showModal()) {
   <app-editorial-form-component
-    [isLoading]="isSaving()"
-    [editorial]="selectedEditorial()"
-    (submitForm)="onSubmitForm($event)"
-    (cancelForm)="onClearForm()"
+    [isLoading]="editorial.isSaving()"
+    [editorial]="editorial.selectedItem()"
+    (submitForm)="onSubmitEditorialForm($event)"
+    (cancelForm)="onClearEditorialForm()"
   />
 }

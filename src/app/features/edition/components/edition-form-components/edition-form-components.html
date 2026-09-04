@@ -101,7 +101,7 @@
         <fieldset class="fieldset">
           <span class="label font-semibold mb-1">Editorial</span>
           <div class="flex gap-2">
-            <app-editorial-select-components 
+            <app-editorial-select-component 
               [selectedId]="formData().editorial_id" 
               (newSelectedId)="updateEditorial($event)" 
             /> 
@@ -117,13 +117,13 @@
           <app-format-select-component 
             class="flex-1" 
             [clearTrigger]="formatClearTrigger()"
-            (newSelectedFormat)="addFormat($event)"
+            (newSelectedId)="addFormat($event)"
           />
           <app-button-component [icon]="'create'" (clicked)="onNavigateToFormat()"/>
         </div>
         <app-format-selected-list-component 
           [formatList]="formFormat()" 
-          (deleteFormat)="deleteFormat($event)"
+          (delete)="deleteFormat($event)"
         />
       </div>
     </div>

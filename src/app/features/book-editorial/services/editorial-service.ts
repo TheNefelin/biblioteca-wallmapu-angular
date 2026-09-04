@@ -2,7 +2,7 @@
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiService } from '@core/services/api-service';
-import { CreateEditorialModel, EditorialModel, UpdateEditorialModel } from '@features/book-editorial/models/editorial-model';
+import { EditorialModel, SaveEditorialModel } from '@features/book-editorial/models/editorial-model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,14 +24,14 @@ export class EditorialService {
     );
   }
 
-  create(item: CreateEditorialModel): Observable<EditorialModel> {
-    return this.apiService.create<EditorialModel, CreateEditorialModel>(
+  create(item: SaveEditorialModel): Observable<EditorialModel> {
+    return this.apiService.create<EditorialModel, SaveEditorialModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateEditorialModel): Observable<EditorialModel> {
-    return this.apiService.update<EditorialModel, UpdateEditorialModel>(
+  update(id: number, item: SaveEditorialModel): Observable<EditorialModel> {
+    return this.apiService.update<EditorialModel, SaveEditorialModel>(
       this.endpoint, id, item
     );
   }

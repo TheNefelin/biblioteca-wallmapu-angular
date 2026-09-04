@@ -1,14 +1,9 @@
-export interface CreateSubjectModel {
+export interface SaveSubjectModel {
   name: string;
 }
 
-
-export interface UpdateSubjectModel extends CreateSubjectModel {
+export interface SubjectModel extends SaveSubjectModel {
   id_subject: number;
-}
-
-
-export interface SubjectModel extends UpdateSubjectModel {
   created_at: string;
   updated_at: string;
 }

@@ -2,49 +2,46 @@ import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
-import { SubjectFormComponents } from '@features/book-subject/components/subject-form-components/subject-form-components';
-import { CreateSubjectModel, SubjectModel, UpdateSubjectModel } from '@features/book-subject/models/subject-model';
+import { SubjectFormComponent } from '@features/book-subject/components/subject-form-component/subject-form-component';
+import { SubjectListComponent } from '@features/book-subject/components/subject-list-component/subject-list-component';
+import { SaveSubjectModel, SubjectModel } from '@features/book-subject/models/subject-model';
 import { SubjectService } from '@features/book-subject/services/subject-service';
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
 import { CrudPage } from '@shared/base/crud-page';
-import { ButtonComponent } from '@shared/components/button-component/button-component';
-import { LoadingComponent } from '@shared/components/loading-component/loading-component';
-import { PaginationComponent } from '@shared/components/pagination-component/pagination-component';
-import { SearchInputComponent } from '@shared/components/search-input-component/search-input-component';
 import { SectionHeaderComponent } from '@shared/components/section-header-component/section-header-component';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-subject-form-page',
   imports: [
-    DatePipe,
     SectionHeaderComponent,
-    SubjectFormComponents,
-    SearchInputComponent,
-    LoadingComponent,
-    PaginationComponent,
-    ButtonComponent,
+    SubjectFormComponent,
+    SubjectListComponent,
   ],
   templateUrl: './subject-form-page.html',
 })
 export class SubjectFormPage extends CrudPage<SubjectModel> {
   private location = inject(Location);
-  private service = inject(SubjectService);
   private mutation = inject(MutationService);
   private confirmService = inject(ModalConfirmService);
 
-  protected readonly isFormModalOpen = signal<boolean>(false);
-  protected readonly selectedSubject = signal<SubjectModel | null>(null);
-  protected readonly isSaving = signal<boolean>(false);
-  protected readonly computedList = computed<SubjectModel[]>(() => this.getAllRX.value() ?? []);
+  // SERVICES ----------------------------------------------------------------------
+  private subjectService = inject(SubjectService);
+  protected readonly subject = {
+    dataList: computed<SubjectModel[]>(() => this.getAllSubjectRX.value() ?? []),
+    isLoading: computed<boolean>(() => this.getAllSubjectRX.isLoading()),
+    isSaving: signal<boolean>(false),
+    showModal: signal<boolean>(false),
+    selectedItem: signal<SubjectModel | null>(null),
+  }
 
-  protected readonly getAllRX = rxResource({
+  // FETCHS ------------------------------------------------------------------------
+  private readonly getAllSubjectRX = rxResource({
     params: () => this.getAllPayload(),
     stream: ({ params }) => {
       if (!params) return of(null);
 
-      return this.service.getAllPagination(params).pipe(
+      return this.subjectService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
           console.error('[SubjectService::SubjectFormPage] getAllPagination:', err);
@@ -54,51 +51,54 @@ export class SubjectFormPage extends CrudPage<SubjectModel> {
     },
   });
 
-  // Metodos de Herencia CrudPage ------------------------------------------------------------
+  // CRUD-PAGE INHERITANCE METHODS -------------------------------------------------
   protected override reload(): void {
-    this.getAllRX.reload();
+    this.getAllSubjectRX.reload();
   }
 
   protected onSearchFilter(searchText: string): void {
     this.onFilterChange({ search: searchText, limit: this.limit() });
   }
 
-  // Acciones --------------------------------------------------------------------------------
-  protected onSelectedSubject(item: SubjectModel): void {
-    this.selectedSubject.set(item);
-    this.isFormModalOpen.set(true);
+  // SUBJECT ACTIONS -----------------------------------------------------------------
+  protected onClearSubjectForm(): void {
+    this.subject.selectedItem.set(null);
+    this.subject.showModal.set(false);
   }
 
-  protected onClearForm(): void {
-    this.selectedSubject.set(null);
-    this.isFormModalOpen.set(false);
+  protected onCreateSubject(): void {
+    this.subject.selectedItem.set(null);
+    this.subject.showModal.set(true);
   }
 
-  protected onSubmitForm(form: SubjectModel): void {
-    const id = form.id_subject;
-    const payload: CreateSubjectModel | UpdateSubjectModel = id > 0
-      ? { id_subject: id, name: form.name }
-      : { name: form.name };
+  protected onEditSubject(item: SubjectModel): void {
+    this.subject.selectedItem.set(item);
+    this.subject.showModal.set(true);
+  }
+
+  protected onSubmitSubjectForm(form: { id: number, data: SaveSubjectModel }): void {
+    const id = form.id;
+    const payload: SaveSubjectModel = form.data;
 
     this.mutation.run(
       id > 0
-        ? this.service.update(id, payload as UpdateSubjectModel)
-        : this.service.create(payload as CreateSubjectModel),
-      { isSaving: this.isSaving },
+        ? this.subjectService.update(id, payload)
+        : this.subjectService.create(payload),
+      { isSaving: this.subject.isSaving },
       {
         successMsg: id > 0
-          ? `Descriptor: ${form.name} modificado correctamente`
-          : `Descriptor: ${form.name} creado correctamente`,
+          ? `Descriptor: ${payload.name} modificado correctamente`
+          : `Descriptor: ${payload.name} creado correctamente`,
         errorMsg: id > 0 ? 'Error al modificar el Descriptor' : 'Error al crear el Descriptor',
         onSuccess: () => {
-          this.onClearForm();
+          this.onClearSubjectForm();
           this.reload();
         },
       }
     );
   }
 
-  protected async onDelete(item: SubjectModel): Promise<void> {
+  protected async onDeleteSubject(item: SubjectModel): Promise<void> {
     const confirmed = await this.confirmService.confirm({
       title: 'Eliminar Descriptor',
       message: `Estás seguro que deseas eliminar el Descriptor (${item.name})?`,
@@ -106,8 +106,8 @@ export class SubjectFormPage extends CrudPage<SubjectModel> {
     if (!confirmed) return;
 
     this.mutation.run(
-      this.service.delete(item.id_subject),
-      { isSaving: this.isSaving },
+      this.subjectService.delete(item.id_subject),
+      { isSaving: this.subject.isSaving },
       {
         successMsg: `Descriptor: ${item.name} eliminado correctamente`,
         errorMsg: 'Error al eliminar el Descriptor',
@@ -116,6 +116,7 @@ export class SubjectFormPage extends CrudPage<SubjectModel> {
     );
   }
 
+  // ACTIONS -----------------------------------------------------------------------
   protected navigateBack(): void {
     this.location.back();
   }

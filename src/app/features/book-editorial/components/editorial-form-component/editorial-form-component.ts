@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, input, linkedSignal, output, signal } from '@angular/core';
-import { EditorialModel } from '@features/book-editorial/models/editorial-model';
+import { Component, computed, input, linkedSignal, output } from '@angular/core';
+import { EditorialModel, SaveEditorialModel } from '@features/book-editorial/models/editorial-model';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
@@ -16,27 +16,22 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 export class EditorialFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly editorial = input<EditorialModel | null>(null);
-  protected readonly submitForm = output<EditorialModel>();
+  protected readonly submitForm = output<{ id: number, data: SaveEditorialModel }>();
   protected readonly cancelForm = output<void>();
 
-  protected readonly errorMessage = signal<string | null>(null);
   protected readonly actionText = computed<string>(() => this.editorial() ? 'Modificar Editorial' : 'Crear Editorial');
 
-  protected readonly formData = linkedSignal<EditorialModel | null, EditorialModel>({
+  protected readonly formData = linkedSignal<SaveEditorialModel | null, SaveEditorialModel>({
     source: this.editorial,
-    computation: (item) => item ?? {
-      id_editorial: 0,
-      name: '',
-      created_at: '',
-      updated_at: '',
-    },
+    computation: (item) => item ?? { name: '' },
   });
 
+  // FORM INPUTS -------------------------------------------------------------------
   protected updateName(value: string, input: HTMLInputElement) {
     this.updateField('name', value, input);
   }
 
-  private updateField<K extends keyof EditorialModel>(key: K, value: string, input?: HTMLInputElement) {
+  private updateField<K extends keyof SaveEditorialModel>(key: K, value: string, input?: HTMLInputElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -47,7 +42,7 @@ export class EditorialFormComponent {
     this.formData.update(data => ({ ...data, [key]: sanitized }));
   }
 
-  private sanitize(key: keyof EditorialModel, value: string): string | null {
+  private sanitize(key: keyof SaveEditorialModel, value: string): string | null {
     switch (key){
       case 'name':
         if (value.length > 100) return null;
@@ -57,20 +52,22 @@ export class EditorialFormComponent {
     }
   }
 
+  // SUBMIT ------------------------------------------------------------------------
   protected onSaveClick(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
 
     if (error) {
-      this.errorMessage.set(error);
       return;
     }
 
-    this.errorMessage.set(null);
-    this.submitForm.emit(data);
+    this.submitForm.emit({
+      id: this.editorial()?.id_editorial ?? 0,
+      data: data,
+    });
   }
 
-  private validateFormOnSubmit(data: EditorialModel): string | null {
+  private validateFormOnSubmit(data: SaveEditorialModel): string | null {
     if (data.name == null)
       return 'El nombre es requerido';
 

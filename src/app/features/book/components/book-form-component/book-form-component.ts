@@ -1,29 +1,33 @@
 import { DatePipe } from '@angular/common';
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { catchError, map, of } from 'rxjs';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { GenreSelectComponents } from "@features/book-genre/components/genre-select-components/genre-select-components";
-import { AuthorSelectComponents } from "@features/book-author/components/author-select-components/author-select-components";
-import { SubjectSelectComponents } from "@features/book-subject/components/subject-select-components/subject-select-components";
+import { GenreSelectComponent } from "@features/book-genre/components/genre-select-component/genre-select-component";
+import { AuthorSelectComponent } from "@features/book-author/components/author-select-component/author-select-component";
+import { SubjectSelectComponent } from "@features/book-subject/components/subject-select-component/subject-select-component";
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { AuthorModel } from '@features/book-author/models/author-model';
+import { AuthorService } from '@features/book-author/services/author-service';
+import { SubjectService } from '@features/book-subject/services/subject-service';
 import { BookFormVM } from '@features/book/models/vm.book-form';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
-import { AuthorSelectedListComponents } from "@features/book-author/components/author-selected-list-components/author-selected-list-components";
-import { SubjectSelectedListComponents } from "@features/book-subject/components/subject-selected-list-components/subject-selected-list-components";
+import { AuthorSelectedListComponent } from "@features/book-author/components/author-selected-list-component/author-selected-list-component";
+import { SubjectSelectedListComponent } from "@features/book-subject/components/subject-selected-list-component/subject-selected-list-component";
 
 @Component({
   selector: 'app-book-form-component',
   imports: [
     DatePipe,
     MessageErrorComponent,
-    GenreSelectComponents,
-    AuthorSelectComponents,
-    SubjectSelectComponents,
+    GenreSelectComponent,
+    AuthorSelectComponent,
+    SubjectSelectComponent,
     LoadingComponent,
     ButtonCreateComponent,
-    AuthorSelectedListComponents,
-    SubjectSelectedListComponents
+    AuthorSelectedListComponent,
+    SubjectSelectedListComponent
 ],
   templateUrl: './book-form-component.html',
 })
@@ -40,6 +44,25 @@ export class BookFormComponent {
 
   readonly errorMessage = signal<string | null>(null);
   readonly formData = signal<Partial<BookFormVM>>({});
+
+  private readonly authorService = inject(AuthorService);
+  private readonly subjectService = inject(SubjectService);
+
+  // lista de autores para resolver el id seleccionado en el objeto completo
+  private readonly allAuthorsRX = rxResource({
+    stream: () => this.authorService.getAll().pipe(
+      map((res) => res),
+      catchError(() => of([])),
+    ),
+  });
+
+  // lista de descriptores para resolver el id seleccionado en el objeto completo
+  private readonly allSubjectsRX = rxResource({
+    stream: () => this.subjectService.getAll().pipe(
+      map((res) => res),
+      catchError(() => of([])),
+    ),
+  });
 
   private readonly updateEffect = effect(() => {
     const book = this.bookFormVM();
@@ -60,10 +83,11 @@ export class BookFormComponent {
     this.formData.update(data => ({ ...data, genre_id: id_genre, }));
   }
 
-  protected addAuthor(item: AuthorModel | null) {
+  protected addAuthor(id: number) {
+    if (!id) return;
+    const item = this.allAuthorsRX.value()?.find(a => a.id_author === id);
     if (!item) return;
-    if (!item.id_author || item.id_author === 0) return;
-    
+
     this.formData.update(data => {
       const exists = data.authors?.some(a => a.id_author === item.id_author);
       if (exists) return data;
@@ -75,9 +99,10 @@ export class BookFormComponent {
     });
   }
 
-  protected addSubject(item: SubjectModel | null) {
+  protected addSubject(id: number) {
+    if (!id) return;
+    const item = this.allSubjectsRX.value()?.find(s => s.id_subject === id);
     if (!item) return;
-    if (!item.id_subject || item.id_subject === 0) return;
     
     this.formData.update(data => {
       const exists = data.subjects?.some(a => a.id_subject === item.id_subject);

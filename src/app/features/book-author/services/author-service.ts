@@ -2,7 +2,7 @@
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiService } from '@core/services/api-service';
-import { AuthorModel, CreateAuthorModel, UpdateAuthorModel } from '@features/book-author/models/author-model';
+import { AuthorModel, SaveAuthorModel } from '@features/book-author/models/author-model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,14 +24,14 @@ export class AuthorService {
     );
   }
 
-  create(item: CreateAuthorModel): Observable<AuthorModel> {
-    return this.apiService.create<AuthorModel, CreateAuthorModel>(
+  create(item: SaveAuthorModel): Observable<AuthorModel> {
+    return this.apiService.create<AuthorModel, SaveAuthorModel>(
       this.endpoint, item
     );
   }
 
-  update(id: number, item: UpdateAuthorModel): Observable<AuthorModel> {
-    return this.apiService.update<AuthorModel, UpdateAuthorModel>(
+  update(id: number, item: SaveAuthorModel): Observable<AuthorModel> {
+    return this.apiService.update<AuthorModel, SaveAuthorModel>(
       this.endpoint, id, item
     );
   }

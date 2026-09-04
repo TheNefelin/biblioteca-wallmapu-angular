@@ -6,13 +6,13 @@ import { SearchSelectComponent, SelectItem } from '@shared/components/search-sel
 import { catchError, map, of } from 'rxjs';
 
 @Component({
-  selector: 'app-genre-select-components',
+  selector: 'app-genre-select-component',
   standalone: true,
   imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './genre-select-components.html',
+  templateUrl: './genre-select-component.html',
 })
-export class GenreSelectComponents {
+export class GenreSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number | undefined>(undefined);
   readonly newSelectedId = output<number>();

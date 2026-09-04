@@ -70,11 +70,11 @@ describe('FormatService', () => {
 
   describe('update', () => {
     it('debería hacer PUT a format/{id} con el payload', () => {
-      service.update(5, { id_format: 5, name: 'Ebook' }).subscribe();
+      service.update(5, { name: 'Ebook' }).subscribe();
 
       const req = httpMock.expectOne(r => r.method === 'PUT');
       expect(req.request.url).toContain('/format/5');
-      expect(req.request.body).toEqual({ id_format: 5, name: 'Ebook' });
+      expect(req.request.body).toEqual({ name: 'Ebook' });
       req.flush({ id_format: 5, name: 'Ebook' });
     });
   });

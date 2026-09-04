@@ -6,17 +6,17 @@ import { SearchSelectComponent, SelectItem } from '@shared/components/search-sel
 import { catchError, map, of } from 'rxjs';
 
 @Component({
-  selector: 'app-subject-select-components',
+  selector: 'app-subject-select-component',
   standalone: true,
   imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './subject-select-components.html',
+  templateUrl: './subject-select-component.html',
 })
-export class SubjectSelectComponents {
+export class SubjectSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly selectedId = input<number>(0);
   readonly clearTrigger = input<number>(0);
-  readonly newSelectedSubject = output<SubjectModel | null>();
+  readonly newSelectedId = output<number>();
 
   private readonly subjectService = inject(SubjectService);
 
@@ -37,13 +37,10 @@ export class SubjectSelectComponents {
   });
 
   protected onSelectionChange(item: SelectItem): void {
-    const subject = this.subjectComputedList().find(s => s.id_subject === item.id);
-    if (subject) {
-      this.newSelectedSubject.emit(subject);
-    }
+    this.newSelectedId.emit(item.id);
   }
 
   protected onCleared(): void {
-    this.newSelectedSubject.emit(null);
+    this.newSelectedId.emit(0);
   }
 }

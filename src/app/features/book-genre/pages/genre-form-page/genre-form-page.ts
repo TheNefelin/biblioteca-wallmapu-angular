@@ -2,21 +2,21 @@ import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
-import { GenreFormComponents } from '@features/book-genre/components/genre-form-components/genre-form-components';
+import { GenreFormComponent } from '@features/book-genre/components/genre-form-component/genre-form-component';
 import { GenreModel, SaveGenreModel } from '@features/book-genre/models/genre-model';
 import { GenreService } from '@features/book-genre/services/genre-service';
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
 import { CrudPage } from '@shared/base/crud-page';
 import { SectionHeaderComponent } from '@shared/components/section-header-component/section-header-component';
-import { GenreListComponents } from "@features/book-genre/components/genre-list-components/genre-list-components";
+import { GenreListComponent } from "@features/book-genre/components/genre-list-component/genre-list-component";
 
 @Component({
   selector: 'app-genre-form-page',
   imports: [
     SectionHeaderComponent,
-    GenreFormComponents,
-    GenreListComponents
+    GenreFormComponent,
+    GenreListComponent
 ],
   templateUrl: './genre-form-page.html',
 })

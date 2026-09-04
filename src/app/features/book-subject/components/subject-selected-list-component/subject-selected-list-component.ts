@@ -2,18 +2,18 @@ import { Component, input, output } from '@angular/core';
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 
 @Component({
-  selector: 'app-subject-selected-list-components',
+  selector: 'app-subject-selected-list-component',
   imports: [],
-  templateUrl: './subject-selected-list-components.html',
+  templateUrl: './subject-selected-list-component.html',
 })
-export class SubjectSelectedListComponents {
+export class SubjectSelectedListComponent {
   readonly subjectList = input<SubjectModel[]>();
-  readonly onDelete = output<SubjectModel>();
+  readonly delete = output<SubjectModel>();
 
-  protected delete(item: SubjectModel, event: MouseEvent): void {
+  protected handleDelete(item: SubjectModel, event: MouseEvent): void {
     event.preventDefault();   // evita submit del form si hay
     event.stopPropagation();  // evita que otros listeners en padres se disparen
     
-    this.onDelete.emit(item);
+    this.delete.emit(item);
   }
 }

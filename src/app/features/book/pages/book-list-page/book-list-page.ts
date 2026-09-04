@@ -26,6 +26,7 @@ import { ModalConfirmService } from '@core/services/modal-confirm-service';
   templateUrl: './book-list-page.html',
 })
 export class BookListPage extends CrudPage<BookDetailModel> {
+  // SERVICES ----------------------------------------------------------------------
   private router = inject(Router);
   private readonly bookService = inject(BookService);
   private readonly mutation = inject(MutationService);
@@ -34,6 +35,7 @@ export class BookListPage extends CrudPage<BookDetailModel> {
   protected readonly isSaving = signal<boolean>(false);
   protected readonly bookComputedList = computed<BookDetailModel[]>(() => this.getAllRX.value() ?? []);
 
+  // FETCHS ------------------------------------------------------------------------
   protected readonly getAllRX = rxResource({
     params: () => this.getAllPayload(),
     stream: ({ params }) => {
@@ -49,7 +51,7 @@ export class BookListPage extends CrudPage<BookDetailModel> {
     },
   });
 
-  // Metodos de Herencia CrudPage ------------------------------------------------------------
+  // CRUD-PAGE INHERITANCE METHODS -------------------------------------------------
   protected override reload(): void {
     this.getAllRX.reload();
   }
@@ -58,7 +60,7 @@ export class BookListPage extends CrudPage<BookDetailModel> {
     this.onFilterChange({ search: searchText, limit: this.limit() });
   }
 
-  // ─── ACCIONES
+  // BOOK ACTIONS ------------------------------------------------------------------
   onCreate() {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.FORM(0)]);
   }

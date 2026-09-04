@@ -38,12 +38,12 @@
           <div class="flex flex-col flex-1 gap-2 text-center p-2">
             <section>
               <h2 class="card-title justify-center text-my-green">{{ item?.book_title }}</h2>
-              <p class="text-sm text-my-purple">{{ item?.author_name ?? 'Sin Autor' }}</p>
+              <p class="text-sm text-my-purple">{{ item?.author_name || 'Sin Autor' }}</p>
               <p class="text-sm text-my-purple">({{ item?.edition || 'Sin Edición' }})</p>  
             </section>
             <section class="mt-auto">
-              <p class="text-sm text-my-dark/50">Género: {{ item?.genre_name ?? 'Sin Género' }}</p>
-              <p class="text-sm text-my-dark/50">Editorial: {{ item?.editorial_name ?? 'Sin Editorial' }}</p>              
+              <p class="text-sm text-my-dark/50">Género: {{ item?.genre_name || 'Sin Género' }}</p>
+              <p class="text-sm text-my-dark/50">Editorial: {{ item?.editorial_name || 'Sin Editorial' }}</p>              
             </section>
            </div>
         </article>

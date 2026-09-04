@@ -103,7 +103,7 @@
           <div class="flex gap-2">
             <app-editorial-select-component 
               [selectedId]="formData().editorial_id" 
-              (newSelectedId)="updateEditorial($event)" 
+              (selectedItem)="updateEditorial($event)" 
             /> 
             <app-button-component [icon]="'create'" (clicked)="onNavigateToEditorial()"/>
           </div>
@@ -117,7 +117,7 @@
           <app-format-select-component 
             class="flex-1" 
             [clearTrigger]="formatClearTrigger()"
-            (newSelectedId)="addFormat($event)"
+            (selectedItem)="addFormat($event)"
           />
           <app-button-component [icon]="'create'" (clicked)="onNavigateToFormat()"/>
         </div>

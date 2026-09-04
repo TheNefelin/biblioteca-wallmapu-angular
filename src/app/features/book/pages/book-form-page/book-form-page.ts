@@ -14,10 +14,8 @@ import { BookSubjectStepService } from '@features/book-subject-step/services/boo
 import { BookService } from '@features/book/services/book-service';
 import { EditionListComponents } from "@features/edition/components/edition-list-components/edition-list-components";
 import { EditionService } from '@features/edition/services/edition-service';
-import { BookModel, CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
-import { BookFormVM } from '@features/book/models/vm.book-form';
+import { BookModel, SaveBookModel } from '@features/book/models/book-model';
 import { EditionDetailModel } from '@features/edition/models/edition-model';
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
 
@@ -27,7 +25,6 @@ import { ModalConfirmService } from '@core/services/modal-confirm-service';
     SectionHeaderComponent,
     BookFormComponent,
     EditionListComponents,
-    ButtonCreateComponent
   ],
   templateUrl: './book-form-page.html',
 })
@@ -37,50 +34,41 @@ export class BookFormPage {
   private readonly mutation = inject(MutationService);
   private readonly confirmService = inject(ModalConfirmService);
 
-  readonly routeId = toSignal(
+  readonly bookId = toSignal(
     this.activatedRoute.paramMap.pipe(
       map(params => Number(params.get('id_book')) || 0)
     ),
     { initialValue: 0 }
   );
 
-  protected readonly bookFormVM = computed<BookFormVM>(() => {
-    const book = this.bookDetailComputed();
-
-    return {
-      id_book: book?.id_book ?? this.routeId(),
-      title: book?.title ?? '',
-      summary: book?.summary ?? '',
-      genre_id: book?.genre.id_genre ?? 0,
-      authors: book?.authors ?? [],
-      subjects: book?.subjects ?? [],
-      created_at: book?.created_at ?? '',
-      updated_at: book?.updated_at ?? ''
-    }
-  });
-
-  protected readonly isEditMode = computed<boolean>(() => this.getBookPayload() > 0);
-  protected readonly headerText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
+  // SERVICES ----------------------------------------------------------------------
+  protected readonly isEditMode = computed<boolean>(() => this.bookId() > 0);
+  protected readonly actionText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
   protected readonly isLoading = computed<boolean>(() =>
     [
       this.getBookRX,
-      this.getEditionRX,
+      this.getEditionByBookRX,
     ].some(r => r.isLoading())
   );
-  protected readonly isSaving = signal<boolean>(false);
 
   private readonly bookService = inject(BookService);
-  protected readonly bookDetailComputed = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
-  private readonly getBookPayload = signal(this.routeId());
+  protected readonly book = {
+    isSaving: signal<boolean>(false),
+    data: computed<BookModel | null>(() => this.getBookRX.value() ?? null),
+  }
 
+  private readonly editionService = inject(EditionService);
+  protected readonly edition = {
+    isSaving: signal<boolean>(false),
+    dataList: computed<EditionDetailModel[]>(() => this.getEditionByBookRX.value() ?? []),
+  }
+  
   private readonly authorStepService = inject(BookAuthorStepService);
   private readonly subjectStepService = inject(BookSubjectStepService);
-  private readonly editionService = inject(EditionService);
 
-  protected readonly computedEditionList = computed<EditionDetailModel[]>(() => this.getEditionRX.value() ?? []);
-
+  // FETCHS ------------------------------------------------------------------------  
   private readonly getBookRX = rxResource({
-    params: () => this.getBookPayload(),
+    params: () => this.bookId(),
     stream: ({ params: idBook }) => {
       if (!idBook) return of(null);
 
@@ -94,8 +82,8 @@ export class BookFormPage {
     }
   });
 
-  private readonly getEditionRX = rxResource({
-    params: () => this.getBookPayload(),
+  private readonly getEditionByBookRX = rxResource({
+    params: () => this.bookId(),
     stream: ({ params: idBook }) => {
       if (!idBook) return of(null);
 
@@ -109,17 +97,18 @@ export class BookFormPage {
     }
   });
 
+  // BOOK AUTHOR/SUBJECT ACTIONS ----------------------------------------------------  
   protected deleteAuthor(item: AuthorModel) {
     if (!this.isEditMode()) return;
 
     const payload: BookAuthorStepModel = {
-      id_book: this.bookFormVM().id_book,
+      id_book: this.bookId(),
       id_author: item.id_author
     };
 
     this.mutation.run(
       this.authorStepService.delete(payload),
-      { isSaving: this.isSaving },
+      { isSaving: this.book.isSaving },
       {
         successMsg: 'Autor eliminado correctamente',
         errorMsg: 'Error al eliminar el Autor',
@@ -132,13 +121,13 @@ export class BookFormPage {
     if (!this.isEditMode()) return;
 
     const payload: BookSubjectStepModel = {
-      id_book: this.bookFormVM().id_book,
+      id_book: this.bookId(),
       id_subject: item.id_subject
     };
 
     this.mutation.run(
       this.subjectStepService.delete(payload),
-      { isSaving: this.isSaving },
+      { isSaving: this.book.isSaving },
       {
         successMsg: 'Descriptor eliminado correctamente',
         errorMsg: 'Error al eliminar el Descriptor',
@@ -147,24 +136,15 @@ export class BookFormPage {
     );
   }
 
-  protected formSubmit(form: BookFormVM): void {
-    const basePayload = {
-      ...form,
-      author_ids: form.authors.map(e => e.id_author),
-      subject_ids: form.subjects.map(e => e.id_subject),
-    }
-
-    const id = basePayload.id_book;
-
-    const payload: CreateBookModel | UpdateBookModel = id === 0
-      ? (basePayload as CreateBookModel)
-      : (basePayload as UpdateBookModel);
+  protected submitBookForm(form: SaveBookModel): void {
+    const id = this.bookId();
+    const payload: SaveBookModel = form;
 
     this.mutation.run(
       id === 0
-        ? this.bookService.create(payload as CreateBookModel)
-        : this.bookService.update(id, payload as UpdateBookModel),
-      { isSaving: this.isSaving },
+        ? this.bookService.create(payload)
+        : this.bookService.update(id, payload),
+      { isSaving: this.book.isSaving },
       {
         successMsg: this.isEditMode() ? 'Libro modificado correctamente' : 'Libro creado correctamente',
         errorMsg: this.isEditMode() ? 'Error al modificar el Libro' : 'Error al crear el Libro',
@@ -173,7 +153,8 @@ export class BookFormPage {
     );
   }
 
-  protected async onDeleteEdition(item: EditionDetailModel): Promise<void> {
+  // EDITION ACTIONS ----------------------------------------------------------------
+  protected async deleteEdition(item: EditionDetailModel): Promise<void> {
     if (!item) return;
 
     const confirmed = await this.confirmService.confirm({
@@ -184,7 +165,7 @@ export class BookFormPage {
 
     this.mutation.run(
       this.editionService.delete(item.id_edition),
-      { isSaving: this.isSaving },
+      { isSaving: this.edition.isSaving },
       {
         successMsg: 'Edición eliminada correctamente',
         errorMsg: 'Error al eliminar la Edición',
@@ -193,6 +174,7 @@ export class BookFormPage {
     );
   }
 
+  // NAVIGATION ----------------------------------------------------------------------
   protected navigateGoBack(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.ROOT]);
   }
@@ -210,10 +192,10 @@ export class BookFormPage {
   }
 
   protected onCreateEdition(): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookFormVM().id_book, 0)]);
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), 0)]);
   }
 
   protected editEdition(item: EditionDetailModel): void {
-    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookFormVM().id_book, item.id_edition)]);
+    this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), item.id_edition)]);
   }
 }

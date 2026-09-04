@@ -8,19 +8,19 @@ import { catchError, map, of } from 'rxjs';
 @Component({
   selector: 'app-editorial-select-component',
   standalone: true,
-  imports: [
-    SearchSelectComponent
-  ],
+  imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './editorial-select-component.html',
 })
 export class EditorialSelectComponent {
   readonly disabled = input<boolean>(false);
-  readonly selectedId = input<number>(0);
-  readonly newSelectedId = output<number>();
   readonly clearTrigger = input<number>(0);
+  readonly selectedId = input<number>(0);
+  protected readonly selectedItem = output<EditorialModel | null>();
 
   private readonly editorialService = inject(EditorialService);
+  protected readonly isLoading = computed(() => this.editorialRX.isLoading());
+  protected readonly editorialList = computed<EditorialModel[]>(() => this.editorialRX.value() ?? []);
 
   private readonly editorialRX = rxResource({
     stream: () => {
@@ -31,18 +31,14 @@ export class EditorialSelectComponent {
     },
   });
 
-  protected readonly isLoading = computed(() => this.editorialRX.isLoading());
-  protected readonly editorialComputedList = computed<EditorialModel[]>(() => this.editorialRX.value() ?? []);
-
-  protected readonly editorialSelectItems = computed<SelectItem[]>(() => {
-    return (this.editorialComputedList() ?? []).map(e => ({ id: e.id_editorial, name: e.name }));
+  protected readonly editorialToSelectItemsList = computed<SelectItem[]>(() => {
+    return this.editorialList().map(e => ({ id: e.id_editorial, name: e.name }));
   });
 
-  protected onSelectionChange(item: SelectItem): void {
-    this.newSelectedId.emit(item.id);
-  }
-
-  protected onCleared(): void {
-    this.newSelectedId.emit(0);
+  protected selectItemToEditorial(item: SelectItem): void {
+    const selectedEditorial = this.editorialList().find(e => e.id_editorial === item.id);
+    if (!selectedEditorial) return;
+    
+    this.selectedItem.emit(selectedEditorial);
   }
 }

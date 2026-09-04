@@ -1,10 +1,10 @@
 <app-search-select-component
-  [items]="genreSelectItems()"
+  [items]="genreToSelectItemsList()"
   [selectedId]="selectedId()"
   [isLoading]="isLoading()"
   [disabled]="disabled()"
   [placeholder]="'Buscar género...'"
   [clearTrigger]="clearTrigger()"
-  (selectionChange)="onSelectionChange($event)"
-  (cleared)="onCleared()"
+  (selectionChange)="selectItemToGenre($event)"
+  (cleared)="selectedItem.emit(null)"
 />

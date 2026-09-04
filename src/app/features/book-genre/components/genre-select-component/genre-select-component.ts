@@ -14,11 +14,13 @@ import { catchError, map, of } from 'rxjs';
 })
 export class GenreSelectComponent {
   readonly disabled = input<boolean>(false);
-  readonly selectedId = input<number | undefined>(undefined);
-  readonly newSelectedId = output<number>();
   readonly clearTrigger = input<number>(0);
+  readonly selectedId = input<number | undefined>(undefined);
+  protected readonly selectedItem = output<GenreModel | null>();
 
   private readonly genreService = inject(GenreService);
+  protected readonly isLoading = computed(() => this.genreRX.isLoading());
+  protected readonly genreList = computed<GenreModel[]>(() => this.genreRX.value() ?? []);
 
   private readonly genreRX = rxResource({
     stream: () => {
@@ -29,18 +31,14 @@ export class GenreSelectComponent {
     },
   });
 
-  protected readonly isLoading = computed(() => this.genreRX.isLoading());
-  protected readonly genreComputedList = computed<GenreModel[]>(() => this.genreRX.value() ?? []);
-
-  protected readonly genreSelectItems = computed<SelectItem[]>(() => {
-    return this.genreComputedList().map(g => ({ id: g.id_genre, name: g.name }));
+  protected readonly genreToSelectItemsList = computed<SelectItem[]>(() => {
+    return this.genreList().map(g => ({ id: g.id_genre, name: g.name }));
   });
 
-  protected onSelectionChange(item: SelectItem): void {
-    this.newSelectedId.emit(item.id);
-  }
-
-  protected onCleared(): void {
-    this.newSelectedId.emit(0);
+  protected selectItemToGenre(item: SelectItem): void {
+    const selectedGenre = this.genreList().find(e => e.id_genre === item.id);
+    if (!selectedGenre) return;
+    
+    this.selectedItem.emit(selectedGenre);
   }
 }

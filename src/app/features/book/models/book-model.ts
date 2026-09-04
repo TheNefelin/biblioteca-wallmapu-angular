@@ -2,22 +2,20 @@ import { AuthorModel } from "@features/book-author/models/author-model"
 import { GenreModel } from "@features/book-genre/models/genre-model"
 import { SubjectModel } from "@features/book-subject/models/subject-model"
 
-export interface CreateBookModel {
+
+export interface BaseBookModel {
   title: string;
   summary: string;
-  genre_id: number;
+}
+
+export interface SaveBookModel extends BaseBookModel {
+  genre_id: number;  
   author_ids: number[];
   subject_ids: number[];
 }
 
-export interface UpdateBookModel extends CreateBookModel {
+export interface BookModel extends BaseBookModel {
   id_book: number;
-}
-
-export interface BookModel {
-  id_book: number;
-  title: string;
-  summary: string;
   genre: GenreModel;
   authors: AuthorModel[];
   subjects: SubjectModel[];

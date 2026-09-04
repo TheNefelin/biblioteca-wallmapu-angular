@@ -1,33 +1,27 @@
 <app-section-header-component
-  [title]="headerText()" 
+  [title]="actionText()" 
   [actionText]="'Volver a Libros'"
   (actionClicked)="navigateGoBack()"
 />
 
 <app-book-form-component
-  [actionText]="headerText()"
+  [actionText]="actionText()"
   [isLoading]="isLoading()"
-  [bookFormVM]="bookFormVM()"
-  (onDeleteAuthor)="deleteAuthor($event)"
-  (onDeleteSubject)="deleteSubject($event)"
-  (onFormSubmit)="formSubmit($event)"
-  (onNavigateToGenre)="navigateToGenre()"
-  (onNavigateToAuthor)="navigateToAuthor()"
-  (onNavigateToSubject)="navigateToSubject()"
+  [book]="book.data()"
+  (deleteAuthor)="deleteAuthor($event)"
+  (deleteSubject)="deleteSubject($event)"
+  (submitForm)="submitBookForm($event)"
+  (navigateToGenre)="navigateToGenre()"
+  (navigateToAuthor)="navigateToAuthor()"
+  (navigateToSubject)="navigateToSubject()"
 />
 
 @if (isEditMode()) {
-  <div class="m-4 flex justify-end">
-    <app-button-create-component
-      [textBtn]="'Crear Edición'"
-      (clicked)="onCreateEdition()"
-    />
-  </div>  
+  <app-edition-list-components 
+    [isLoading]="isLoading()"
+    [editionDetailList]="edition.dataList()"
+    (create)="onCreateEdition()"
+    (edit)="editEdition($event)"
+    (delete)="deleteEdition($event)"
+  />
 }
-
-<app-edition-list-components 
-  [isLoading]="isLoading()"
-  [editionDetailList]="computedEditionList()"
-  (edit)="editEdition($event)"
-  (delete)="onDeleteEdition($event)"
-/>

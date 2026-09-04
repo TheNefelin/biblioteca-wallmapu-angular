@@ -14,9 +14,14 @@ import { AboutComponent } from '@features/home/components/about-component/about-
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { EditionService } from '@features/edition/services/edition-service';
 import { EditionCardListComponent } from "@features/edition/components/edition-card-list-component/edition-card-list-component";
-import { EditionSearchComponent } from "@features/edition/components/edition-search-component/edition-search-component";
+import { SearchFilterComponent } from "@features/home/components/search-filter-component/search-filter-component";
 import { EditionDetailModel, EditionFilterModel } from '@features/edition/models/edition-model';
 import { extractErrorMessage } from '@core/utils/error-handler';
+import { AuthorModel } from '@features/book-author/models/author-model';
+import { FormatModel } from '@features/format/models/format-model';
+import { EditorialModel } from '@features/book-editorial/models/editorial-model';
+import { GenreModel } from '@features/book-genre/models/genre-model';
+import { SubjectModel } from '@features/book-subject/models/subject-model';
 
 @Component({
   selector: 'app-home.page',
@@ -29,7 +34,7 @@ import { extractErrorMessage } from '@core/utils/error-handler';
     AboutComponent,
     NewsCardListComponent,
     EditionCardListComponent,
-    EditionSearchComponent
+    SearchFilterComponent
 ],
   templateUrl: './home-page.html',
 })
@@ -131,24 +136,24 @@ export class HomePage {
     }
   }
 
-  protected onAuthorIdSelected(id_author: number): void {
-    this.id_author.set(id_author);
+  protected onSelectedAuthor(item: AuthorModel | null): void {
+    this.id_author.set(item?.id_author ?? 0);
   }
 
-  protected onFormatIdSelected(id_format: number): void {
-    this.id_format.set(id_format);
+  protected onSelectedFormat(item: FormatModel | null): void {
+    this.id_format.set(item?.id_format ?? 0);
   }
 
-  protected onEditorialIdSelected(id_editorial: number): void {
-    this.id_editorial.set(id_editorial);
+  protected onSelectedEditorial(item: EditorialModel | null): void {
+    this.id_editorial.set(item?.id_editorial ?? 0);
   }
 
-  protected onGenreIdSelected(id_genre: number): void {
-    this.id_genre.set(id_genre);
+  protected onSelectedGenre(item: GenreModel | null): void {
+    this.id_genre.set(item?.id_genre ?? 0);
   }
 
-  protected onSubjectIdSelected(id_subject: number): void {
-    this.id_subject.set(id_subject);
+  protected onSelectedSubject(item: SubjectModel | null): void {
+    this.id_subject.set(item?.id_subject ?? 0);
   }
 
   protected onNavigateTo(item: EditionDetailModel): void {

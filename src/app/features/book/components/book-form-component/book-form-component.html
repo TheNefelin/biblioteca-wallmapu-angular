@@ -18,20 +18,20 @@
       <fieldset class="fieldset flex flex-col">
         <span class="label font-semibold">Género</span>
         <div class="flex gap-2">
-          <app-genre-select-component class="flex-1" [selectedId]="formData().genre_id" (newSelectedId)="updateGenre($event)" />
-          <app-button-create-component (clicked)="navigateToGenre()"/>
+          <app-genre-select-component class="flex-1" [selectedId]="formData().genre_id" (selectedItem)="updateGenre($event)" />
+          <app-button-create-component (clicked)="navigateToGenre.emit()"/>
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
 
       <p class="pt-6 text-my-purple">
-        - ID: {{ formData().id_book }}
+        - ID: {{ book()?.id_book }}
       </p>
       <p class="text-my-purple">
-        {{ formData().created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha de Creación
+        {{ book()?.created_at | date:'yyyy-MM-dd HH:mm:ss' }} - Fecha de Creación
       </p>
       <p class="text-my-purple">
-        {{ formData().updated_at| date:'yyyy-MM-dd HH:mm:ss' }} - Fecha de Modificación:
+        {{ book()?.updated_at| date:'yyyy-MM-dd HH:mm:ss' }} - Fecha de Modificación:
       </p>
     </div>
 
@@ -51,20 +51,20 @@
       <div class="divider text-base-content/40">Autores</div>
       <span class="label font-semibold">Seleccionar Autor/es</span>
       <div class="my-2 flex gap-2">
-        <app-author-select-component class="flex-1" (newSelectedId)="addAuthor($event)" />
-        <app-button-create-component (clicked)="navigateToAuthor()"/>
+        <app-author-select-component class="flex-1" (selectedItem)="addAuthor($event)" />
+        <app-button-create-component (clicked)="navigateToAuthor.emit()"/>
       </div>
-      <app-author-selected-list-component [authorList]="formData().authors" (delete)="deleteAuthor($event)" />
+      <app-author-selected-list-component [authorList]="book()?.authors" (delete)="deleteAuthor.emit($event)" />
     </div>
 
     <div>
       <div class="divider text-base-content/40">Descriptores</div>
       <span class="label font-semibold">Descriptor/es</span>
       <div class="my-2 flex gap-2">
-        <app-subject-select-component class="flex-1" (newSelectedId)="addSubject($event)" />
-        <app-button-create-component (clicked)="navigateToSubject()"/>
+        <app-subject-select-component class="flex-1" (selectedItem)="addSubject($event)" />
+        <app-button-create-component (clicked)="navigateToSubject.emit()"/>
       </div>
-      <app-subject-selected-list-component [subjectList]="formData().subjects" (delete)="deleteSubject($event)" />
+      <app-subject-selected-list-component [subjectList]="book()?.subjects" (delete)="deleteSubject.emit($event)" />
     </div>
 
     @if (isLoading()) {

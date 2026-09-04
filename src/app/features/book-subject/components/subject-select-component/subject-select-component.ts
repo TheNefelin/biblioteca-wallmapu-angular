@@ -14,11 +14,13 @@ import { catchError, map, of } from 'rxjs';
 })
 export class SubjectSelectComponent {
   readonly disabled = input<boolean>(false);
-  readonly selectedId = input<number>(0);
   readonly clearTrigger = input<number>(0);
-  readonly newSelectedId = output<number>();
+  readonly selectedId = input<number>(0);
+  protected readonly selectedItem = output<SubjectModel | null>();
 
   private readonly subjectService = inject(SubjectService);
+  protected readonly isLoading = computed(() => this.subjectRX.isLoading());
+  protected readonly subjectList = computed<SubjectModel[]>(() => this.subjectRX.value() ?? []);
 
   private readonly subjectRX = rxResource({
     stream: () => {
@@ -29,18 +31,14 @@ export class SubjectSelectComponent {
     },
   });
 
-  protected readonly isLoading = computed(() => this.subjectRX.isLoading());
-  protected readonly subjectComputedList = computed<SubjectModel[]>(() => this.subjectRX.value() ?? []);
-
-  protected readonly subjectSelectItems = computed<SelectItem[]>(() => {
-    return this.subjectComputedList().map(s => ({ id: s.id_subject, name: s.name }));
+  protected readonly subjectsToSelectItemsList = computed<SelectItem[]>(() => {
+    return this.subjectList().map(s => ({ id: s.id_subject, name: s.name }));
   });
 
-  protected onSelectionChange(item: SelectItem): void {
-    this.newSelectedId.emit(item.id);
-  }
-
-  protected onCleared(): void {
-    this.newSelectedId.emit(0);
+  protected selectItemToSubject(item: SelectItem): void {
+    const selectedSubject = this.subjectList().find(e => e.id_subject === item.id);
+    if (!selectedSubject) return;
+    
+    this.selectedItem.emit(selectedSubject);
   }
 }

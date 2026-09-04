@@ -1,7 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, map, of } from 'rxjs';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { GenreSelectComponent } from "@features/book-genre/components/genre-select-component/genre-select-component";
 import { AuthorSelectComponent } from "@features/book-author/components/author-select-component/author-select-component";
@@ -9,12 +7,11 @@ import { SubjectSelectComponent } from "@features/book-subject/components/subjec
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { AuthorModel } from '@features/book-author/models/author-model';
-import { AuthorService } from '@features/book-author/services/author-service';
-import { SubjectService } from '@features/book-subject/services/subject-service';
-import { BookFormVM } from '@features/book/models/vm.book-form';
 import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 import { AuthorSelectedListComponent } from "@features/book-author/components/author-selected-list-component/author-selected-list-component";
 import { SubjectSelectedListComponent } from "@features/book-subject/components/subject-selected-list-component/subject-selected-list-component";
+import { BookModel, SaveBookModel } from '@features/book/models/book-model';
+import { GenreModel } from '@features/book-genre/models/genre-model';
 
 @Component({
   selector: 'app-book-form-component',
@@ -34,43 +31,28 @@ import { SubjectSelectedListComponent } from "@features/book-subject/components/
 export class BookFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly actionText = input.required<string>();
-  readonly bookFormVM = input<BookFormVM | null>(null);
-  readonly onDeleteAuthor = output<AuthorModel>();
-  readonly onDeleteSubject = output<SubjectModel>();
-  readonly onFormSubmit = output<BookFormVM>();
-  readonly onNavigateToGenre = output<void>();
-  readonly onNavigateToAuthor = output<void>();
-  readonly onNavigateToSubject = output<void>();
+  readonly book = input<BookModel | null>(null);
+  protected readonly deleteAuthor = output<AuthorModel>();
+  protected readonly deleteSubject = output<SubjectModel>();
+  protected readonly submitForm = output<SaveBookModel>();
+  protected readonly navigateToGenre = output<void>();
+  protected readonly navigateToAuthor = output<void>();
+  protected readonly navigateToSubject = output<void>();
 
-  readonly errorMessage = signal<string | null>(null);
-  readonly formData = signal<Partial<BookFormVM>>({});
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly formData = linkedSignal<SaveBookModel>(() => {
+    const payload = this.book();
 
-  private readonly authorService = inject(AuthorService);
-  private readonly subjectService = inject(SubjectService);
-
-  // lista de autores para resolver el id seleccionado en el objeto completo
-  private readonly allAuthorsRX = rxResource({
-    stream: () => this.authorService.getAll().pipe(
-      map((res) => res),
-      catchError(() => of([])),
-    ),
-  });
-
-  // lista de descriptores para resolver el id seleccionado en el objeto completo
-  private readonly allSubjectsRX = rxResource({
-    stream: () => this.subjectService.getAll().pipe(
-      map((res) => res),
-      catchError(() => of([])),
-    ),
-  });
-
-  private readonly updateEffect = effect(() => {
-    const book = this.bookFormVM();
-    if (book) {
-      this.formData.set(book);
+    return { 
+      title: payload?.title ?? '',
+      summary: payload?.summary ?? '',
+      genre_id: payload?.genre.id_genre ?? 0,
+      author_ids: payload?.authors.map(e => e.id_author) ?? [],
+      subject_ids: payload?.subjects.map(e => e.id_subject) ?? [],
     }
   });
 
+  // FORM INPUTS -------------------------------------------------------------------
   protected updateTitle(value: string, input: HTMLInputElement) {
     this.updateField('title', value, input);
   }
@@ -79,43 +61,12 @@ export class BookFormComponent {
     this.updateField('summary', value, input);
   }
 
-  protected updateGenre(id_genre: number) {
-    this.formData.update(data => ({ ...data, genre_id: id_genre, }));
-  }
-
-  protected addAuthor(id: number) {
-    if (!id) return;
-    const item = this.allAuthorsRX.value()?.find(a => a.id_author === id);
+  protected updateGenre(item: GenreModel | null) {
     if (!item) return;
-
-    this.formData.update(data => {
-      const exists = data.authors?.some(a => a.id_author === item.id_author);
-      if (exists) return data;
-    
-      return {
-        ...data,
-        authors: [...data.authors || [], item]
-      };
-    });
+    this.formData.update(data => ({ ...data, genre_id: item.id_genre, }));
   }
 
-  protected addSubject(id: number) {
-    if (!id) return;
-    const item = this.allSubjectsRX.value()?.find(s => s.id_subject === id);
-    if (!item) return;
-    
-    this.formData.update(data => {
-      const exists = data.subjects?.some(a => a.id_subject === item.id_subject);
-      if (exists) return data;
-    
-      return {
-        ...data,
-        subjects: [...data.subjects || [], item]
-      };
-    });
-  }
-
-  private updateField<K extends keyof BookFormVM>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
+  private updateField<K extends keyof SaveBookModel>(key: K, value: string, input?: HTMLInputElement | HTMLTextAreaElement) {
     const sanitized = this.sanitize(key, value);
 
     if (sanitized === null) {
@@ -131,7 +82,7 @@ export class BookFormComponent {
     this.errorMessage.set(null);
   }
 
-  private sanitize(key: keyof BookFormVM, value: string): string | null {
+  private sanitize(key: keyof SaveBookModel, value: string): string | null {
     switch (key){
       case 'title':
         if (value.length > 100) return null;
@@ -141,28 +92,58 @@ export class BookFormComponent {
     }
   }  
 
-  protected deleteAuthor(item: AuthorModel): void {    
+  // FORM ACTIONS ------------------------------------------------------------------
+  protected addAuthor(item: AuthorModel | null) {
+    if (!item) return;
+
+    this.formData.update(data => {
+      const exists = data?.author_ids.some(id => id === item.id_author);
+      if (exists) return data;
+    
+      return {
+        ...data,
+        authors: [...data?.author_ids || [], item.id_author]
+      };
+    });
+  }
+  
+  protected onDeleteAuthor(item: AuthorModel): void {    
     this.formData.update(data => {
       return {
         ...data,
-        authors: data.authors?.filter(s => s.id_author !== item.id_author) || []
+        authors: data.author_ids?.filter(id => id !== item.id_author) || []
       };
     });
 
-    this.onDeleteAuthor.emit(item);
+    this.deleteAuthor.emit(item);
   }
 
-  protected deleteSubject(item: SubjectModel): void {
+  protected addSubject(item: SubjectModel | null) {
+    if (!item) return;
+    
+    this.formData.update(data => {
+      const exists = data?.subject_ids?.some(id => id === item.id_subject);
+      if (exists) return data;
+    
+      return {
+        ...data,
+        subject_ids: [...data?.subject_ids || [], item.id_subject]
+      };
+    });
+  }
+
+  protected onDeleteSubject(item: SubjectModel): void {
     this.formData.update(data => {
       return {
         ...data,
-        subjects: data.subjects?.filter(s => s.id_subject !== item.id_subject) || []
+        subjects: data.subject_ids?.filter(id => id !== item.id_subject) || []
       };
     });
 
-    this.onDeleteSubject.emit(item);
+    this.deleteSubject.emit(item);
   }
 
+  // SUBMIT ------------------------------------------------------------------------
   protected formSubmit(event: Event): void {
     event.preventDefault();
 
@@ -174,18 +155,15 @@ export class BookFormComponent {
       return;
     }
 
-    const baseData = this.bookFormVM();
-
-    const submitData: BookFormVM = { 
-      ...baseData,
+    const submitData: SaveBookModel = { 
       ...data,
-    } as BookFormVM
+    }
 
     this.errorMessage.set(null)
-    this.onFormSubmit.emit(submitData);
+    this.submitForm.emit(submitData);
   }
 
-  private validateFormOnSubmit(data: Partial<BookFormVM>): string | null {
+  private validateFormOnSubmit(data: Partial<SaveBookModel>): string | null {
     const title = data.title?.trim();
     if (!title) return 'El título es requerido';
     if (title.length < 2) return 'El título debe tener al menos 2 caracteres';
@@ -198,17 +176,5 @@ export class BookFormComponent {
     if (!data.genre_id || data.genre_id === 0) return 'El género es requerido';
   
     return null; // ✅ sin errores
-  }
-
-  protected navigateToGenre(): void {
-    this.onNavigateToGenre.emit();
-  }
-
-  protected navigateToAuthor(): void {
-    this.onNavigateToAuthor.emit();
-  }
-
-  protected navigateToSubject(): void {
-    this.onNavigateToSubject.emit();
   }
 }

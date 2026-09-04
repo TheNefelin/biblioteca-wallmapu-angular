@@ -1,17 +1,15 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { Component, inject, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, map, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { EditorialSelectComponent } from "@features/book-editorial/components/editorial-select-component/editorial-select-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
 import { FormatSelectedListComponent } from "@features/format/components/format-selected-list-component/format-selected-list-component";
-import { FormatModel } from '@features/format/models/format-model';
-import { FormatService } from '@features/format/services/format-service';
 import { EditionModel, SaveEditionModel } from '@features/edition/models/edition-model';
+import { EditorialModel } from '@features/book-editorial/models/editorial-model';
+import { FormatModel } from '@features/format/models/format-model';
 
 @Component({
   selector: 'app-edition-form-components',
@@ -38,16 +36,6 @@ export class EditionFormComponents {
 
   protected readonly formatClearTrigger = signal<number>(0);
   protected readonly errorMessage = signal<string | null>(null);
-
-  private readonly formatService = inject(FormatService);
-
-  // lista de formatos para resolver el id seleccionado en el objeto completo
-  private readonly allFormatsRX = rxResource({
-    stream: () => this.formatService.getAll().pipe(
-      map((res) => res),
-      catchError(() => of([])),
-    ),
-  });
 
   protected readonly formFile = signal<File | null>(null)
   protected readonly formFormat = linkedSignal<FormatModel[]>(() => this.editionModel()?.formats ?? []);
@@ -82,13 +70,11 @@ export class EditionFormComponents {
     this.updateField('pages', value, input);
   }
 
-  protected updateEditorial(id_editorial: number) {
-    this.formData.update(data => ({ ...data, editorial_id: id_editorial }));
+  protected updateEditorial(item: EditorialModel | null): void {
+    this.formData.update(data => ({ ...data, editorial_id: item?.id_editorial ?? 0 }));
   }
 
-  protected addFormat(id: number): void {
-    if (!id) return;
-    const item = this.allFormatsRX.value()?.find(f => f.id_format === id);
+  protected addFormat(item: FormatModel | null): void {
     if (!item) return;
 
     this.formFormat.update(data => {

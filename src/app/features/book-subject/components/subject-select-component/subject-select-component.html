@@ -1,10 +1,10 @@
 <app-search-select-component
-  [items]="subjectSelectItems()"
+  [items]="subjectsToSelectItemsList()"
   [selectedId]="selectedId()"
   [isLoading]="isLoading()"
   [disabled]="disabled()"
   [placeholder]="'Buscar descriptor...'"
   [clearTrigger]="clearTrigger()"
-  (selectionChange)="onSelectionChange($event)"
-  (cleared)="onCleared()"
+  (selectionChange)="selectItemToSubject($event)"
+  (cleared)="selectedItem.emit(null)"
 />

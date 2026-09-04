@@ -1,0 +1,87 @@
+<section class="bg-my-light p-6">
+  <div class="max-w-7xl mx-auto">
+
+    <h2 class="text-3xl font-bold text-my-purple tracking-tight">{{ textTitle() ?? 'Sin textTitle' }}</h2>
+    <p class="text-my-green mt-2">{{ textDescription() ?? 'Sin Descripción' }}</p>
+  
+    <span class="label mt-4 mb-1">
+      <span class="label-text text-sm font-semibold">Buscar</span>
+    </span>
+    <label class="input w-full focus-within:border-my-green focus-within:outline-none">
+      <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </g>
+      </svg>
+      
+      <input type="search" class="grow" 
+        [placeholder]="searchPlaceholder() ?? 'buscar...'"
+        [value]="searchText()"
+        (input)="onSearchChange($event)"
+        (search)="onSearchChange($event)"
+      />
+    </label>
+  
+    <section class="flex gap-4 flex-wrap items-end mt-4">
+      <div>
+        <span class="label mb-1 grid">
+          <span class="label-text text-sm font-semibold">Filtrar por autor</span>
+        </span>
+        <app-author-select-component 
+          [clearTrigger]="clearTrigger()"
+          (selectedItem)="selectedAuthor.emit($event)"
+        />
+      </div>   
+      
+      <div>
+        <span class="label mb-1 grid">
+          <span class="label-text text-sm font-semibold">Filtrar por Formato</span>
+        </span>
+        <app-format-select-component
+          [clearTrigger]="clearTrigger()" 
+          (selectedItem)="selectedFormat.emit($event)"/>
+      </div>
+      
+      <div>
+        <span class="label mb-1 grid">
+          <span class="label-text text-sm font-semibold">Filtrar por descriptor</span>
+        </span>
+        <app-subject-select-component 
+          [clearTrigger]="clearTrigger()"
+          (selectedItem)="selectedSubject.emit($event)"
+        />
+      </div>
+  
+      <div>
+        <span class="label mb-1 grid">
+          <span class="label-text text-sm font-semibold">Filtrar por editorial</span>
+        </span>
+        <app-editorial-select-component 
+          [clearTrigger]="clearTrigger()"
+          (selectedItem)="selectedEditorial.emit($event)"
+        />
+      </div>
+  
+      <div>
+        <span class="label mb-1 grid">
+          <span class="label-text text-sm font-semibold">Filtrar por género</span>
+        </span>
+        <app-genre-select-component 
+          [clearTrigger]="clearTrigger()"
+          (selectedItem)="selectedGenre.emit($event)"
+        />
+      </div>
+     
+      <div class="ml-auto">
+        <button 
+          class="btn border-0 text-my-purple"
+          (click)="onClear()">
+          
+          Limpiar
+        </button>
+      </div>
+    </section>  
+
+  </div>
+</section>

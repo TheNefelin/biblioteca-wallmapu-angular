@@ -1,10 +1,10 @@
 <app-search-select-component
-  [items]="editorialSelectItems()"
+  [items]="editorialToSelectItemsList()"
   [selectedId]="selectedId()"
   [isLoading]="isLoading()"
   [disabled]="disabled()"
   [placeholder]="'Buscar editorial...'"
   [clearTrigger]="clearTrigger()"
-  (selectionChange)="onSelectionChange($event)"
-  (cleared)="onCleared()"
+  (selectionChange)="selectItemToEditorial($event)"
+  (cleared)="selectedItem.emit(null)"
 />

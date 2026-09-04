@@ -6,9 +6,14 @@ import { EditorialSelectComponent } from "@features/book-editorial/components/ed
 import { AuthorSelectComponent } from "@features/book-author/components/author-select-component/author-select-component";
 import { FormatSelectComponent } from "@features/format/components/format-select-component/format-select-component";
 import { SubjectSelectComponent } from "@features/book-subject/components/subject-select-component/subject-select-component";
+import { AuthorModel } from '@features/book-author/models/author-model';
+import { FormatModel } from '@features/format/models/format-model';
+import { EditorialModel } from '@features/book-editorial/models/editorial-model';
+import { GenreModel } from '@features/book-genre/models/genre-model';
+import { SubjectModel } from '@features/book-subject/models/subject-model';
 
 @Component({
-  selector: 'app-edition-search-component',
+  selector: 'app-search-filter-component',
   imports: [
     GenreSelectComponent,
     EditorialSelectComponent,
@@ -16,18 +21,18 @@ import { SubjectSelectComponent } from "@features/book-subject/components/subjec
     FormatSelectComponent,
     SubjectSelectComponent
   ],
-  templateUrl: './edition-search-component.html',
+  templateUrl: './search-filter-component.html',
 })
-export class EditionSearchComponent {
+export class SearchFilterComponent {
   readonly textTitle = input<string | null>(null);
   readonly textDescription = input<string | null>(null);
   readonly searchPlaceholder = input<string | null>(null);
   readonly searchChange = output<string>();
-  readonly authorIdSelected = output<number>();
-  readonly formatIdSelected = output<number>();
-  readonly editorialIdSelected = output<number>();
-  readonly genreIdSelected = output<number>();
-  readonly subjectIdSelected = output<number>();
+  readonly selectedAuthor = output<AuthorModel | null>();
+  readonly selectedFormat = output<FormatModel | null>();
+  readonly selectedEditorial = output<EditorialModel | null>();
+  readonly selectedGenre = output<GenreModel | null>();
+  readonly selectedSubject = output<SubjectModel | null>();
 
   protected readonly searchText = signal<string>('');
   protected readonly clearTrigger = signal<number>(0);
@@ -51,30 +56,10 @@ export class EditionSearchComponent {
   protected onClear(): void {
     this.clearTrigger.update(v => v + 1);
     this.searchText.set('');
-    this.authorIdSelected.emit(0);
-    this.formatIdSelected.emit(0);
-    this.editorialIdSelected.emit(0);
-    this.genreIdSelected.emit(0);
-    this.subjectIdSelected.emit(0);
-  }
-
-  protected authorSelected(id: number) {
-    this.authorIdSelected.emit(id)
-  }
-
-  protected formatSelected(id: number): void {
-    this.formatIdSelected.emit(id)
-  }
-
-  protected subjectSelected(id: number): void {
-    this.subjectIdSelected.emit(id)
-  }
-
-  protected editorialSelected(id: number) {
-    this.editorialIdSelected.emit(id)
-  }
-
-  protected genreSelected(id: number) {
-    this.genreIdSelected.emit(id)
+    this.selectedAuthor.emit(null);
+    this.selectedFormat.emit(null);
+    this.selectedEditorial.emit(null);
+    this.selectedGenre.emit(null);
+    this.selectedSubject.emit(null);
   }
 }

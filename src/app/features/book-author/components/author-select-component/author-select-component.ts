@@ -14,11 +14,13 @@ import { catchError, map, of } from 'rxjs';
 })
 export class AuthorSelectComponent {
   readonly disabled = input<boolean>(false);
-  readonly selectedId = input<number>(0);
-  readonly newSelectedId = output<number>();
   readonly clearTrigger = input<number>(0);
+  readonly selectedId = input<number>(0);
+  protected readonly selectedItem = output<AuthorModel | null>();
 
   private readonly authorService = inject(AuthorService);
+  protected readonly isLoading = computed(() => this.authorRX.isLoading());
+  protected readonly authorList = computed<AuthorModel[]>(() => this.authorRX.value() ?? []);
 
   private readonly authorRX = rxResource({
     stream: () => {
@@ -29,18 +31,15 @@ export class AuthorSelectComponent {
     },
   });
 
-  protected readonly isLoading = computed(() => this.authorRX.isLoading());
-  protected readonly authorComputedList = computed<AuthorModel[]>(() => this.authorRX.value() ?? []);
 
-  protected readonly authorSelectItems = computed<SelectItem[]>(() => {
-    return this.authorComputedList().map(e => ({ id: e.id_author, name: e.name }));
+  protected readonly authorToSelectItemsList = computed<SelectItem[]>(() => {
+    return this.authorList().map(e => ({ id: e.id_author, name: e.name }));
   });
 
-  protected onSelectionChange(item: SelectItem): void {
-    this.newSelectedId.emit(item.id);
-  }
-
-  protected onCleared(): void {
-    this.newSelectedId.emit(0);
+  protected selectItemToAuthor(item: SelectItem): void {
+    const selectedSubject = this.authorList().find(e => e.id_author === item.id);
+    if (!selectedSubject) return;
+    
+    this.selectedItem.emit(selectedSubject);
   }
 }

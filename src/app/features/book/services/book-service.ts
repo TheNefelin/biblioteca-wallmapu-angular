@@ -1,7 +1,7 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
-import { BookDetailModel, BookModel, CreateBookModel, UpdateBookModel } from '@features/book/models/book-model';
+import { BookDetailModel, BookModel, SaveBookModel } from '@features/book/models/book-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 
@@ -24,14 +24,14 @@ export class BookService {
     );
   }
 
-  create(item: CreateBookModel): Observable<BookModel> {
-    return this.apiService.create<BookModel, CreateBookModel>(
+  create(item: SaveBookModel): Observable<BookModel> {
+    return this.apiService.create<BookModel, SaveBookModel>(
       this.endpoint, item
     );
   }  
 
-  update(id: number, item: UpdateBookModel): Observable<BookModel> {
-    return this.apiService.update<BookModel, UpdateBookModel>(
+  update(id: number, item: SaveBookModel): Observable<BookModel> {
+    return this.apiService.update<BookModel, SaveBookModel>(
       this.endpoint, id, item
     );
   }

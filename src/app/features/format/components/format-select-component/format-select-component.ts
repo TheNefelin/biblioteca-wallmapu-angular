@@ -1,43 +1,44 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormatModel } from '@features/format/models/format-model';
 import { FormatService } from '@features/format/services/format-service';
-import { SelectItem, SearchSelectComponent } from '@shared/components/search-select-component/search-select-component';
-import { catchError, of } from 'rxjs';
+import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
+import { catchError, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-format-select-component',
+  standalone: true,
   imports: [SearchSelectComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './format-select-component.html',
 })
 export class FormatSelectComponent {
   readonly disabled = input<boolean>(false);
-  readonly selectedId = input<number>(0);
-  readonly newSelectedId = output<number>();
   readonly clearTrigger = input<number>(0);
+  readonly selectedId = input<number>(0);
+  protected readonly selectedItem = output<FormatModel | null>();
 
   private readonly formatService = inject(FormatService);
+  protected readonly isLoading = computed(() => this.formatRX.isLoading());
+  protected readonly formatList = computed<FormatModel[]>(() => this.formatRX.value() ?? []);
 
   private readonly formatRX = rxResource({
     stream: () => {
       return this.formatService.getAll().pipe(
+        map((res) => res),
         catchError(() => of([])),
       );
     },
   });
 
-  protected readonly isLoading = computed(() => this.formatRX.isLoading());
-  protected readonly computedFormatList = computed<FormatModel[]>(() => this.formatRX.value() ?? []);
-
-  protected readonly formatSelectItems = computed<SelectItem[]>(() => {
-    return this.computedFormatList().map(e => ({ id: e.id_format, name: e.name }));
+  protected readonly formatToSelectItemsList = computed<SelectItem[]>(() => {
+    return this.formatList().map(e => ({ id: e.id_format, name: e.name }));
   });
 
-  protected onSelectionChange(item: SelectItem): void {
-    this.newSelectedId.emit(item.id);
-  }
-
-  protected onCleared(): void {
-    this.newSelectedId.emit(0);
+  protected selectItemToFormat(item: SelectItem): void {
+    const selectedFormat = this.formatList().find(e => e.id_format === item.id);
+    if (!selectedFormat) return;
+    
+    this.selectedItem.emit(selectedFormat);
   }
 }

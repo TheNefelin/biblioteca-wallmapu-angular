@@ -3,6 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { ReservationDetailModel, ReservationFilterModel } from '@features/reservation/models/reservation-model';
 import { ReservationService } from '@features/reservation/services/reservation-service';
+import { ReservationStatusModel } from '@features/reservation-status/models/reservation-status-model';
 import { catchError, map, of } from 'rxjs';
 import { ReservationListComponent } from "@features/reservation/components/reservation-list-component/reservation-list-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
@@ -82,8 +83,8 @@ export class UserReservationPage extends CrudPage<ReservationDetailModel> {
     this.selectedReservation.set(null);
   }
 
-  protected onFilterByIdStatus(id: number): void {
-    this.selectFilterStatusId.set(id);
+  protected onFilterByIdStatus(status: ReservationStatusModel | null): void {
+    this.selectFilterStatusId.set(status?.id_status ?? 0);
     this.currentPage.set(1);
   }
 

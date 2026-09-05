@@ -13,9 +13,9 @@
       </div>
   
       <div class="flex gap-2 items-center">
-        <app-reservation-status-select-components
+        <app-reservation-status-select-component
           [selectedId]="selectStatusId()"
-          (newSelectedId)="selectedIdStatus.emit($event)"
+          (selectedItem)="selectedIdStatus.emit($event)"
         />
 
         <app-button-component 

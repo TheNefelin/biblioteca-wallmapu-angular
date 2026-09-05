@@ -7,11 +7,11 @@ import { SubjectSelectComponent } from "@features/book-subject/components/subjec
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { AuthorModel } from '@features/book-author/models/author-model';
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
 import { AuthorSelectedListComponent } from "@features/book-author/components/author-selected-list-component/author-selected-list-component";
 import { SubjectSelectedListComponent } from "@features/book-subject/components/subject-selected-list-component/subject-selected-list-component";
 import { BookModel, SaveBookModel } from '@features/book/models/book-model';
 import { GenreModel } from '@features/book-genre/models/genre-model';
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-book-form-component',
@@ -22,24 +22,26 @@ import { GenreModel } from '@features/book-genre/models/genre-model';
     AuthorSelectComponent,
     SubjectSelectComponent,
     LoadingComponent,
-    ButtonCreateComponent,
     AuthorSelectedListComponent,
-    SubjectSelectedListComponent
-],
+    SubjectSelectedListComponent,
+    ButtonComponent
+  ],
   templateUrl: './book-form-component.html',
 })
 export class BookFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly actionText = input.required<string>();
   readonly book = input<BookModel | null>(null);
-  protected readonly deleteAuthor = output<AuthorModel>();
-  protected readonly deleteSubject = output<SubjectModel>();
-  protected readonly submitForm = output<SaveBookModel>();
+  protected readonly submitForm = output<{ id: number, data: SaveBookModel }>();
   protected readonly navigateToGenre = output<void>();
   protected readonly navigateToAuthor = output<void>();
   protected readonly navigateToSubject = output<void>();
 
   protected readonly errorMessage = signal<string | null>(null);
+
+  protected readonly AuthorSubjectClearTrigger = signal<number>(0);
+  protected readonly formAuthors = linkedSignal<AuthorModel[]>(() => this.book()?.authors ?? []);
+  protected readonly formSubjects = linkedSignal<SubjectModel[]>(() => this.book()?.subjects ?? []);
   protected readonly formData = linkedSignal<SaveBookModel>(() => {
     const payload = this.book();
 
@@ -96,57 +98,39 @@ export class BookFormComponent {
   protected addAuthor(item: AuthorModel | null) {
     if (!item) return;
 
-    this.formData.update(data => {
-      const exists = data?.author_ids.some(id => id === item.id_author);
+    this.formAuthors.update(data => {
+      const exists = data?.some(e => e.id_author === item.id_author);
       if (exists) return data;
-    
-      return {
-        ...data,
-        authors: [...data?.author_ids || [], item.id_author]
-      };
+
+      return [...data, item]
     });
+
+    this.AuthorSubjectClearTrigger.update(e => e + 1);
   }
   
   protected onDeleteAuthor(item: AuthorModel): void {    
-    this.formData.update(data => {
-      return {
-        ...data,
-        authors: data.author_ids?.filter(id => id !== item.id_author) || []
-      };
-    });
-
-    this.deleteAuthor.emit(item);
+    this.formAuthors.update(data => data.filter(e => e.id_author !== item.id_author));
   }
 
   protected addSubject(item: SubjectModel | null) {
     if (!item) return;
-    
-    this.formData.update(data => {
-      const exists = data?.subject_ids?.some(id => id === item.id_subject);
+
+    this.formSubjects.update(data => {
+      const exists = data?.some(e => e.id_subject === item.id_subject);
       if (exists) return data;
-    
-      return {
-        ...data,
-        subject_ids: [...data?.subject_ids || [], item.id_subject]
-      };
+
+      return [...data, item]
     });
+
+    this.AuthorSubjectClearTrigger.update(e => e + 1);
   }
 
   protected onDeleteSubject(item: SubjectModel): void {
-    this.formData.update(data => {
-      return {
-        ...data,
-        subjects: data.subject_ids?.filter(id => id !== item.id_subject) || []
-      };
-    });
-
-    this.deleteSubject.emit(item);
+    this.formSubjects.update(data => data.filter(e => e.id_subject !== item.id_subject));
   }
 
   // SUBMIT ------------------------------------------------------------------------
-  protected formSubmit(event: Event): void {
-    event.preventDefault();
-
+  protected formSubmit(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
     
@@ -155,12 +139,12 @@ export class BookFormComponent {
       return;
     }
 
-    const submitData: SaveBookModel = { 
-      ...data,
-    }
+    this.submitForm.emit({
+      id: this.book()?.id_book ?? 0,
+      data: data
+    });
 
     this.errorMessage.set(null)
-    this.submitForm.emit(submitData);
   }
 
   private validateFormOnSubmit(data: Partial<SaveBookModel>): string | null {

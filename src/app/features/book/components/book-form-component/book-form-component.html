@@ -1,6 +1,6 @@
 <div class="w-full max-w-7xl p-4 mx-auto">
-  <form class="fieldset bg-my-light rounded-box border p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
-    (submit)="formSubmit($event)">
+  <form class="fieldset bg-my-light rounded-box p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
+  (ngSubmit)="formSubmit()">
   
     <div>
       <fieldset class="fieldset">
@@ -19,7 +19,7 @@
         <span class="label font-semibold">Género</span>
         <div class="flex gap-2">
           <app-genre-select-component class="flex-1" [selectedId]="formData().genre_id" (selectedItem)="updateGenre($event)" />
-          <app-button-create-component (clicked)="navigateToGenre.emit()"/>
+          <app-button-component [icon]="'create'" (clicked)="navigateToGenre.emit()"/>
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
@@ -51,34 +51,44 @@
       <div class="divider text-base-content/40">Autores</div>
       <span class="label font-semibold">Seleccionar Autor/es</span>
       <div class="my-2 flex gap-2">
-        <app-author-select-component class="flex-1" (selectedItem)="addAuthor($event)" />
-        <app-button-create-component (clicked)="navigateToAuthor.emit()"/>
+        <app-author-select-component 
+          class="flex-1" 
+          [clearTrigger]="AuthorSubjectClearTrigger()"
+          (selectedItem)="addAuthor($event)" />
+        <app-button-component [icon]="'create'" (clicked)="navigateToAuthor.emit()"/>
       </div>
-      <app-author-selected-list-component [authorList]="book()?.authors" (delete)="deleteAuthor.emit($event)" />
+      <app-author-selected-list-component 
+        [authorList]="formAuthors()" 
+        (delete)="onDeleteAuthor($event)" />
     </div>
 
     <div>
       <div class="divider text-base-content/40">Descriptores</div>
       <span class="label font-semibold">Descriptor/es</span>
       <div class="my-2 flex gap-2">
-        <app-subject-select-component class="flex-1" (selectedItem)="addSubject($event)" />
-        <app-button-create-component (clicked)="navigateToSubject.emit()"/>
+        <app-subject-select-component 
+          class="flex-1" 
+          [clearTrigger]="AuthorSubjectClearTrigger()"
+          (selectedItem)="addSubject($event)" />
+        <app-button-component [icon]="'create'" (clicked)="navigateToSubject.emit()"/>
       </div>
-      <app-subject-selected-list-component [subjectList]="book()?.subjects" (delete)="deleteSubject.emit($event)" />
+      <app-subject-selected-list-component 
+        [subjectList]="formSubjects()" 
+        (delete)="onDeleteSubject($event)" />
     </div>
+
+    @if (errorMessage()) {
+      <div class="my-4">
+        <app-message-error-component [message]="errorMessage()"/>
+      </div>
+    }
 
     @if (isLoading()) {
       <app-loading-component/>
     } @else {
-    <button class="btn btn-lg bg-my-purple text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
-      {{ actionText() }}
-    </button>  
+      <div>
+        <app-button-component [icon]="'save'" [textBtn]="actionText()" (clicked)="formSubmit()" />
+      </div>
     }
   </form>
-
-  @if (errorMessage()) {
-    <div class="my-4">
-      <app-message-error-component [message]="errorMessage()"/>
-    </div>
-  }
 </div>

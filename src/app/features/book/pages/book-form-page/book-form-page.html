@@ -1,27 +1,25 @@
 <app-section-header-component
   [title]="actionText()" 
-  [actionText]="'Volver a Libros'"
-  (actionClicked)="navigateGoBack()"
+  [actionText]="'Volver a Lista de Libros'"
+  (actionClicked)="onNavigateGoBack()"
 />
 
 <app-book-form-component
   [actionText]="actionText()"
-  [isLoading]="isLoading()"
+  [isLoading]="isLoading() || book.isSaving()"
   [book]="book.data()"
-  (deleteAuthor)="deleteAuthor($event)"
-  (deleteSubject)="deleteSubject($event)"
-  (submitForm)="submitBookForm($event)"
-  (navigateToGenre)="navigateToGenre()"
-  (navigateToAuthor)="navigateToAuthor()"
-  (navigateToSubject)="navigateToSubject()"
+  (submitForm)="onSubmitBookForm($event)"
+  (navigateToGenre)="onNavigateToGenre()"
+  (navigateToAuthor)="onNavigateToAuthor()"
+  (navigateToSubject)="onNavigateToSubject()"
 />
 
 @if (isEditMode()) {
   <app-edition-list-components 
-    [isLoading]="isLoading()"
+    [isLoading]="isLoading() || edition.isSaving()"
     [editionDetailList]="edition.dataList()"
     (create)="onCreateEdition()"
-    (edit)="editEdition($event)"
-    (delete)="deleteEdition($event)"
+    (edit)="onEditEdition($event)"
+    (delete)="onDeleteEdition($event)"
   />
 }

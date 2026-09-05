@@ -3,14 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { BookFormComponent } from '@features/book/components/book-form-component/book-form-component';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
-import { SubjectModel } from '@features/book-subject/models/subject-model';
-import { BookSubjectStepModel } from '@features/book-subject-step/models/book-subject-step-model';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
-import { AuthorModel } from '@features/book-author/models/author-model';
-import { BookAuthorStepService } from '@features/book-author-step/services/book-author-step-service';
-import { BookAuthorStepModel } from '@features/book-author-step/models/book-author-step-model';
-import { BookSubjectStepService } from '@features/book-subject-step/services/book-subject-step-service';
 import { BookService } from '@features/book/services/book-service';
 import { EditionListComponents } from "@features/edition/components/edition-list-components/edition-list-components";
 import { EditionService } from '@features/edition/services/edition-service';
@@ -63,10 +57,7 @@ export class BookFormPage {
     dataList: computed<EditionDetailModel[]>(() => this.getEditionByBookRX.value() ?? []),
   }
   
-  private readonly authorStepService = inject(BookAuthorStepService);
-  private readonly subjectStepService = inject(BookSubjectStepService);
-
-  // FETCHS ------------------------------------------------------------------------  
+  // FETCHS ------------------------------------------------------------------------
   private readonly getBookRX = rxResource({
     params: () => this.bookId(),
     stream: ({ params: idBook }) => {
@@ -97,48 +88,10 @@ export class BookFormPage {
     }
   });
 
-  // BOOK AUTHOR/SUBJECT ACTIONS ----------------------------------------------------  
-  protected deleteAuthor(item: AuthorModel) {
-    if (!this.isEditMode()) return;
-
-    const payload: BookAuthorStepModel = {
-      id_book: this.bookId(),
-      id_author: item.id_author
-    };
-
-    this.mutation.run(
-      this.authorStepService.delete(payload),
-      { isSaving: this.book.isSaving },
-      {
-        successMsg: 'Autor eliminado correctamente',
-        errorMsg: 'Error al eliminar el Autor',
-        onSuccess: () => this.getBookRX.reload(),
-      }
-    );
-  }
-
-  protected deleteSubject(item: SubjectModel) {
-    if (!this.isEditMode()) return;
-
-    const payload: BookSubjectStepModel = {
-      id_book: this.bookId(),
-      id_subject: item.id_subject
-    };
-
-    this.mutation.run(
-      this.subjectStepService.delete(payload),
-      { isSaving: this.book.isSaving },
-      {
-        successMsg: 'Descriptor eliminado correctamente',
-        errorMsg: 'Error al eliminar el Descriptor',
-        onSuccess: () => this.getBookRX.reload(),
-      }
-    );
-  }
-
-  protected submitBookForm(form: SaveBookModel): void {
-    const id = this.bookId();
-    const payload: SaveBookModel = form;
+  // BOOK ACTIONS ------------------------------------------------------------------  
+  protected onSubmitBookForm(form: { id: number, data: SaveBookModel }): void {
+    const id = form.id;
+    const payload: SaveBookModel = form.data;
 
     this.mutation.run(
       id === 0
@@ -154,7 +107,7 @@ export class BookFormPage {
   }
 
   // EDITION ACTIONS ----------------------------------------------------------------
-  protected async deleteEdition(item: EditionDetailModel): Promise<void> {
+  protected async onDeleteEdition(item: EditionDetailModel): Promise<void> {
     if (!item) return;
 
     const confirmed = await this.confirmService.confirm({
@@ -175,19 +128,19 @@ export class BookFormPage {
   }
 
   // NAVIGATION ----------------------------------------------------------------------
-  protected navigateGoBack(): void {
+  protected onNavigateGoBack(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.ROOT]);
   }
 
-  protected navigateToGenre(): void {
+  protected onNavigateToGenre(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.GENRE.ROOT]);
   }
 
-  protected navigateToAuthor(): void {
+  protected onNavigateToAuthor(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.AUTHOR.ROOT]);
   }
 
-  protected navigateToSubject(): void {
+  protected onNavigateToSubject(): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.SUBJECT.ROOT]);
   }
 
@@ -195,7 +148,7 @@ export class BookFormPage {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), 0)]);
   }
 
-  protected editEdition(item: EditionDetailModel): void {
+  protected onEditEdition(item: EditionDetailModel): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), item.id_edition)]);
   }
 }

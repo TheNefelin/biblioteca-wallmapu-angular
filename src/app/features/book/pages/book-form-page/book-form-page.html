@@ -1,11 +1,11 @@
 <app-section-header-component
-  [title]="actionText()" 
+  [title]="heading()" 
   [actionText]="'Volver a Lista de Libros'"
   (actionClicked)="onNavigateGoBack()"
 />
 
 <app-book-form-component
-  [actionText]="actionText()"
+  [heading]="heading()"
   [isLoading]="isLoading() || book.isSaving()"
   [book]="book.data()"
   (submitForm)="onSubmitBookForm($event)"

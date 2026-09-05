@@ -28,6 +28,7 @@ import { FormatModel } from '@features/format/models/format-model';
 })
 export class EditionFormComponents {
   readonly isLoading = input<boolean>(false);
+  readonly heading = input.required<string>();
   readonly editionModel = input<EditionModel | null>();
   protected readonly formSubmit = output<{ id: number, data: SaveEditionModel, img: File | null }>();
   protected readonly deleteImage = output<number>();

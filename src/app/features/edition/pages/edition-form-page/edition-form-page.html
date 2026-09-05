@@ -1,10 +1,11 @@
 <app-section-header-component
-  [title]="title()"
+  [title]="heading()"
   [actionText]="'Volver a Libro'"
   (actionClicked)="navigateBack()"
 />
 
 <app-edition-form-components 
+  [heading]="heading()"
   [isLoading]="isLoading() || edition.isSaving()"
   [editionModel]="edition.data()"
   (deleteImage)="deleteImage($event)"

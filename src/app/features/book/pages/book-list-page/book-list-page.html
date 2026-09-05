@@ -1,33 +1,94 @@
 <section class="flex flex-col justify-between h-full">
-  <div>
-    <app-section-header-component 
-      [title]="'Libros'" 
-      [searchPlaceholder]="'Buscar Libro'"
-      (searchChange)="onSearchFilter($event)"
-    />
-
-    <div class="flex justify-between m-4">
-      <app-button-component 
-        [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="reload()"
-      />
-    
-      <app-button-component 
-        [icon]="'create'" [textBtn]="'Crear Libro'" (clicked)="onCreate()"
-      />
-    </div>
-
-    <app-book-list-component 
-      [isLoading]="getAllRX.isLoading()"
-      [bookList]="bookComputedList()"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)"
-    />
-  </div>
-
-  <app-pagination-component
-    [totalPages]="totalPages()"
-    [currentPage]="currentPage()"
-    (prevPage)="prevPage()"
-    (nextPage)="nextPage()" 
+  <app-section-header-component 
+    [title]="'Libros'" 
+    [searchPlaceholder]="'Buscar Libro'"
+    (searchChange)="onSearchFilter($event)"
   />
+
+  <div class="p-4 grid grid-cols-1 gap-4">
+    <div class="bg-my-light rounded-md text-my-dark shadow-xl overflow-x-auto">
+      <header class="p-6 pb-2 flex justify-between flex-wrap gap-4">
+        <div>
+          <h2 class="font-bold text-my-purple text-lg">
+            Gestión de Libros
+          </h2>
+          <p class="text-sm text-my-dark/50">
+            Lista completa de todos los Libros
+          </p>
+        </div>
+
+        <div class="flex gap-2 items-center">
+          <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="reload()" />
+          <app-button-component [icon]="'create'" textBtn="Crear Libro" (clicked)="onCreate()" />
+        </div>
+      </header>
+
+      <div class="overflow-x-auto">
+        @if (getAllRX.isLoading()) {
+          <div class="p-4 flex justify-center">
+            <app-loading-component/>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="table w-full text-center py-4">
+              <thead class="uppercase">
+                <tr>
+                  <th></th>
+                  <th>Id Edicion</th>
+                  <th>Titulo / Author</th>
+                  <th>Copias / Ediciones</th>
+                  <th>Creación / Modificación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of bookComputedList(); track item.id_book) {
+                <tr class="hover:bg-my-purple/10 text-my-purple">
+                    <td>
+                      <div class="flex items-center gap-3">
+                        <div class="avatar">
+                          <div class="mask mask-squircle h-12 w-12">
+                            <img
+                              [ngSrc]="item.edition_cover_image || 'images/layout.webp'"
+                              [alt]="item.title || 'Sin Edicion'"
+                              fill />
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <p>{{ item.id_book }}</p>
+                    </td>
+                    <td>
+                      <p class="font-bold">{{ item.title }}</p>
+                      <p class="font-bold">{{ item.author_name }}</p>
+                    </td>
+                    <td>
+                      <p>{{ item.copy_count }} Copia/s</p>
+                      <p>{{ item.edition_count }} Edicion/s</p>
+                    </td>
+                    <td>
+                      <div>{{ item.created_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
+                      <div>{{ item.updated_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
+                    </td>
+                    <td class="flex justify-center gap-2">
+                      <app-button-component [icon]="'edit'" (clicked)="onEdit(item)" />
+                      <app-button-component [icon]="'delete'" (clicked)="onDelete(item)" />
+                    </td>
+                  </tr>
+                }
+              </tbody>        
+            </table>
+          </div>
+        }
+      </div>
+
+      <app-pagination-component
+        [totalPages]="totalPages()"
+        [currentPage]="currentPage()"
+        (prevPage)="prevPage()"
+        (nextPage)="nextPage()" 
+      />    
+    </div>
+  </div>
 </section>

@@ -37,7 +37,7 @@ export class BookFormPage {
 
   // SERVICES ----------------------------------------------------------------------
   protected readonly isEditMode = computed<boolean>(() => this.bookId() > 0);
-  protected readonly actionText = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
+  protected readonly heading = computed<string>(() => this.isEditMode() ? "Modificar Libro" : "Crear Libro");
   protected readonly isLoading = computed<boolean>(() =>
     [
       this.getBookRX,
@@ -101,9 +101,17 @@ export class BookFormPage {
       {
         successMsg: this.isEditMode() ? 'Libro modificado correctamente' : 'Libro creado correctamente',
         errorMsg: this.isEditMode() ? 'Error al modificar el Libro' : 'Error al crear el Libro',
-        onSuccess: () => this.getBookRX.reload(),
+        onSuccess: (result) => this.onBookSaved(result),
       }
     );
+  }
+
+  private onBookSaved(result: BookModel | null | undefined): void {
+    if (!this.isEditMode() && result) {
+      this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.FORM(result.id_book)]);
+    } else {
+      this.getBookRX.reload();
+    }
   }
 
   // EDITION ACTIONS ----------------------------------------------------------------
@@ -122,7 +130,7 @@ export class BookFormPage {
       {
         successMsg: 'Edición eliminada correctamente',
         errorMsg: 'Error al eliminar la Edición',
-        onSuccess: () => this.getBookRX.reload(),
+        onSuccess: () => this.getEditionByBookRX.reload(),
       }
     );
   }

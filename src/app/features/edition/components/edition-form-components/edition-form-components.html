@@ -136,7 +136,7 @@
       @if (isLoading()) {
         <app-loading-component/>
       } @else {
-        <app-button-component [icon]="'save'" [textBtn]="editionModel()?.id_edition === 0 ? 'Crear Edición' : 'Modificar Edición'" (clicked)="onSubmit()" />
+        <app-button-component [icon]="'save'" [textBtn]="heading()" (clicked)="onSubmit()" />
       }
     </div>
   </form>

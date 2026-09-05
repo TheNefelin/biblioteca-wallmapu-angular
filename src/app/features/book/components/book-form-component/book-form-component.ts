@@ -30,7 +30,7 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
 })
 export class BookFormComponent {
   readonly isLoading = input<boolean>(false);
-  readonly actionText = input.required<string>();
+  readonly heading = input.required<string>();
   readonly book = input<BookModel | null>(null);
   protected readonly submitForm = output<{ id: number, data: SaveBookModel }>();
   protected readonly navigateToGenre = output<void>();

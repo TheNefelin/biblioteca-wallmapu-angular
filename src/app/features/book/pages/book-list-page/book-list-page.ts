@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { BookService } from '@features/book/services/book-service';
 import { catchError, map, of } from 'rxjs';
-import { BookListComponent } from "@features/book/components/book-list-component/book-list-component";
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
@@ -12,14 +11,18 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
 import { CrudPage } from '@shared/base/crud-page';
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   selector: 'app-book-list-page',
   imports: [
-    BookListComponent,
+    DatePipe,
+    NgOptimizedImage,
     SectionHeaderComponent,
     PaginationComponent,
     ButtonComponent,
+    LoadingComponent
   ],
   templateUrl: './book-list-page.html',
 })

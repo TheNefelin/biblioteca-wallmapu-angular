@@ -29,6 +29,7 @@ describe('EditionFormComponents', () => {
 
     fixture = TestBed.createComponent(EditionFormComponents);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('heading', 'Crear Edición');
     fixture.detectChanges();
   });
 

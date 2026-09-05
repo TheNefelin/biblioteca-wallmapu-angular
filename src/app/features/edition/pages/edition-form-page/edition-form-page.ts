@@ -83,7 +83,7 @@ export class EditionFormPage {
   }
 
   protected readonly isEditMode = computed<boolean>(() => !! this.edition.data())
-  protected readonly title = computed<string>(() =>
+  protected readonly heading = computed<string>(() =>
     this.isEditMode()
     ? `Modificar Edición de: ${ this.book()?.title }`
     : `Crear Edición para: ${ this.book()?.title }`

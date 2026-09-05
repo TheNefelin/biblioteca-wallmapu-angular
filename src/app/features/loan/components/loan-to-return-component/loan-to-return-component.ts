@@ -1,13 +1,13 @@
 import { Component, input, output } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
-import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { SearchCodbarComponent } from "@shared/components/search-codbar-component/search-codbar-component";
 import { LoanDetailComponent } from "../loan-detail-component/loan-detail-component";
 
 @Component({
   selector: 'app-loan-to-return-component',
   imports: [
-    ButtonClearComponent,
+    ButtonComponent,
     SearchCodbarComponent,
     LoanDetailComponent,
   ],

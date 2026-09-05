@@ -2,19 +2,17 @@ import { DatePipe } from '@angular/common';
 import { Component, effect, input, output, signal } from '@angular/core';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { NotificationDetailModel } from '@features/notification/models/notification-model';
-import { ButtonRefreshComponent } from "@shared/components/button-refresh-component/button-refresh-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { ButtonNotificationComponent } from "@shared/components/button-notification-component/button-notification-component";
 
 @Component({
   selector: 'app-notification-list-components',
   imports: [
     DatePipe,
-    ButtonRefreshComponent,
+    ButtonComponent,
     PaginationComponent,
     LoadingComponent,
-    ButtonNotificationComponent
 ],
   templateUrl: './notification-list-components.html',
 })

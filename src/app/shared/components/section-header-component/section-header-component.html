@@ -7,8 +7,9 @@
     </div>
 
     @if (actionText()) {
-      <app-button-goback-component 
+      <app-button-component 
         class="ml-auto"
+        [icon]="'goto'"
         [textBtn]="actionText() ?? ''"
         (clicked)="actionClicked.emit()"
       />

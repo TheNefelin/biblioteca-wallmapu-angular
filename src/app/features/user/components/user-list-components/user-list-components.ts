@@ -3,14 +3,14 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 import { Role } from '@shared/constants/roles-enum';
 import { UserDetailModel } from '@features/user/models/user-model';
 import { NgOptimizedImage } from '@angular/common';
-import { ButtonEditComponent } from "@shared/components/button-edit-component/button-edit-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-user-list-components',
   imports: [
     NgOptimizedImage,
     LoadingComponent,
-    ButtonEditComponent
+    ButtonComponent
   ],
   templateUrl: './user-list-components.html',
 })

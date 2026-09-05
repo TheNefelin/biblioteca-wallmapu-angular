@@ -7,7 +7,7 @@
       <p class="text-sm text-base-content/60">a usarios resgistrados</p>
     </div>
 
-    <app-button-clear-component (clicked)="clearForm()"/>
+    <app-button-component [icon]="'clear'" (clicked)="clearForm()"/>
   </header>
     
   <form (submit)="formSubmit($event)" class="p-4 grid grid-cols-1 gap-2">
@@ -63,8 +63,9 @@
           <app-loading-component/>
         </div>
       } @else {
-        <app-button-notification-component
-          type="submit"
+        <app-button-component
+          [icon]="'notification'"
+          [type]="'submit'"
           [isOpen]="false"
           [textBtn]="'Enviar Notificación'"
         />

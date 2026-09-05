@@ -20,9 +20,9 @@
         Filtrar No Leido
       </label>  
       @if (isUser()) {
-        <app-button-notification-component (clicked)="onMarkAllAsRead.emit()" [textBtn]="'Marcar todo como leído'" />
+        <app-button-component [icon]="'notification'" (clicked)="onMarkAllAsRead.emit()" [textBtn]="'Marcar todo como leído'" />
       }
-      <app-button-refresh-component (clicked)="onReload.emit()"/>
+      <app-button-component [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="onReload.emit()"/>
     </div>
   </header>
   

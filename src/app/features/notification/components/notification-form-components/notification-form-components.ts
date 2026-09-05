@@ -1,17 +1,15 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { ButtonNotificationComponent } from "@shared/components/button-notification-component/button-notification-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { CreateNotificationByEmailModel } from '@features/notification/models/notification-model';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
 
 @Component({
   selector: 'app-notification-form-components',
   imports: [
     LoadingComponent,
-    ButtonNotificationComponent,
+    ButtonComponent,
     MessageErrorComponent,
-    ButtonClearComponent,
   ],
   templateUrl: './notification-form-components.html',
 })

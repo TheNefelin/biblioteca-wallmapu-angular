@@ -16,8 +16,8 @@
         (newSelectedId)="onSelectedIdStatus.emit($event)"
       />
 
-      <app-button-refresh-component 
-        (clicked)="onReload.emit()"
+      <app-button-component 
+        [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="onReload.emit()"
       />
     </div>
   </header>

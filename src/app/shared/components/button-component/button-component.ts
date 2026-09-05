@@ -25,5 +25,6 @@ export class ButtonComponent {
   readonly textBtn = input<string>('');
   readonly isOpen = input<boolean>(true);
   readonly disabled = input<boolean>(false);
+  readonly type = input<'button' | 'submit'>('button');
   protected readonly clicked = output<void>();
 }

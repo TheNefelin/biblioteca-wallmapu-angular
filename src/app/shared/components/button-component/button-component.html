@@ -1,5 +1,5 @@
 <button
-  type="button"
+  [type]="type()"
   [disabled]="disabled()"
   (click)="clicked.emit()"
   class="btn"

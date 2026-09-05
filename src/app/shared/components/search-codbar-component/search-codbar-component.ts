@@ -2,7 +2,7 @@ import { Component, effect, input, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "../message-error-component/message-error-component";
 import { LoadingComponent } from "../loading-component/loading-component";
 import { MessageSuccessComponent } from "../message-success-component/message-success-component";
-import { ButtonSearchComponent } from "../button-search-component/button-search-component";
+import { ButtonComponent } from "../button-component/button-component";
 
 @Component({
   selector: 'app-search-codbar-component',
@@ -10,7 +10,7 @@ import { ButtonSearchComponent } from "../button-search-component/button-search-
     MessageErrorComponent, 
     LoadingComponent, 
     MessageSuccessComponent, 
-    ButtonSearchComponent
+    ButtonComponent
   ],
   templateUrl: './search-codbar-component.html',
 })

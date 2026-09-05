@@ -7,13 +7,12 @@
     />
 
     <div class="flex justify-between m-4">
-      <app-button-refresh-component 
-        (clicked)="reload()"
+      <app-button-component 
+        [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="reload()"
       />
     
-      <app-button-create-component 
-        [textBtn]="'Crear Libro'" 
-        (clicked)="onCreate()"
+      <app-button-component 
+        [icon]="'create'" [textBtn]="'Crear Libro'" (clicked)="onCreate()"
       />
     </div>
 

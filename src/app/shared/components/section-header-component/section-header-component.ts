@@ -1,11 +1,11 @@
 import { Component, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { ButtonGobackComponent } from "../button-goback-component/button-goback-component";
+import { ButtonComponent } from "../button-component/button-component";
 
 @Component({
   selector: 'app-section-header-component',
-  imports: [ButtonGobackComponent],
+  imports: [ButtonComponent],
   templateUrl: './section-header-component.html',
 })
 export class SectionHeaderComponent {

@@ -2,7 +2,7 @@ import { Component, input, output, signal } from '@angular/core';
 import { SearchCodbarComponent } from "@shared/components/search-codbar-component/search-codbar-component";
 import { ReservationDetailComponents } from "../reservation-detail-components/reservation-detail-components";
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
-import { ButtonClearComponent } from "@shared/components/button-clear-component/button-clear-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
@@ -10,7 +10,7 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
   imports: [
     SearchCodbarComponent,
     ReservationDetailComponents,
-    ButtonClearComponent,
+    ButtonComponent,
     MessageErrorComponent
   ],
   templateUrl: './reservation-to-loan-components.html',

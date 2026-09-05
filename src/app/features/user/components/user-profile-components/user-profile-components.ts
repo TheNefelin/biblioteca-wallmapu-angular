@@ -3,14 +3,14 @@ import { Component, input, output } from '@angular/core';
 import { UserStatsComponents } from "@features/stats/components/user-stats-components/user-stats-components";
 import { UserDetailModel } from '@features/user/models/user-model';
 import { AuthUser } from '@features/auth/models/auth-user';
-import { ButtonEditComponent } from "@shared/components/button-edit-component/button-edit-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-user-profile-components',
   imports: [
     NgOptimizedImage,
     UserStatsComponents,
-    ButtonEditComponent
+    ButtonComponent
 ],
   templateUrl: './user-profile-components.html',
 })

@@ -4,9 +4,8 @@ import { ReservationDetailModel } from '@features/reservation/models/reservation
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { ReservationStatusSelectComponents } from "@features/reservation-status/components/reservation-status-select-components/reservation-status-select-components";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
-import { ButtonDeleteComponent } from "@shared/components/button-delete-component/button-delete-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { ButtonRefreshComponent } from "@shared/components/button-refresh-component/button-refresh-component";
 
 @Component({
   selector: 'app-reservation-list-components',
@@ -15,8 +14,7 @@ import { ButtonRefreshComponent } from "@shared/components/button-refresh-compon
     LoadingComponent,
     ReservationStatusSelectComponents,
     PaginationComponent,
-    ButtonDeleteComponent,
-    ButtonRefreshComponent,
+    ButtonComponent,
   ],
   templateUrl: './reservation-list-components.html',
 })

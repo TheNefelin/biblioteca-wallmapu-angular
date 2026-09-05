@@ -12,8 +12,7 @@ import { SectionHeaderComponent } from "@shared/components/section-header-compon
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { NewsGalleryService } from '@features/news-gallery/services/news-gallery-service';
-import { ButtonRefreshComponent } from "@shared/components/button-refresh-component/button-refresh-component";
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { extractErrorMessage } from '@core/utils/error-handler';
 
 @Component({
@@ -24,8 +23,7 @@ import { extractErrorMessage } from '@core/utils/error-handler';
     SectionHeaderComponent,
     PaginationComponent,
     MessageErrorComponent,
-    ButtonRefreshComponent,
-    ButtonCreateComponent
+    ButtonComponent
 ],
   templateUrl: './news-list-page.html',
 })

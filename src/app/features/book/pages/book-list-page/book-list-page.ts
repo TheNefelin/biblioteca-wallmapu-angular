@@ -8,8 +8,7 @@ import { Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { BookDetailModel } from '@features/book/models/book-model';
-import { ButtonRefreshComponent } from "@shared/components/button-refresh-component/button-refresh-component";
-import { ButtonCreateComponent } from "@shared/components/button-create-component/button-create-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { CrudPage } from '@shared/base/crud-page';
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
@@ -20,8 +19,7 @@ import { ModalConfirmService } from '@core/services/modal-confirm-service';
     BookListComponent,
     SectionHeaderComponent,
     PaginationComponent,
-    ButtonRefreshComponent,
-    ButtonCreateComponent,
+    ButtonComponent,
   ],
   templateUrl: './book-list-page.html',
 })

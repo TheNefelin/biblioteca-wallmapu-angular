@@ -36,7 +36,7 @@
             </thead>
             <tbody>
               @for (item of editionDetailList(); track item.id_edition) {
-               <tr class="hover:bg-my-purple/10 text-my-purple">
+                <tr class="hover:bg-my-purple/10 text-my-purple">
                   <td>
                     <div class="flex items-center gap-3">
                       <div class="avatar">
@@ -64,8 +64,10 @@
                     <div>{{ item.updated_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
                   </td>
                   <td class="flex justify-center gap-2">
-                    <app-button-component [icon]="'edit'" (clicked)="edit.emit(item)" />
-                    <app-button-component [icon]="'delete'" (clicked)="delete.emit(item)" />
+                    <div class="flex justify-center gap-2">
+                      <app-button-component [icon]="'edit'" (clicked)="edit.emit(item)" />
+                      <app-button-component [icon]="'delete'" (clicked)="delete.emit(item)" />
+                    </div>
                   </td>
                 </tr>
               }

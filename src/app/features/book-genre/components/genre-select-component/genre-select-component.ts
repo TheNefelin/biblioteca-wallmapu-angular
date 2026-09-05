@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { GenreModel } from '@features/book-genre/models/genre-model';
 import { GenreService } from '@features/book-genre/services/genre-service';
 import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-genre-select-component',
@@ -25,7 +25,6 @@ export class GenreSelectComponent {
   private readonly genreRX = rxResource({
     stream: () => {
       return this.genreService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       );
     },

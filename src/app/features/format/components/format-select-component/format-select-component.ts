@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormatModel } from '@features/format/models/format-model';
 import { FormatService } from '@features/format/services/format-service';
 import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-format-select-component',
@@ -15,7 +15,7 @@ import { catchError, map, of } from 'rxjs';
 export class FormatSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly clearTrigger = input<number>(0);
-  readonly selectedId = input<number>(0);
+  readonly selectedId = input<number | undefined>(undefined);
   protected readonly selectedItem = output<FormatModel | null>();
 
   private readonly formatService = inject(FormatService);
@@ -25,7 +25,6 @@ export class FormatSelectComponent {
   private readonly formatRX = rxResource({
     stream: () => {
       return this.formatService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       );
     },

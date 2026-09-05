@@ -7,7 +7,7 @@ import { AuthorModel } from '@features/book-author/models/author-model';
   templateUrl: './author-selected-list-component.html',
 })
 export class AuthorSelectedListComponent {
-  readonly authorList = input<AuthorModel[]>();
+  readonly authorList = input<AuthorModel[]>([]);
   readonly delete = output<AuthorModel>();
 
   protected handleDelete(item: AuthorModel, event: MouseEvent): void {

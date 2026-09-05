@@ -200,26 +200,23 @@ protected readonly submitForm = output<{ id: number, data: SaveModel }>();
 ### 4.6 Select components, selected-list y resolución de modelos
 
 **Select component** (`{feature}-select-component/`):
-- Emite `number` via `newSelectedId = output<number>()` (el id del item seleccionado, `0` al limpiar).
+- Emite el modelo completo via `selectedItem = output<FeatureModel | null>()` (el item seleccionado, `null` al limpiar).
 - Contiene su propio `rxResource` para cargar la lista de opciones (`getAll()`).
 - Expone `clearTrigger = input<number>(0)` para resetear la selección visual desde el padre.
-- El padre **no recibe el modelo completo** — recibe solo el id.
+- Expone `selectedId = input<number | undefined>(undefined)` (sin default numérico) para preseleccionar desde el padre.
+- Emitir el modelo completo evita que el consumidor haga un segundo fetch del catálogo para resolver id → modelo.
 
 **Selected-list component** (`{feature}-selected-list-component/`):
-- Recibe la lista de items seleccionados como `input<FeatureModel[]>()`.
+- Recibe la lista de items seleccionados como `input<FeatureModel[]>([])` (con default vacío).
 - Emite `delete = output<FeatureModel>()` (sin prefijo `on`).
 - El handler interno `handleDelete` hace `event.preventDefault()` + `event.stopPropagation()` antes de emitir.
 
-**Resolución de modelo en el consumidor** (`book-form-component`, `edition-form-components`):
-- Cuando el select emite un `number`, el consumidor resuelve el modelo completo inyectando el servicio:
+**Consumo del modelo en el consumidor** (`book-form-component`, `edition-form-components`):
+- El select emite el `FeatureModel` completo; el consumidor lo agrega directamente a su lista de seleccionados (sin re-fetch):
 
 ```ts
-// book-form-component: resolve id → AuthorModel
-private authorService = inject(AuthorService);
-
-protected addAuthor(id: number): void {
-  if (!id) return;
-  const item = this.allAuthorsRX.value()?.find(a => a.id_author === id);
+// book-form-component: recibe el AuthorModel completo del select
+protected addAuthor(item: AuthorModel | null): void {
   if (!item) return;
   this.formData.update(data => ({
     ...data,
@@ -296,7 +293,7 @@ Antes de dar una app Angular por terminada:
 - [ ] `CrudPage<TModel>` para listados paginados; streams `rxResource` puros (`mapPaginated`/`emptyPaginated`)
 - [ ] Estado agrupado por feature (`{ dataList, isLoading, isSaving, showModal, selectedItem }`); handlers `onCreate*`/`onEdit*`/`onDelete*`/`onClear*`/`onSubmit*`
 - [ ] `linkedSignal` con `computation` en forms (reset por source change); `clearTrigger` solo en selects; form emite `{ id, data: SaveModel }`
-- [ ] Select emite `number` (`newSelectedId`); consumidor resuelve `number → Model` via servicio inyectado; selected-list emite `delete`
+- [ ] Select emite `Model | null` (`selectedItem`); consumidor agrega el modelo directo a su lista; selected-list emite `delete`
 - [ ] Labels asociados a controles; elementos interactivos focusables con keydown
 - [ ] Auth consistente: **[CSR]** Bearer de `localStorage`/`sessionStorage`; **[SSR]** por namespace (sessionStorage + sessionSignal reactivo + interceptor con refresh/retry/logout)
 - [ ] Feedback: `ErrorService` (modal, vía interceptor) + `SuccessService` (toast) + `ConfirmService` (promise-based)
@@ -327,5 +324,5 @@ Antes de dar una app Angular por terminada:
 | Comillas dobles / imports relativos | Inconsistencia que rompe el lint; usar comillas simples + aliases |
 | Verificar outputs con `OutputEmitterRef` como si fueran funciones | Confundir método handler y output homónimo (colisión de nombres); renombrar el método |
 | Signals sueltas para estado de feature | `dataList`, `isLoading`, `isSaving`, `showModal`, `selectedItem` como signals individuales dispersos → difícil de rastrear; agrupar en un objeto por feature |
-| Select emitiendo `Model \| null` al page | El page recibe el modelo completo innecesariamente; el select debe emitir `number` y el consumidor resuelve via servicio (desacopla select de model) |
+| Select emitiendo `number` (`newSelectedId`) | Obliga al consumidor a un **segundo fetch** del catálogo para resolver id → modelo (doble fetch) y hace el contrato ambiguo; el select debe emitir el modelo completo (`selectedItem = output<Model \| null>()`) y el consumidor lo agrega directo |
 | `templateUrl` apuntando a nombre viejo tras renombrar archivo | El componente compila pero el template no se carga; actualizar `templateUrl` junto con el nombre del archivo |

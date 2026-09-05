@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { SubjectService } from '@features/book-subject/services/subject-service';
 import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-subject-select-component',
@@ -15,7 +15,7 @@ import { catchError, map, of } from 'rxjs';
 export class SubjectSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly clearTrigger = input<number>(0);
-  readonly selectedId = input<number>(0);
+  readonly selectedId = input<number | undefined>(undefined);
   protected readonly selectedItem = output<SubjectModel | null>();
 
   private readonly subjectService = inject(SubjectService);
@@ -25,7 +25,6 @@ export class SubjectSelectComponent {
   private readonly subjectRX = rxResource({
     stream: () => {
       return this.subjectService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       );
     },

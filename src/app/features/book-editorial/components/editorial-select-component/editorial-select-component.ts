@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { EditorialModel } from '@features/book-editorial/models/editorial-model';
 import { EditorialService } from '@features/book-editorial/services/editorial-service';
 import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-editorial-select-component',
@@ -15,7 +15,7 @@ import { catchError, map, of } from 'rxjs';
 export class EditorialSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly clearTrigger = input<number>(0);
-  readonly selectedId = input<number>(0);
+  readonly selectedId = input<number | undefined>(undefined);
   protected readonly selectedItem = output<EditorialModel | null>();
 
   private readonly editorialService = inject(EditorialService);
@@ -25,7 +25,6 @@ export class EditorialSelectComponent {
   private readonly editorialRX = rxResource({
     stream: () => {
       return this.editorialService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       );
     },

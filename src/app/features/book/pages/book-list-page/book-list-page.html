@@ -43,7 +43,7 @@
               </thead>
               <tbody>
                 @for (item of bookComputedList(); track item.id_book) {
-                <tr class="hover:bg-my-purple/10 text-my-purple">
+                  <tr class="hover:bg-my-purple/10 text-my-purple">
                     <td>
                       <div class="flex items-center gap-3">
                         <div class="avatar">
@@ -71,9 +71,11 @@
                       <div>{{ item.created_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
                       <div>{{ item.updated_at | date:'yyyy-MM-dd hh:mm:ss' }}</div>
                     </td>
-                    <td class="flex justify-center gap-2">
-                      <app-button-component [icon]="'edit'" (clicked)="onEdit(item)" />
-                      <app-button-component [icon]="'delete'" (clicked)="onDelete(item)" />
+                    <td>
+                      <div class="flex justify-center gap-2">
+                        <app-button-component [icon]="'edit'" (clicked)="onEdit(item)" />
+                        <app-button-component [icon]="'delete'" (clicked)="onDelete(item)" />
+                      </div>
                     </td>
                   </tr>
                 }

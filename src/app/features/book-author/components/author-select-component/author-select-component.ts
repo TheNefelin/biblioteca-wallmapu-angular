@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { AuthorService } from '@features/book-author/services/author-service';
 import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-author-select-component',
@@ -15,7 +15,7 @@ import { catchError, map, of } from 'rxjs';
 export class AuthorSelectComponent {
   readonly disabled = input<boolean>(false);
   readonly clearTrigger = input<number>(0);
-  readonly selectedId = input<number>(0);
+  readonly selectedId = input<number | undefined>(undefined);
   protected readonly selectedItem = output<AuthorModel | null>();
 
   private readonly authorService = inject(AuthorService);
@@ -25,7 +25,6 @@ export class AuthorSelectComponent {
   private readonly authorRX = rxResource({
     stream: () => {
       return this.authorService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       );
     },

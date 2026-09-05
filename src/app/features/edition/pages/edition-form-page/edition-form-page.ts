@@ -158,7 +158,7 @@ export class EditionFormPage {
   private onEditionSaved(result: EditionModel | null | undefined): void {
     if (!this.isEditMode() && result) {
       this.router.navigate([
-        ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(result.id_edition, this.bookId())
+        ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), result.id_edition)
       ]);
     } else {
       this.getEditionRX.reload();

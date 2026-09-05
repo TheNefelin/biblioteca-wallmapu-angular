@@ -7,7 +7,7 @@ import { SubjectModel } from '@features/book-subject/models/subject-model';
   templateUrl: './subject-selected-list-component.html',
 })
 export class SubjectSelectedListComponent {
-  readonly subjectList = input<SubjectModel[]>();
+  readonly subjectList = input<SubjectModel[]>([]);
   readonly delete = output<SubjectModel>();
 
   protected handleDelete(item: SubjectModel, event: MouseEvent): void {

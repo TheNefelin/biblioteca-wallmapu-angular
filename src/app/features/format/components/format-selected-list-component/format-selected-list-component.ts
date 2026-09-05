@@ -7,7 +7,7 @@ import { FormatModel } from '@features/format/models/format-model';
   templateUrl: './format-selected-list-component.html',
 })
 export class FormatSelectedListComponent {
-  readonly formatList = input<FormatModel[]>();
+  readonly formatList = input<FormatModel[]>([]);
   readonly delete = output<FormatModel>();
 
   protected handleDelete(item: FormatModel, event: MouseEvent): void {

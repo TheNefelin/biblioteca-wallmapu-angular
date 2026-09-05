@@ -1,15 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { LoanListComponent } from "@features/loan/components/loan-list-component/loan-list-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { LoanDetailModel, LoanFilterModel } from '@features/loan/models/loan-model';
 import { LoanService } from '@features/loan/services/loan-service';
 import { LoanToReturnComponent } from "@features/loan/components/loan-to-return-component/loan-to-return-component";
 import { LoanPolicyComponent } from "@features/loan-policies/components/loan-policy-component/loan-policy-component";
+import { LoanStatusModel } from '@features/loan-status/models/loan-status-model';
 import { MutationService } from '@core/services/mutation-service';
+import { CrudPage } from '@shared/base/crud-page';
 
 @Component({
   selector: 'app-admin-loan-page',
@@ -21,44 +22,51 @@ import { MutationService } from '@core/services/mutation-service';
   ],
   templateUrl: './admin-loan-page.html',
 })
-export class AdminLoanPage {
+export class AdminLoanPage extends CrudPage<LoanDetailModel> {
+  // STATE ------------------------------------------------------------------------
+  protected readonly selectFilterStatusId = signal<number>(0);
   protected readonly clearCounter = signal<number>(0);
-  protected readonly isSaving = signal<boolean>(false);
-  protected readonly selectStatusId = signal<number>(0);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
+  protected readonly getLoanByCodebarPayload = signal<string | null>(null);
 
-  protected readonly isLoadingLoan = computed<boolean>(() => this.getLoanByCodebarRX.isLoading());
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getLoanRX,
-    ].some(e => e.isLoading())
-  );
-
+  // SERVICES ----------------------------------------------------------------------
   private readonly loanService = inject(LoanService);
   private readonly mutation = inject(MutationService);
-  private readonly getLoanByCodebarPayload = signal<string | null>(null);
-  private readonly getLoanPayload = computed<PaginationRequestModel<LoanFilterModel>>(() => {
+
+  // LOAN STATE ----------------------------------------------------------------------
+  protected readonly loan = {
+    dataList: computed<LoanDetailModel[]>(() => this.getLoanRX.value() ?? []),
+    isLoading: computed<boolean>(() => this.getLoanRX.isLoading() && !this.getLoanRX.hasValue()),
+    isSaving: signal<boolean>(false),
+  }
+
+  // LOAN DETAIL STATE ---------------------------------------------------------------
+  protected readonly detail = {
+    data: computed<LoanDetailModel | null>(() => this.getLoanByCodebarRX.value() ?? null),
+    isLoading: computed<boolean>(() => this.getLoanByCodebarRX.isLoading()),
+  }
+
+  // FETCHS -------------------------------------------------------------------------
+  private readonly getPaginationPayload = computed<PaginationRequestModel<LoanFilterModel>>(() => {
     return {
       page: this.currentPage(),
       limit: this.limit(),
       search: this.search(),
       filter: {
-        id_status: this.selectStatusId(),
+        id_status: this.selectFilterStatusId(),
       }
     }
   });
-  protected readonly computedPaginationAndLoanList = computed<PaginationResponseModel<LoanDetailModel[]> | null>(() => this.getLoanRX.value() ?? null);
-  protected readonly computedLoanDetail = computed<LoanDetailModel | null>(() => this.getLoanByCodebarRX.value() ?? null);
 
   private readonly getLoanRX = rxResource({
-    params: () => this.getLoanPayload(),
+    params: () => this.getPaginationPayload(),
     stream: ({ params }) => {
+      if (!params) return of(null);
+
       return this.loanService.getAllPagination(params).pipe(
+        map(response => this.mapPaginated(response)),
         catchError(err => {
           console.error('[LoanService::AdminLoanPage] getAllPagination:', err);
-          return of(null);
+          return of(this.emptyPaginated());
         })
       );
     },
@@ -78,60 +86,50 @@ export class AdminLoanPage {
     },
   });
 
+  // CRUD-PAGE INHERITANCE METHODS ---------------------------------------------------
+  protected override reload(): void {
+    this.getLoanRX.reload();
+  }
+
+  // LOAN ACTIONS ---------------------------------------------------------------------
   protected onClear(): void {
     this.clearCounter.update(e => e + 1);
     this.getLoanByCodebarPayload.set(null);
   }
 
-  protected onGetLoanByBarcode(codebar: string): void {
+  protected onSearchLoanByBarcode(codebar: string): void {
     this.getLoanByCodebarPayload.set(codebar);
   }
 
   protected onReturnLoan(item: LoanDetailModel): void {
     this.mutation.run(
       this.loanService.return(item.copy_id),
-      { isSaving: this.isSaving },
+      { isSaving: this.loan.isSaving },
       {
         successMsg: 'Préstamo registrado correctamente',
         errorMsg: 'Error al registrar el préstamo',
-        onSuccess: () => this.onReloadLoan(),
+        onSuccess: () => {
+          this.reload();
+          this.onClear();
+        },
       }
     );
-    this.onClear();
-  }
-
-  protected onReloadLoan(): void {
-    this.getLoanRX.reload();
-    this.onClear();
   }
 
   protected onUpdateExpireLoan(): void {
     this.mutation.run(
       this.loanService.expire(),
-      { isSaving: this.isSaving },
+      { isSaving: this.loan.isSaving },
       {
         successMsg: 'Estado de Préstamos actualizado correctamente',
         errorMsg: 'Error al actualizar el estado de los Préstamos',
-        onSuccess: () => this.onReloadLoan(),
+        onSuccess: () => this.reload(),
       }
     );
   }
 
-  protected onFilterByIdStatus(id: number): void {
-    this.selectStatusId.set(id);
-  }
-
-  nextPage() {
-    const totalPages = this.computedPaginationAndLoanList()?.pages ?? 1
-
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+  protected onFilterByIdStatus(status: LoanStatusModel | null): void {
+    this.selectFilterStatusId.set(status?.id_status ?? 0);
+    this.currentPage.set(1);
   }
 }

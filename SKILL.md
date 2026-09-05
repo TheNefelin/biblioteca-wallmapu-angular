@@ -151,6 +151,25 @@ protected readonly genre = {
 - **Convención de handlers**: los métodos de acción usan `on` + nombre de la acción (`onCreateGenre`, `onEditGenre`, `onDeleteGenre`, `onClearGenreForm`, `onSubmitGenreForm`). `onClear*` cierra el modal y limpia selectedItem. `onSubmit*` desestructura `{ id, data: SaveModel }` del form y delega a `MutationService`.
 - **El form emite `{ id, data: SaveModel }`**: el componente form output `submitForm = output<{ id: number, data: SaveModel }>()`. El id es `0` en creación o `feature.id` en edición. El page extrae `id` y `data` y decide create vs update.
 
+#### 4.2.1 Listado paginado con filtro por catálogo
+
+Patrón para listados con filtro por estado/catálogo (reservation, loan y sus status):
+
+- **`getPaginationPayload` privado por página** (computed tipado con el `*FilterModel`). No se hace `override` de `getAllPayload` de `CrudPage`: es `PaginationRequestModel<null>` y por la varianza de `Signal<PaginationRequestModel<...>>` (TS2416) un `computed<...<LoanFilterModel>>` no es asignable a `computed<...<null>>`.
+- **El select del catálogo emite el modelo completo** y el page recibe el item en el handler:
+  `onFilterByIdStatus(status: FeatureStatusModel | null)` → `selectFilterStatusId.set(status?.id_status ?? 0)` + `currentPage.set(1)`.
+- **Sentinel `0 = todos`**: `selectFilterStatusId = signal<number>(0)`; `ApiService.buildQuery` omite números `<= 0`, así que `0` = sin filtro.
+- **Stream puro del rxResource de listado**:
+  ```
+  if (!params) return of(null);
+  return this.featureService.getAllPagination(params).pipe(
+    map(response => this.mapPaginated(response)),
+    catchError(err => { console.error('[Service::Page] getAllPagination:', err); return of(this.emptyPaginated()); }),
+  );
+  ```
+  Los side-effects de `totalPages` viven solo en `mapPaginated`/`emptyPaginated`.
+- **El list component es presentacional y reemite el filtro**: `selectedIdStatus = output<FeatureStatusModel | null>()`; el template hace `<app-x-status-select-component [selectedId]="selectStatusId()" (selectedItem)="selectedIdStatus.emit($event)" />`.
+
 ### 4.3 Mutaciones — `MutationService`
 
 ```ts
@@ -291,6 +310,7 @@ Antes de dar una app Angular por terminada:
 - [ ] `MutationService` con `onClose` solo en éxito (el modal no pierde datos al fallar)
 - [ ] Outputs sin prefijo `on` y sin nombres de eventos DOM nativos (`no-output-on-prefix`, `no-output-native`)
 - [ ] `CrudPage<TModel>` para listados paginados; streams `rxResource` puros (`mapPaginated`/`emptyPaginated`)
+- [ ] Filtro por catálogo: `getPaginationPayload` privado por página + handler `onFilterByIdStatus(Model | null)` con sentinel `0 = todos`
 - [ ] Estado agrupado por feature (`{ dataList, isLoading, isSaving, showModal, selectedItem }`); handlers `onCreate*`/`onEdit*`/`onDelete*`/`onClear*`/`onSubmit*`
 - [ ] `linkedSignal` con `computation` en forms (reset por source change); `clearTrigger` solo en selects; form emite `{ id, data: SaveModel }`
 - [ ] Select emite `Model | null` (`selectedItem`); consumidor agrega el modelo directo a su lista; selected-list emite `delete`

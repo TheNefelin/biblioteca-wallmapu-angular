@@ -1,9 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
+import { LoanStatusModel } from '@features/loan-status/models/loan-status-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { ButtonComponent } from "@shared/components/button-component/button-component";
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { LoanStatusSelectComponent } from "@features/loan-status/components/loan-status-select-component/loan-status-select-component";
 
@@ -20,19 +20,12 @@ import { LoanStatusSelectComponent } from "@features/loan-status/components/loan
 })
 export class LoanListComponent {
   readonly isLoading = input<boolean>(false);
-  readonly selectStatusId = input<number>(0);
-  readonly paginationAndLoanList = input<PaginationResponseModel<LoanDetailModel[]> | null>(null);
-  protected readonly onSelectedIdStatus = output<number>();
-  protected readonly onReload = output<void>();
-  protected readonly onNextPage = output<void>();
-  protected readonly onPrevPage = output<void>();
-
-  protected readonly totalPages = signal<number>(1);
-
-  protected readonly updateTotalPagesEffect = effect(() => {
-    const data = this.paginationAndLoanList();
-    if (data?.pages) {
-      this.totalPages.set(data.pages);
-    }
-  });
+  readonly selectStatusId = input<number | undefined>(undefined);
+  readonly loanList = input<LoanDetailModel[]>([]);
+  readonly currentPage = input<number>(1);
+  readonly totalPages = input<number>(1);
+  protected readonly selectedIdStatus = output<LoanStatusModel | null>();
+  protected readonly reload = output<void>();
+  protected readonly nextPage = output<void>();
+  protected readonly prevPage = output<void>();
 }

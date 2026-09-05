@@ -1,4 +1,4 @@
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
 

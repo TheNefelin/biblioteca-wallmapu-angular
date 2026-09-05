@@ -4,11 +4,11 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <app-loan-to-return-component
       [clearTrigger]="clearCounter()"
-      [isLoading]="isLoadingLoan()"
-      [loanDetailModel]="computedLoanDetail()"
-      (onGetLoanByBarcode)="onGetLoanByBarcode($event)"
-      (onReturnLoan)="onReturnLoan($event)"
-      (onClear)="onClear()"
+      [isLoading]="detail.isLoading()"
+      [loanDetailModel]="detail.data()"
+      (getLoanByBarcode)="onSearchLoanByBarcode($event)"
+      (returnLoan)="onReturnLoan($event)"
+      (clear)="onClear()"
     />
   
     <app-loan-policy-component/>
@@ -24,12 +24,14 @@
   </div>  
   
   <app-loan-list-component 
-    [isLoading]="isLoading()"
-    [paginationAndLoanList]="computedPaginationAndLoanList()"
-    [selectStatusId]="selectStatusId()"
-    (onSelectedIdStatus)="onFilterByIdStatus($event)"
-    (onReload)="onReloadLoan()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"    
+    [isLoading]="loan.isLoading() || loan.isSaving()"
+    [loanList]="loan.dataList()"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [selectStatusId]="selectFilterStatusId()"
+    (selectedIdStatus)="onFilterByIdStatus($event)"
+    (reload)="reload()"
+    (nextPage)="nextPage()"
+    (prevPage)="prevPage()"    
   />
 </section>

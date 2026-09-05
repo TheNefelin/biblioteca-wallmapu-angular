@@ -17,19 +17,19 @@ export class LoanToReturnComponent {
   readonly loanDetailModel = input<LoanDetailModel | null>(null);
   readonly clearTrigger = input<number>(0);
   readonly isLoading = input<boolean>(false);
-  protected readonly onGetLoanByBarcode = output<string>();
-  protected readonly onReturnLoan = output<LoanDetailModel>()
-  protected readonly onClear = output<void>();
-    
+  protected readonly getLoanByBarcode = output<string>();
+  protected readonly returnLoan = output<LoanDetailModel>()
+  protected readonly clear = output<void>();
+
   protected onEnterBookBarcode(barcode: string | null): void {
     if (!barcode) return;
-    this.onGetLoanByBarcode.emit(barcode);
+    this.getLoanByBarcode.emit(barcode);
   }
-  
-  protected returnLoan(): void {
+
+  protected onReturnLoan(): void {
     const loan = this.loanDetailModel();
     if (!loan) return;
 
-    this.onReturnLoan.emit(loan);
+    this.returnLoan.emit(loan);
   }
 }

@@ -18,7 +18,7 @@
     [clearTrigger]="clearTrigger()"
     [textTitle]="'Código de Barra de la Reserva'"
     [isLoading]="isLoading()"
-    (onSubmit)="onSearchReservation($event)"
+    (submitted)="onSearchReservation($event)"
   />
 
   <app-reservation-detail-component 
@@ -33,7 +33,7 @@
       [clearTrigger]="clearTrigger()"
       [textTitle]="'Código de Barra del Libro'"
       [isLoading]="isLoading()"
-      (onSubmit)="onEnterBookBarCode($event)"
+      (submitted)="onEnterBookBarCode($event)"
     />
   }
 

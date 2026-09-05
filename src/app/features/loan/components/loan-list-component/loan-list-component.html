@@ -13,11 +13,11 @@
     <div class="flex gap-2 items-center">
       <app-loan-status-select-component
         [selectedId]="selectStatusId()"
-        (newSelectedId)="onSelectedIdStatus.emit($event)"
+        (selectedItem)="selectedIdStatus.emit($event)"
       />
 
       <app-button-component 
-        [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="onReload.emit()"
+        [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="reload.emit()"
       />
     </div>
   </header>
@@ -45,7 +45,7 @@
         </thead>
 
         <tbody class="[&>tr>td]:align-middle">
-          @for(item of paginationAndLoanList()?.data; track item.id_loan) {
+          @for(item of loanList(); track item.id_loan) {
             <tr class="hover:bg-my-purple/10 text-my-purple">
               <td>{{ item.id_loan }}</td>
               <td>{{ item.book_title }}</td>
@@ -74,9 +74,9 @@
   </div>
 
   <app-pagination-component
-    [currentPage]="paginationAndLoanList()?.page ?? 1"
+    [currentPage]="currentPage()"
     [totalPages]="totalPages()"
-    (prevPage)="onPrevPage.emit()"
-    (nextPage)="onNextPage.emit()"
+    (prevPage)="prevPage.emit()"
+    (nextPage)="nextPage.emit()"
   />
 </div>

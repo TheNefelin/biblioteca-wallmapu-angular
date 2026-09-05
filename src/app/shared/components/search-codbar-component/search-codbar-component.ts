@@ -21,7 +21,7 @@ export class SearchCodbarComponent {
   readonly successMessage = input<string | null>(null);
   readonly isLoading = input<boolean>(false);
   readonly clearTrigger = input<number>(0);
-  readonly onSubmit = output<string | null>();
+  protected readonly submitted = output<string | null>();
 
   protected errorMsge = signal<string | null>(this.errorMessage());
   protected successMsge = signal<string | null>(this.successMessage());
@@ -35,7 +35,7 @@ export class SearchCodbarComponent {
     this.successMsge.set(null);  
   });
 
-  protected updateCode(value: string, input: HTMLInputElement) {
+  protected updateCode(value: string) {
     this.formData.set(value);
   }
 
@@ -52,7 +52,7 @@ export class SearchCodbarComponent {
 
     this.errorMsge.set(null);
     this.successMsge.set(null);
-    this.onSubmit.emit(data);
+    this.submitted.emit(data);
   }
 
   private validateFormOnSubmit(data: string | null): string | null {

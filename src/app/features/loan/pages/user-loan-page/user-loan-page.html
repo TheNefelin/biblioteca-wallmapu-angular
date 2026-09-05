@@ -5,17 +5,17 @@
     <app-loan-policy-component/>
   </div>
 
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()" />
-  }
-
-  <app-loan-list-component 
-    [isLoading]="isLoading()"
-    [paginationAndLoanList]="computedPaginationAndLoanList()"
-    [selectStatusId]="selectStatusId()"
-    (onSelectedIdStatus)="onFilterByIdStatus($event)"
-    (onReload)="onReloadLoan()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"    
-  />
+  <div>
+    <app-loan-list-component 
+      [isLoading]="loan.isLoading()"
+      [loanList]="loan.dataList()"
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [selectStatusId]="selectFilterStatusId()"
+      (selectedIdStatus)="onFilterByIdStatus($event)"
+      (reload)="reload()"
+      (nextPage)="nextPage()"
+      (prevPage)="prevPage()"    
+    />
+  </div>
 </section>

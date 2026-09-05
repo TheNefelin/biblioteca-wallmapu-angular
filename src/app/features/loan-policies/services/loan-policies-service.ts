@@ -1,5 +1,5 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
 import { LoanPoliciesModel } from '@features/loan-policies/models/loan-policies-model';
 
@@ -7,18 +7,13 @@ import { LoanPoliciesModel } from '@features/loan-policies/models/loan-policies-
   providedIn: 'root',
 })
 export class LoanPoliciesService {
-  private ApiResponseService = inject(ApiResponseService)
-  private readonly endpoint = 'loan-policies';
+  private readonly api = inject(ApiService);
 
   getDefault(): Observable<LoanPoliciesModel> {
-    return this.ApiResponseService.getAll<LoanPoliciesModel>(
-      `${this.endpoint}/default`
-    );
+    return this.api.getAll<LoanPoliciesModel>('loan-policies/default');
   }
 
   update(id: number, item: LoanPoliciesModel): Observable<LoanPoliciesModel> {
-    return this.ApiResponseService.update<LoanPoliciesModel, LoanPoliciesModel>(
-      this.endpoint, id, item
-    );
+    return this.api.update<LoanPoliciesModel, LoanPoliciesModel>('loan-policies', id, item);
   }
 }

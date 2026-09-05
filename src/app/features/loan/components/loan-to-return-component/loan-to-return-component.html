@@ -7,7 +7,7 @@
     
     <app-button-component
       [icon]="'clear'"
-      (clicked)="onClear.emit()"
+      (clicked)="clear.emit()"
     />
   </section>
 
@@ -18,7 +18,7 @@
     [clearTrigger]="clearTrigger()"  
     [textTitle]="'Código de Barra de la Copia'"
     [isLoading]="isLoading()"
-    (onSubmit)="onEnterBookBarcode($event)"
+    (submitted)="onEnterBookBarcode($event)"
   />
 
   <app-loan-detail-component
@@ -27,7 +27,7 @@
 
   @if (loanDetailModel()) {
     <button 
-      (click)="returnLoan()"
+      (click)="onReturnLoan()"
       type="button" class="btn bg-my-purple hover:bg-my-purple/80 text-my-light w-full mt-2">
       Registrar Devolución
     </button>

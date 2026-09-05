@@ -1,19 +1,10 @@
-@if(isLoading()) {
-  <app-loading-component/>
-} @else {
-  <select 
-    [disabled]="disabled()"
-    [value]="selectedId()"
-    (change)="onChange($event)"
-    class="select text-my-pink"
-  >      
-    @for (item of computedLoanStatusList(); track item.id_status) {
-      <option 
-        [value]="item.id_status"
-        [selected]="item.id_status === selectedId()">
-        
-        {{ item.name }}
-      </option>
-    }
-  </select>
-}
+<app-search-select-component
+  [items]="loanStatusToSelectItemsList()"
+  [selectedId]="selectedId()"
+  [isLoading]="isLoading()"
+  [disabled]="disabled()"
+  [placeholder]="'Todos los Estados'"
+  [clearTrigger]="clearTrigger()"
+  (selectionChange)="selectItemToStatus($event)"
+  (cleared)="selectedItem.emit(null)"
+/>

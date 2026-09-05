@@ -2,7 +2,7 @@
   <div class="hero p-4 pt-20">
     <div class="hero-content px-6 pt-12 flex-col lg:flex-row items-start gap-10 w-full bg-my-light rounded-lg">
       
-      @if (isLoadingBook()){
+      @if (isLoading()){
         <app-loading-component/>
       } @else {
 
@@ -17,22 +17,13 @@
         </figure>
   
         <div class="flex-1">
-          <h1 class="text-5xl font-bold text-my-purple mb-2">{{ computedBook()?.title }}</h1>
+          <h1 class="text-5xl font-bold text-my-purple mb-2">{{ book()?.title }}</h1>
   
-          @for (item of computedBook()?.authors; track item.name) {
+          @for (item of book()?.authors; track item.name) {
             <p class="text-xl text-my-pink mb-4">{{ item.name }}</p>
           }
   
-          <p><strong class="text-my-green">Género: </strong> {{ computedBook()?.genre?.name }}</p>
-  
-          <!--
-          <div class="mb-6">
-            <div class="flex items-center gap-2">
-              <span class="text-2xl">⭐ {{ 5 }}</span>
-              <span class="text-sm text-my-dark/60">(basado en reseñas)</span>
-            </div>
-          </div>
-          -->
+          <p><strong class="text-my-green">Género: </strong> {{ book()?.genre?.name }}</p>
 
           <div class="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
             <table class="table text-sm text-my-dark/80 py-4">
@@ -48,7 +39,7 @@
             <table class="table text-sm text-my-dark/80 py-4">
               <div class="divider text-base-content/40 max-w-7xl mx-auto m-0">Descriptor/es</div>
               <tbody class="text-center">
-                @for (item of computedBook()?.subjects; track item.id_subject) {
+                @for (item of book()?.subjects; track item.id_subject) {
                   <tr><td class="p-0">{{ item.name }}</td></tr>
                 }
                 <tr></tr>
@@ -57,22 +48,22 @@
           </div>
   
           <p class="text-lg leading-relaxed my-6 text-my-dark/70">
-            {{ computedBook()?.summary }}
+            {{ book()?.summary }}
           </p>
   
           <section class="flex justify-between gap-4 flex-wrap">
             <div class="mb-6 space-y-2 text-sm">
               <p><strong class="text-my-green">ISBN:</strong> {{ selectedEdition()?.isbn }}</p>
               <p><strong class="text-my-green">Publicado:</strong> {{ selectedEdition()?.publication_year }}</p>
-              <p><strong class="text-my-green">Paginas:</strong> {{ selectedEdition()?.pages }}</p>              
-              <p><strong class="text-my-green">Edicion:</strong> {{ selectedEdition()?.edition }}</p>
-              <p><strong class="text-my-green">Editorial:</strong> {{ selectedCopy()?.editorial_name }}</p>
-              <p><strong class="text-my-green">Copia n°:</strong> {{ selectedCopy()?.copy_number }}</p>
+              <p><strong class="text-my-green">Páginas:</strong> {{ selectedEdition()?.pages }}</p>              
+              <p><strong class="text-my-green">Edición:</strong> {{ selectedEdition()?.edition }}</p>
+              <p><strong class="text-my-green">Editorial:</strong> {{ reservation.selectedCopy()?.editorial_name }}</p>
+              <p><strong class="text-my-green">Copia n°:</strong> {{ reservation.selectedCopy()?.copy_number }}</p>
               <p>
                 <strong class="text-my-green">Estado:</strong> 
-                @if (selectedCopy()?.is_availability) {
+                @if (reservation.selectedCopy()?.is_availability) {
                   <span class="bg-my-green text-my-light mx-2 p-1 pr-2 rounded-md">
-                    {{ selectedCopy()?.availability_status }}
+                    {{ reservation.selectedCopy()?.availability_status }}
                   </span>
                 } @else {
                   <span class="bg-my-pink text-my-light mx-2 p-1 pr-2 rounded-md">
@@ -83,10 +74,10 @@
             </div>
     
             @if (isAuthenticated()) {
-              @if (selectedCopy()?.is_availability) {
+              @if (reservation.selectedCopy()?.is_availability) {
                 <div class="flex gap-4">
                   <section class="text-right">
-                    <button (click)="openModal()" class="btn btn-outline bg-my-pink text-my-light p-6">Reservar Libro</button>
+                    <button (click)="onConfirmReservation()" class="btn btn-outline bg-my-pink text-my-light p-6">Reservar Libro</button>
                   </section>
                 </div>
               }
@@ -101,35 +92,11 @@
     </div>
   </div>
 
-  <section class="max-w-7xl mx-auto px-4">
-    @if (successMessage()) {
-      <app-message-success-component
-        [message]="successMessage()"
-      />
-    }
-
-    @if (errorMessage()) {
-      <app-message-error-component
-        [message]="errorMessage()"
-      />       
-    }
-  </section>
-  
   <div class="divider px-4 text-base-content/40 max-w-7xl mx-auto">Lista de Copias</div>
 
   <app-copy-list-for-reservation-components 
     [isLoading]="isLoading()"
-    [copyDetailList]="computedCopyList()"
+    [copyDetailList]="copyList()"
     (selectedCopy)="onSelectedCopy($event)"
   />
 </section>
-
-<app-modal-action-component
-  [isLoading]="isLoading()" 
-  [textTitle]="'Crear Reserva'"
-  [textContent]="'Realizar Reserva de:'"
-  [textName]="computedBook()?.title + ' - ' + selectedCopy()?.edition_name  + ' - Copia n° ' + selectedCopy()?.copy_number"
-  [isOpen]="isModalOpen()"
-  (onConfirm)="createReservation()"
-  (onModalClose)="closeModal()"
-/>

@@ -4,33 +4,26 @@ import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ReservationDetailModel, ReservationFilterModel } from '@features/reservation/models/reservation-model';
 import { ReservationService } from '@features/reservation/services/reservation-service';
-import { catchError, finalize, map, of, tap } from 'rxjs';
-import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
+import { catchError, of } from 'rxjs';
 import { ReservationListComponents } from "@features/reservation/components/reservation-list-components/reservation-list-components";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { ReservationBarcodeComponents } from "@features/reservation/components/reservation-barcode-components/reservation-barcode-components";
 import { LoanPolicyComponent } from "@features/loan-policies/components/loan-policy-component/loan-policy-component";
-import { extractErrorMessage } from '@core/utils/error-handler';
+import { MutationService } from '@core/services/mutation-service';
+import { ModalConfirmService } from '@core/services/modal-confirm-service';
 
 @Component({
   selector: 'app-user-reservation-page',
   imports: [
-    ModalActionComponent,
     ReservationListComponents,
     SectionHeaderComponent,
-    MessageSuccessComponent,
-    MessageErrorComponent,
     ReservationBarcodeComponents,
     LoanPolicyComponent
   ],
   templateUrl: './user-reservation-page.html',
 })
 export class UserReservationPage {
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isModalOpen = signal<boolean>(false);
+  protected readonly isSaving = signal<boolean>(false);
   protected readonly selectedReservation = signal<ReservationDetailModel | null>(null);
   protected readonly selectStatusId = signal<number>(0);
   protected readonly currentPage = signal<number>(1);
@@ -38,6 +31,9 @@ export class UserReservationPage {
   private readonly search = signal<string>('');
 
   private readonly reservationService = inject(ReservationService);
+  private readonly mutation = inject(MutationService);
+  private readonly confirmService = inject(ModalConfirmService);
+
   private readonly getPaginationPayload = computed<PaginationRequestModel<ReservationFilterModel>>(() => {
     return {
       page: this.currentPage(),
@@ -48,50 +44,21 @@ export class UserReservationPage {
       }
     }
   });
-  private readonly cancelReservationPayload = signal<number | null>(null);
-  private readonly cancelReservationTemp = signal<number | null>(null);
   protected readonly computedPaginationAndReservationList = computed<PaginationResponseModel<ReservationDetailModel[]> | null>(() => this.getReservationRX.value() ?? null);
 
-  protected readonly isLoading = computed(() => 
+  protected readonly isLoading = computed(() =>
     [
       this.getReservationRX,
-      this.cancelReservationRX,
     ].some(e => e.isLoading())
   );
 
   private readonly getReservationRX = rxResource({
     params: () => this.getPaginationPayload(),
-    stream: ({ params }) => { 
-
+    stream: ({ params }) => {
       return this.reservationService.getByUserPagination(params).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
+          console.error('[ReservationService::UserReservationPage] getByUserPagination:', err);
           return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly cancelReservationRX = rxResource({
-    params: () => this.cancelReservationPayload(),
-    stream: ({ params: id_reservation }) => {    
-      if (!id_reservation) return of(null);
-
-      return this.reservationService.cancel(id_reservation).pipe(
-        map(response => {
-          this.successMessage.set('Reserva eliminada correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.reloadReservation();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        }),
-        finalize(() => {
-          this.closeModal();
         })
       );
     },
@@ -129,23 +96,23 @@ export class UserReservationPage {
     }
   }
 
-  protected onCancelReservation(id_reservation: number): void {
-    this.cancelReservationTemp.set(id_reservation);
-    this.isModalOpen.set(true);
-  }
+  protected async onCancelReservation(id_reservation: number): Promise<void> {
+    if (!id_reservation) return;
 
-  protected onConfirmCancelReservation(): void {
-    this.cancelReservationPayload.set(this.cancelReservationTemp());
-  }
+    const confirmed = await this.confirmService.confirm({
+      title: 'Cancelar Reserva',
+      message: 'Estás seguro que deseas cancelar la Reserva?',
+    });
+    if (!confirmed) return;
 
-  protected closeModal(): void {
-    this.cancelReservationTemp.set(null);
-    this.cancelReservationPayload.set(null);
-    this.isModalOpen.set(false);
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
+    this.mutation.run(
+      this.reservationService.cancel(id_reservation),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Reserva eliminada correctamente',
+        errorMsg: 'Error al cancelar la Reserva',
+        onSuccess: () => this.reloadReservation(),
+      }
+    );
   }
 }

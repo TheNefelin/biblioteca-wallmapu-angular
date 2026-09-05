@@ -9,14 +9,6 @@
     <app-loan-policy-component/>
   </div>
 
-  @if (successMessage()) {
-    <app-message-success-component [message]="successMessage()" />
-  }
-  
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()" />
-  }
-  
   <div>
     <app-reservation-list-components
       [isLoading]="isLoading()"
@@ -31,13 +23,3 @@
     />
   </div>
 </section>
-
-<app-modal-action-component
-  [textTitle]="'Cancelar Reserva'"
-  [textContent]="'¿Estás seguro que deseas cancelar la Reserva?'"
-  [textName]="'Elemento'"
-  [isOpen]="isModalOpen()"
-  [isLoading]="isLoading()"
-  (onConfirm)="onConfirmCancelReservation()"
-  (onModalClose)="closeModal()"
-/>

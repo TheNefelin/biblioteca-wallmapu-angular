@@ -13,14 +13,7 @@
   
     <app-loan-policy-component/>
   </div>
-  
-  @if (successMessage()) {
-    <app-message-success-component [message]="successMessage()" />  }
-   
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()" />
-  }
-  
+
   <div class="flex justify-end">
     <button
       (click)="onUpdateExpireLoan()"
@@ -40,12 +33,3 @@
     (onPrevPage)="prevPage()"    
   />
 </section>
-
-<app-modal-action-component
-  [textTitle]="'Mensaje'"
-  [textContent]="'Mensaje'"
-  [textName]="'Mensaje'"
-  [isOpen]="isModalOpen()"
-  [isLoading]="isLoading()"
-  (onModalClose)="closeModal()"
-/>

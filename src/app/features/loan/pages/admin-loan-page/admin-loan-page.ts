@@ -1,26 +1,21 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { LoanListComponent } from "@features/loan/components/loan-list-component/loan-list-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { ModalActionComponent } from "@shared/components/modal-action-component/modal-action-component";
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { LoanDetailModel, LoanFilterModel } from '@features/loan/models/loan-model';
 import { LoanService } from '@features/loan/services/loan-service';
 import { LoanToReturnComponent } from "@features/loan/components/loan-to-return-component/loan-to-return-component";
 import { LoanPolicyComponent } from "@features/loan-policies/components/loan-policy-component/loan-policy-component";
+import { MutationService } from '@core/services/mutation-service';
 
 @Component({
   selector: 'app-admin-loan-page',
   imports: [
     LoanListComponent,
     SectionHeaderComponent,
-    MessageSuccessComponent,
-    MessageErrorComponent,
-    ModalActionComponent,
     LoanToReturnComponent,
     LoanPolicyComponent
   ],
@@ -28,25 +23,21 @@ import { LoanPolicyComponent } from "@features/loan-policies/components/loan-pol
 })
 export class AdminLoanPage {
   protected readonly clearCounter = signal<number>(0);
-  protected readonly isModalOpen = signal<boolean>(false);
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly isSaving = signal<boolean>(false);
   protected readonly selectStatusId = signal<number>(0);
   protected readonly currentPage = signal<number>(1);
   private readonly limit = signal<number>(10);
   private readonly search = signal<string>('');
 
   protected readonly isLoadingLoan = computed<boolean>(() => this.getLoanByCodebarRX.isLoading());
-  protected readonly isLoading = computed<boolean>(() => 
+  protected readonly isLoading = computed<boolean>(() =>
     [
       this.getLoanRX,
-      this.returnLoanRX,
-      this.updateExpiredLoanRX,      
     ].some(e => e.isLoading())
   );
 
   private readonly loanService = inject(LoanService);
-  private readonly returnLoanPayload = signal<number | null>(null);
+  private readonly mutation = inject(MutationService);
   private readonly getLoanByCodebarPayload = signal<string | null>(null);
   private readonly getLoanPayload = computed<PaginationRequestModel<LoanFilterModel>>(() => {
     return {
@@ -63,12 +54,10 @@ export class AdminLoanPage {
 
   private readonly getLoanRX = rxResource({
     params: () => this.getLoanPayload(),
-    stream: ({ params }) => { 
-
+    stream: ({ params }) => {
       return this.loanService.getAllPagination(params).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
+          console.error('[LoanService::AdminLoanPage] getAllPagination:', err);
           return of(null);
         })
       );
@@ -79,49 +68,10 @@ export class AdminLoanPage {
     params: () => this.getLoanByCodebarPayload(),
     stream: ({ params: codebar }) => {
       if (!codebar) return of(null);
-      this.errorMessage.set(null);
-      
+
       return this.loanService.getByCopyBarCode(codebar).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly returnLoanRX = rxResource({
-    params: () => this.returnLoanPayload(),
-    stream: ({ params: id_copy }) => {
-      if (!id_copy) return of(null);
-      this.errorMessage.set(null);
-      
-      return this.loanService.return(id_copy).pipe(
-        map(response => {
-          this.successMessage.set('Préstamo registrado correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.onReloadLoan();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly updateExpiredLoanRX = rxResource({
-    stream: () => {    
-      return this.loanService.expire().pipe(
-        map(response => response),
-        tap(() => {
-          this.onReloadLoan();
-        }),
-        catchError(err => {
-          this.handleError(err);
+          console.error('[LoanService::AdminLoanPage] getByCopyBarCode:', err);
           return of(null);
         })
       );
@@ -131,7 +81,6 @@ export class AdminLoanPage {
   protected onClear(): void {
     this.clearCounter.update(e => e + 1);
     this.getLoanByCodebarPayload.set(null);
-    this.errorMessage.set(null);
   }
 
   protected onGetLoanByBarcode(codebar: string): void {
@@ -139,12 +88,16 @@ export class AdminLoanPage {
   }
 
   protected onReturnLoan(item: LoanDetailModel): void {
-    this.returnLoanPayload.set(item.copy_id);
+    this.mutation.run(
+      this.loanService.return(item.copy_id),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Préstamo registrado correctamente',
+        errorMsg: 'Error al registrar el préstamo',
+        onSuccess: () => this.onReloadLoan(),
+      }
+    );
     this.onClear();
-  }
-
-  protected closeModal(): void {
-    this.isModalOpen.set(false);
   }
 
   protected onReloadLoan(): void {
@@ -153,10 +106,17 @@ export class AdminLoanPage {
   }
 
   protected onUpdateExpireLoan(): void {
-    this.updateExpiredLoanRX.reload();
-    this.onClear();
+    this.mutation.run(
+      this.loanService.expire(),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Estado de Préstamos actualizado correctamente',
+        errorMsg: 'Error al actualizar el estado de los Préstamos',
+        onSuccess: () => this.onReloadLoan(),
+      }
+    );
   }
-  
+
   protected onFilterByIdStatus(id: number): void {
     this.selectStatusId.set(id);
   }
@@ -173,13 +133,5 @@ export class AdminLoanPage {
     if (this.currentPage() > 1){
       this.currentPage.update(e => e - 1);
     }
-  }
-
-  private handleError(err: unknown): void {
-    const message = err instanceof Error 
-      ? err.message 
-      : (err as any)?.error?.detail || (err as any)?.error?.message || 'Unexpected error';
-    this.successMessage.set(null);
-    this.errorMessage.set(message);
   }
 }

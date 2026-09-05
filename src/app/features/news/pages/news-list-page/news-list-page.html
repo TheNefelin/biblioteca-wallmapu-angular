@@ -11,10 +11,6 @@
       <app-button-component [icon]="'create'" [textBtn]="'Crear Noticia'" (clicked)="onCreate()" />
     </div>
     
-    @if (errorMessage()) {
-      <app-message-error-component [message]="errorMessage()"/>
-    }
-
     <app-news-list-component 
       [isLoading]="isLoading()"
       [newsWithImagesList]="newsWithImagesList()"
@@ -29,13 +25,4 @@
     (prevPage)="prevPage()"
     (nextPage)="nextPage()" 
   />  
-</section>  
-
-<app-modal-delete-component
-  title="Eliminar Noticia"
-  [isOpen]="openDeleteModal()"
-  [isLoading]="isLoading()"
-  [itemName]="selectedNewsWithImagesModel()?.title"
-  (confirm)="confirmDelete()"
-  (cancel)="closeDeleteModal()"
-/>
+</section>

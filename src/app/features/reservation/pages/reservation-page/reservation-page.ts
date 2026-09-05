@@ -15,6 +15,26 @@ import { MutationService } from '@core/services/mutation-service';
 import { catchError, map, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { CopyListForReservationComponents } from "@features/copy/components/copy-list-for-reservation-components/copy-list-for-reservation-components";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
+
+export function pickInitialCopy(
+  editions: readonly EditionModel[],
+  copies: readonly CopyDetailModel[],
+  idEdition: number,
+): { copy: CopyDetailModel; edition: EditionModel } | null {
+  const selectedEdition = editions.find(edition => edition.id_edition === idEdition);
+  if (!selectedEdition) return null;
+
+  const candidateCopies = copies.filter(copy => copy.edition_id === idEdition);
+  if (candidateCopies.length === 0) return null;
+
+  const copy =
+    candidateCopies.find(candidate => candidate.is_availability) ??
+    candidateCopies.find(candidate => !candidate.is_availability);
+  if (!copy) return null;
+
+  return { copy, edition: selectedEdition };
+}
 
 @Component({
   selector: 'app-reservation-page',
@@ -22,13 +42,13 @@ import { CopyListForReservationComponents } from "@features/copy/components/copy
     NgOptimizedImage,
     LoadingComponent,
     CopyListForReservationComponents,
+    ButtonComponent,
   ],
   templateUrl: './reservation-page.html',
 })
 export class ReservationPage {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly viewportScroller = inject(ViewportScroller);
-  private readonly auth = inject(AuthStore);
   private readonly confirmService = inject(ModalConfirmService);
   private readonly mutation = inject(MutationService);
 
@@ -47,31 +67,6 @@ export class ReservationPage {
   );
 
   // SERVICES -------------------------------------------------------------------------
-  private readonly bookService = inject(BookService);
-  protected readonly book = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
-
-  private readonly editionService = inject(EditionService);
-  protected readonly editionList = computed<EditionModel[]>(() => this.getEditionRX.value() ?? []);
-
-  private readonly copyService = inject(CopyService);
-  protected readonly copyList = computed<CopyDetailModel[]>(() => this.getCopyRX.value() ?? []);
-
-  private readonly selectedCopyId = signal<number>(0);
-
-  private readonly reservationService = inject(ReservationService);
-  protected readonly reservation = {
-    selectedCopy: computed<CopyDetailModel | null>(() =>
-      this.copyList().find(e => e.id_copy == this.selectedCopyId()) ?? null
-    ),
-    selectedEditionId: signal<number>(this.editionId()),
-    isSaving: signal<boolean>(false),
-  }
-
-  protected readonly selectedEdition = computed<EditionModel | null>(() =>
-    this.editionList().find(e => e.id_edition == this.reservation.selectedEditionId()) ?? null
-  );
-
-  protected readonly isAuthenticated = computed<boolean>(() => this.auth.isAuthenticated());
   protected readonly isLoading = computed<boolean>(() =>
     [
       this.getBookRX,
@@ -80,18 +75,37 @@ export class ReservationPage {
     ].some(r => r.isLoading())
   );
 
-  private readonly firstLoadEffect = effect(() => {
-    const id_edition = this.editionId();
-    const copyList = this.copyList();
+  private readonly auth = inject(AuthStore);
+  protected readonly isAuthenticated = computed<boolean>(() => this.auth.isAuthenticated());
 
-    const copyByEditionList = copyList.filter(e => e.edition_id == id_edition);
-    if (!copyByEditionList.length) return;
+  private readonly reservationService = inject(ReservationService);
+  protected readonly isSaving = signal<boolean>(false);
 
-    const availableCopyByEdition = copyByEditionList.find(e => e.is_availability);
-    const selected = availableCopyByEdition ?? copyByEditionList[0];
+  private readonly bookService = inject(BookService);
+  protected readonly book = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
 
-    this.reservation.selectedEditionId.set(selected.edition_id);
-    this.selectedCopyId.set(selected.id_copy);
+  private readonly editionService = inject(EditionService);
+  protected readonly edition = {
+    dataList: computed<EditionModel[]>(() => this.getEditionRX.value() ?? []),
+    selectedItem: signal<EditionModel | null>(null),
+  }
+
+  private readonly copyService = inject(CopyService);
+  protected readonly copy = {
+    dataList: computed<CopyDetailModel[]>(() => this.getCopyRX.value() ?? []),
+    selectedItem: signal<CopyDetailModel | null>(null),
+  }
+
+  private readonly autoSelectEffect = effect(() => {
+    const result = pickInitialCopy(
+      this.edition.dataList(),
+      this.copy.dataList(),
+      this.editionId(),
+    );
+    if (!result) return;
+
+    this.copy.selectedItem.set(result.copy);
+    this.edition.selectedItem.set(result.edition);
   });
 
   private readonly getBookRX = rxResource({
@@ -135,16 +149,20 @@ export class ReservationPage {
       );
     }
   });
-
+   
   // RESERVATION ACTIONS ----------------------------------------------------------------
   protected onSelectedCopy(item: CopyDetailModel): void {
-    this.reservation.selectedEditionId.set(item.edition_id);
-    this.selectedCopyId.set(item.id_copy);
+    const selectedEdition = this.edition.dataList().find(e => e.id_edition === item.edition_id); 
+    if (!selectedEdition) return;
+
+    this.copy.selectedItem.set(item);
+    this.edition.selectedItem.set(selectedEdition);
+
     this.viewportScroller.scrollToPosition([0, 0]);
   }
 
   protected async onConfirmReservation(): Promise<void> {
-    const copyId = this.reservation.selectedCopy()?.id_copy;
+    const copyId = this.copy.selectedItem()?.id_copy;
     if (!copyId) return;
 
     const confirmed = await this.confirmService.confirm({
@@ -155,7 +173,7 @@ export class ReservationPage {
 
     this.mutation.run(
       this.reservationService.create({ copy_id: copyId }),
-      { isSaving: this.reservation.isSaving },
+      { isSaving: this.isSaving },
       {
         successMsg: 'Reserva registrada correctamente',
         errorMsg: 'Error al crear la Reserva',

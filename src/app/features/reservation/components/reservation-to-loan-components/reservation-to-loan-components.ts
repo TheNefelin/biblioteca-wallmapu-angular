@@ -19,9 +19,9 @@ export class ReservationToLoanComponents {
   readonly reservationDetail = input<ReservationDetailModel | null>(null);
   readonly clearTrigger = input<number>(0);
   readonly isLoading = input<boolean>(false);
-  protected readonly onGetReservationById = output<number>();
-  protected readonly onReservationToLoan = output<ReservationDetailModel>()
-  protected readonly onClear = output<void>();
+  protected readonly getReservationById = output<number>();
+  protected readonly reservationToLoan = output<ReservationDetailModel>()
+  protected readonly clear = output<void>();
 
   protected readonly disabledInput = signal<boolean>(false);
   protected readonly errorMessage = signal<string | null>(null);
@@ -37,7 +37,7 @@ export class ReservationToLoanComponents {
       return;
     }
     
-    this.onGetReservationById.emit(id_reservation);
+    this.getReservationById.emit(id_reservation);
     this.disabledInput.set(false);
   }
   
@@ -55,7 +55,7 @@ export class ReservationToLoanComponents {
     this.disabledInput.set(true);
   }
 
-  protected reservationToLoan(): void {
+  protected handleReservationToLoan(): void {
     const reservation = this.reservationDetail();
     
     if (!reservation || !reservation.id_reservation || !reservation.copy_id) {
@@ -63,6 +63,6 @@ export class ReservationToLoanComponents {
       return;
     }
 
-    this.onReservationToLoan.emit(reservation);
+    this.reservationToLoan.emit(reservation);
   }
 }

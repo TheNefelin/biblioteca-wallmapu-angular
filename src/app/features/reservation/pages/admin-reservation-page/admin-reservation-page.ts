@@ -103,10 +103,12 @@ export class AdminReservationPage {
       {
         successMsg: 'Reserva convertida a préstamo correctamente',
         errorMsg: 'Error al convertir la Reserva a préstamo',
-        onSuccess: () => this.reloadReservation(),
+        onSuccess: () => {
+          this.reloadReservation();
+          this.onClear();
+        },
       }
     );
-    this.onClear();
   }
 
   protected reloadReservation(): void {

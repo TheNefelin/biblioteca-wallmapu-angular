@@ -15,11 +15,11 @@
       <div class="flex gap-2 items-center">
         <app-reservation-status-select-components
           [selectedId]="selectStatusId()"
-          (newSelectedId)="onSelectedIdStatus.emit($event)"
+          (newSelectedId)="selectedIdStatus.emit($event)"
         />
 
         <app-button-component 
-          [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="onReload.emit()"
+          [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="reload.emit()"
         />
       </div>
      </header>
@@ -70,7 +70,7 @@
 
               <td class="whitespace-nowrap p-1">
                 @if (item.reservation_status_id === 1) {
-                  <app-button-component [icon]="'delete'" (clicked)="onCancelReservation.emit(item.id_reservation)" />
+                  <app-button-component [icon]="'delete'" (clicked)="cancelReservation.emit(item.id_reservation)" />
                 }
               </td>
             </tr>
@@ -83,7 +83,7 @@
   <app-pagination-component
     [currentPage]="paginationAndReservationList()?.page ?? 1"
     [totalPages]="totalPages()"
-    (prevPage)="onPrevPage.emit()"
-    (nextPage)="onNextPage.emit()"
+    (prevPage)="prevPage.emit()"
+    (nextPage)="nextPage.emit()"
   />
 </div>

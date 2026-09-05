@@ -9,7 +9,7 @@
         <figure class="relative aspect-7/10 w-full max-w-96 mx-auto">
           <img
             class="w-full h-full object-cover shadow-2xl"
-            [ngSrc]="selectedEdition()?.cover_image??  'images/without_cover.webp'"
+            [ngSrc]="edition.selectedItem()?.cover_image?? 'images/without_cover.webp'"
             [alt]="'Portada'"
             fill
             priority
@@ -29,7 +29,7 @@
             <table class="table text-sm text-my-dark/80 py-4">
               <div class="divider text-base-content/40 max-w-7xl mx-auto m-0">Formato/s</div>
               <tbody class="text-center">
-                @for (item of selectedEdition()?.formats; track item.id_format) {
+                @for (item of edition.selectedItem()?.formats; track item.id_format) {
                   <tr><td class="p-0">{{ item.name }}</td></tr>
                 }
                 <tr></tr>
@@ -53,17 +53,18 @@
   
           <section class="flex justify-between gap-4 flex-wrap">
             <div class="mb-6 space-y-2 text-sm">
-              <p><strong class="text-my-green">ISBN:</strong> {{ selectedEdition()?.isbn }}</p>
-              <p><strong class="text-my-green">Publicado:</strong> {{ selectedEdition()?.publication_year }}</p>
-              <p><strong class="text-my-green">Páginas:</strong> {{ selectedEdition()?.pages }}</p>              
-              <p><strong class="text-my-green">Edición:</strong> {{ selectedEdition()?.edition }}</p>
-              <p><strong class="text-my-green">Editorial:</strong> {{ reservation.selectedCopy()?.editorial_name }}</p>
-              <p><strong class="text-my-green">Copia n°:</strong> {{ reservation.selectedCopy()?.copy_number }}</p>
+              <p><strong class="text-my-green">Id Copia:</strong> {{ copy.selectedItem()?.id_copy }}</p>
+              <p><strong class="text-my-green">ISBN:</strong> {{ edition.selectedItem()?.isbn }}</p>
+              <p><strong class="text-my-green">Publicado:</strong> {{ edition.selectedItem()?.publication_year }}</p>
+              <p><strong class="text-my-green">Páginas:</strong> {{ edition.selectedItem()?.pages }}</p>              
+              <p><strong class="text-my-green">Edición:</strong> {{ edition.selectedItem()?.edition }}</p>
+              <p><strong class="text-my-green">Editorial:</strong> {{ copy.selectedItem()?.editorial_name }}</p>
+              <p><strong class="text-my-green">Copia n°:</strong> {{ copy.selectedItem()?.copy_number }}</p>
               <p>
                 <strong class="text-my-green">Estado:</strong> 
-                @if (reservation.selectedCopy()?.is_availability) {
+                @if (copy.selectedItem()?.is_availability) {
                   <span class="bg-my-green text-my-light mx-2 p-1 pr-2 rounded-md">
-                    {{ reservation.selectedCopy()?.availability_status }}
+                    {{ copy.selectedItem()?.availability_status }}
                   </span>
                 } @else {
                   <span class="bg-my-pink text-my-light mx-2 p-1 pr-2 rounded-md">
@@ -74,11 +75,17 @@
             </div>
     
             @if (isAuthenticated()) {
-              @if (reservation.selectedCopy()?.is_availability) {
+              @if (copy.selectedItem()?.is_availability) {
                 <div class="flex gap-4">
-                  <section class="text-right">
-                    <button (click)="onConfirmReservation()" class="btn btn-outline bg-my-pink text-my-light p-6">Reservar Libro</button>
-                  </section>
+                  @if (isLoading() || isSaving()) {
+                    <app-loading-component/>
+                  } @else {
+                    <app-button-component
+                      [icon]="'book'"
+                      [textBtn]="'Reservar Libro'"
+                      [disabled]="isSaving()"
+                      (clicked)="onConfirmReservation()" />
+                  }
                 </div>
               }
             } @else {
@@ -95,8 +102,8 @@
   <div class="divider px-4 text-base-content/40 max-w-7xl mx-auto">Lista de Copias</div>
 
   <app-copy-list-for-reservation-components 
-    [isLoading]="isLoading()"
-    [copyDetailList]="copyList()"
+    [isLoading]="isLoading() || isSaving()"
+    [copyDetailList]="copy.dataList()"
     (selectedCopy)="onSelectedCopy($event)"
   />
 </section>

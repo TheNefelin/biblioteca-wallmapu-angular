@@ -3,11 +3,11 @@
   [disabled]="disabled()"
   (click)="clicked.emit()"
   class="btn"
-  [class.bg-my-pink]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification'"
+  [class.bg-my-pink]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification' || icon() === 'book'"
   [class.bg-my-green]="icon() === 'edit' || icon() === 'goto'"
   [class.bg-my-purple]="icon() === 'refresh' || icon() === 'search' || icon() === 'save' || icon() === 'download'"
   [class.bg-my-yellow]="icon() === 'help'"
-  [class.btn-outline]="icon() === 'refresh' || icon() === 'search'"
+  [class.btn-outline]="icon() === 'refresh' || icon() === 'search' || icon() === 'book'"
   [class.btn-ghost]="icon() === 'barcode'"
   [class.text-my-light]="icon() !== 'barcode' && icon() !== 'help'"
   [class.text-my-dark]="icon() === 'help'"
@@ -17,7 +17,7 @@
   [class.hover:fill-my-light]="icon() === 'barcode'"
   [class.hover:bg-my-pink]="icon() === 'help'"
   [class.hover:text-my-light]="icon() === 'help'"
-  [class.hover:bg-my-pink/80]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification'"
+  [class.hover:bg-my-pink/80]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification' || icon() === 'book'"
   [class.hover:bg-my-green/80]="icon() === 'edit' || icon() === 'goto'"
   [class.hover:bg-my-purple/80]="icon() === 'refresh' || icon() === 'search' || icon() === 'save' || icon() === 'download'"
 >
@@ -96,6 +96,11 @@
     @case ('download') {
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
         <path fill="default" d="M5 20h14v-2H5zM19 9h-4V3H9v6H5l7 7z"/>
+      </svg>
+    }
+    @case ('book') {
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/>
       </svg>
     }
     @default {

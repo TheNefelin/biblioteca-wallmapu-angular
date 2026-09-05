@@ -6,9 +6,9 @@
       [clearTrigger]="clearCounter()"
       [isLoading]="isLoadingReservation()"
       [reservationDetail]="computedReservationDetail()"
-      (onGetReservationById)="onSearchReservation($event)"
-      (onReservationToLoan)="onRegisterReservationToLoan($event)"
-      (onClear)="onClear()"
+      (getReservationById)="onSearchReservation($event)"
+      (reservationToLoan)="onRegisterReservationToLoan($event)"
+      (clear)="onClear()"
     />
   
     <app-loan-policy-component/>
@@ -27,10 +27,10 @@
     [isLoading]="isLoading()"
     [paginationAndReservationList]="computedPaginationAndReservationList()"
     [selectStatusId]="selectStatusId()"
-    (onSelectedIdStatus)="onFilterByIdStatus($event)"
-    (onCancelReservation)="onCancelReservation($event)"
-    (onReload)="reloadReservation()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"
+    (selectedIdStatus)="onFilterByIdStatus($event)"
+    (cancelReservation)="onCancelReservation($event)"
+    (reload)="reloadReservation()"
+    (nextPage)="nextPage()"
+    (prevPage)="prevPage()"
   />
 </section>

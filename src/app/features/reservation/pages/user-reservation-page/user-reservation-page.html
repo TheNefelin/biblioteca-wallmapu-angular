@@ -14,12 +14,12 @@
       [isLoading]="isLoading()"
       [paginationAndReservationList]="computedPaginationAndReservationList()"
       [selectStatusId]="selectStatusId()"
-      (onSelectedReservation)="onSelectedReservation($event)"
-      (onSelectedIdStatus)="onFilterByIdStatus($event)"
-      (onCancelReservation)="onCancelReservation($event)"
-      (onReload)="reloadReservation()"
-      (onNextPage)="nextPage()"
-      (onPrevPage)="prevPage()"
+      (selectedReservation)="onSelectedReservation($event)"
+      (selectedIdStatus)="onFilterByIdStatus($event)"
+      (cancelReservation)="onCancelReservation($event)"
+      (reload)="reloadReservation()"
+      (nextPage)="nextPage()"
+      (prevPage)="prevPage()"
     />
   </div>
 </section>

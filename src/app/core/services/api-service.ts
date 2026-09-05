@@ -10,6 +10,14 @@ export class ApiService {
   private apiUrl = environment.apiUrl;
 
   getAllPagination<T, F = null>(endpoint: string, params: PaginationRequestModel<F>): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}/${endpoint}/pagination${this.buildQuery(params)}`);
+  }
+
+  getAllPaginationByPath<T, F = null>(path: string, params: PaginationRequestModel<F>): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}/${path}${this.buildQuery(params)}`);
+  }
+
+  private buildQuery<F>(params: PaginationRequestModel<F>): string {
     let path = `?page=${params.page}&limit=${params.limit}`
 
     if (params.search && params.search.trim() !== '')
@@ -24,7 +32,7 @@ export class ApiService {
       }
     }
 
-    return this.http.get<T>(`${this.apiUrl}/${endpoint}/pagination${path}`);
+    return path;
   }
 
   getAll<T>(endpoint: string): Observable<T> {

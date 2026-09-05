@@ -7,7 +7,7 @@
     
     <app-button-component
       [icon]="'clear'"
-      (clicked)="onClear.emit()"
+      (clicked)="clear.emit()"
     />
   </section>
 
@@ -39,7 +39,7 @@
 
   @if (disabledInput()) {
     <button 
-      (click)="reservationToLoan()" 
+      (click)="handleReservationToLoan()" 
       type="button" class="btn bg-my-purple hover:bg-my-purple/80 text-my-light w-full mt-2">
       Registrar Préstamo
     </button> 

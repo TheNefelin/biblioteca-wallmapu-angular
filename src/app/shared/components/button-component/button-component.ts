@@ -13,7 +13,8 @@ export type ButtonIcon =
   | 'barcode'
   | 'notification'
   | 'help'
-  | 'download';
+  | 'download'
+  | 'book';
 
 @Component({
   selector: 'app-button-component',

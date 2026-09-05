@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { ReservationDetailModel, ReservationModel } from '@features/reservation/models/reservation-model';
+import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
 
 @Component({
   selector: 'app-reservation-detail-components',

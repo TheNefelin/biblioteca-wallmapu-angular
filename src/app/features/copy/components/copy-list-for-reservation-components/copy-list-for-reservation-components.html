@@ -25,7 +25,7 @@
               (click)="selectedCopy.emit(copy)"
               (keydown.enter)="selectedCopy.emit(copy)"
               (keydown.space)="selectedCopy.emit(copy)"
-              class="hover:bg-my-dark/10 cursor-pointer">
+              class="hover:bg-my-dark/10 cursor-pointer text-my-purple">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="avatar">
@@ -40,27 +40,26 @@
                   <div>
                     <div class="font-bold">Copia n°: {{ copy?.copy_number }}</div>
                     <div class="text-sm opacity-50">{{ copy?.signature_topography }}</div>
-                    <div class="text-sm opacity-50">ID: {{ copy?.id_copy }}</div>
+                    <div class="text-sm opacity-50">Id: {{ copy?.id_copy }}</div>
                   </div>
                 </div>
               </td>
   
               <td>
-                @if (copy?.availability_status?.toLocaleLowerCase() === 'disponible') {
-                  <span class="badge bg-my-green text-my-light p-4 h-auto">{{ copy?.availability_status }}</span>
+                @if (copy.availability_status.toLocaleLowerCase() === 'disponible') {
+                  <p class="badge bg-my-green text-my-light p-2 h-auto">{{ copy?.availability_status }}</p>
                 } @else {
-                  <span class="badge bg-my-pink text-my-light p-4 h-auto">{{ copy?.availability_status }}</span>
+                  <p class="badge bg-my-pink text-my-light p-2 h-auto">{{ copy?.availability_status }}</p>
                 }
               </td>
   
               <td>
-                <span>{{ copy?.editorial_name }}</span>
-                <br />
-                <span>{{ copy?.edition_name }}</span>
+                <p>{{ copy?.editorial_name }}</p>
+                <p>{{ copy?.edition_name }}</p>
               </td>
   
               <td>
-                <span class="badge badge-ghost p-4 h-auto">{{ copy?.edition_isbn }}</span>
+                <span class="badge badge-ghost p-4 h-auto text-my-pink font-bold">{{ copy?.edition_isbn }}</span>
               </td>  
             </tr>
           }

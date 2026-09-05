@@ -45,8 +45,8 @@
         </thead>
 
         <tbody>
-          @for(item of paginationAndReservationList()?.data; track item.id_reservation) {
-            <tr (click)="selectReservation(item)" class="hover:bg-my-purple/10 text-my-purple">
+          @for(item of reservationList(); track item.id_reservation) {
+            <tr (click)="selectedReservation.emit(item)" class="hover:bg-my-purple/10 text-my-purple">
               <td>{{ item.id_reservation }}</td>
               <td>{{ item.book_title }}</td>
               <td>{{ item.user_name }} {{ item.user_lastname }}</td>
@@ -81,7 +81,7 @@
   </div>
   
   <app-pagination-component
-    [currentPage]="paginationAndReservationList()?.page ?? 1"
+    [currentPage]="currentPage()"
     [totalPages]="totalPages()"
     (prevPage)="prevPage.emit()"
     (nextPage)="nextPage.emit()"

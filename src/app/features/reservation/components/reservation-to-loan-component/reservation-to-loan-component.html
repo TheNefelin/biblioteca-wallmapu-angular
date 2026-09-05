@@ -21,7 +21,7 @@
     (onSubmit)="onSearchReservation($event)"
   />
 
-  <app-reservation-detail-components 
+  <app-reservation-detail-component 
     [reservationModel]="reservationDetail()"
   />
 
@@ -38,11 +38,13 @@
   }
 
   @if (disabledInput()) {
-    <button 
-      (click)="handleReservationToLoan()" 
-      type="button" class="btn bg-my-purple hover:bg-my-purple/80 text-my-light w-full mt-2">
-      Registrar Préstamo
-    </button> 
+    <div class="pt-2 flex justify-center">
+      <app-button-component
+        [icon]="'save'"
+        [textBtn]="'Registrar Préstamo'"
+        (clicked)="handleReservationToLoan()"
+      />
+    </div>
   }
 
   @if (errorMessage()) {

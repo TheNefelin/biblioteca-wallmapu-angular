@@ -1,16 +1,16 @@
 import { Component, input } from '@angular/core';
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
 import { BarcodeGeneratorComponent } from "@shared/components/barcode-generator.component/barcode-generator.component";
-import { ReservationDetailComponents } from "../reservation-detail-components/reservation-detail-components";
+import { ReservationDetailComponent } from "../reservation-detail-component/reservation-detail-component";
 
 @Component({
-  selector: 'app-reservation-barcode-components',
+  selector: 'app-reservation-barcode-component',
   imports: [
     BarcodeGeneratorComponent,
-    ReservationDetailComponents
+    ReservationDetailComponent
 ],
-  templateUrl: './reservation-barcode-components.html',
+  templateUrl: './reservation-barcode-component.html',
 })
-export class ReservationBarcodeComponents {
+export class ReservationBarcodeComponent {
   readonly reservationDetail = input<ReservationDetailModel | null>(null); 
 }

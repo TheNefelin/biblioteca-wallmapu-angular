@@ -2,22 +2,24 @@
 
 <section class="p-4 grid grid-cols-1 gap-4">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <app-reservation-barcode-components
+    <app-reservation-barcode-component
       [reservationDetail]="selectedReservation()"
     />
-    
+
     <app-loan-policy-component/>
   </div>
 
   <div>
-    <app-reservation-list-components
-      [isLoading]="isLoading()"
-      [paginationAndReservationList]="computedPaginationAndReservationList()"
-      [selectStatusId]="selectStatusId()"
+    <app-reservation-list-component
+      [isLoading]="reservation.isLoading() || this.reservation.isSaving()"
+      [reservationList]="reservation.dataList()"
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [selectStatusId]="selectFilterStatusId()"
       (selectedReservation)="onSelectedReservation($event)"
       (selectedIdStatus)="onFilterByIdStatus($event)"
       (cancelReservation)="onCancelReservation($event)"
-      (reload)="reloadReservation()"
+      (reload)="reload()"
       (nextPage)="nextPage()"
       (prevPage)="prevPage()"
     />

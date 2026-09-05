@@ -1,21 +1,21 @@
 import { Component, input, output, signal } from '@angular/core';
 import { SearchCodbarComponent } from "@shared/components/search-codbar-component/search-codbar-component";
-import { ReservationDetailComponents } from "../reservation-detail-components/reservation-detail-components";
+import { ReservationDetailComponent } from "../reservation-detail-component/reservation-detail-component";
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
-  selector: 'app-reservation-to-loan-components',
+  selector: 'app-reservation-to-loan-component',
   imports: [
     SearchCodbarComponent,
-    ReservationDetailComponents,
+    ReservationDetailComponent,
     ButtonComponent,
     MessageErrorComponent
   ],
-  templateUrl: './reservation-to-loan-components.html',
+  templateUrl: './reservation-to-loan-component.html',
 })
-export class ReservationToLoanComponents {
+export class ReservationToLoanComponent {
   readonly reservationDetail = input<ReservationDetailModel | null>(null);
   readonly clearTrigger = input<number>(0);
   readonly isLoading = input<boolean>(false);

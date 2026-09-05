@@ -1,68 +1,75 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ReservationDetailModel, ReservationFilterModel, ReservationPickupModel } from '@features/reservation/models/reservation-model';
 import { ReservationService } from '@features/reservation/services/reservation-service';
-import { catchError, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { ReservationListComponents } from "@features/reservation/components/reservation-list-components/reservation-list-components";
-import { ReservationToLoanComponents } from "@features/reservation/components/reservation-to-loan-components/reservation-to-loan-components";
+import { ReservationListComponent } from "@features/reservation/components/reservation-list-component/reservation-list-component";
+import { ReservationToLoanComponent } from "@features/reservation/components/reservation-to-loan-component/reservation-to-loan-component";
 import { LoanPolicyComponent } from "@features/loan-policies/components/loan-policy-component/loan-policy-component";
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
+import { CrudPage } from '@shared/base/crud-page';
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-admin-reservation-page',
   imports: [
     SectionHeaderComponent,
-    ReservationListComponents,
-    ReservationToLoanComponents,
-    LoanPolicyComponent
+    ReservationListComponent,
+    ReservationToLoanComponent,
+    LoanPolicyComponent,
+    ButtonComponent,
   ],
   templateUrl: './admin-reservation-page.html',
 })
-export class AdminReservationPage {
+export class AdminReservationPage extends CrudPage<ReservationDetailModel> {
+  // STATE ------------------------------------------------------------------------
+  protected readonly selectFilterStatusId = signal<number>(0);
   protected readonly clearCounter = signal<number>(0);
-  protected readonly isSaving = signal<boolean>(false);
-  protected readonly selectStatusId = signal<number>(0);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
+  protected readonly getReservationByIdPayload = signal<number | null>(null);
 
-  protected readonly isLoadingReservation = computed<boolean>(() => this.getReservationByIdRX.isLoading());
-  protected readonly isLoading = computed(() =>
-    [
-      this.getReservationRX,
-      this.getReservationByIdRX,
-    ].some(e => e.isLoading())
-  );
-
+  // SERVICES ----------------------------------------------------------------------
   private readonly reservationService = inject(ReservationService);
   private readonly mutation = inject(MutationService);
   private readonly confirmService = inject(ModalConfirmService);
-  
-  private readonly getReservationByIdPayload = signal<number | null>(null);
+
+  // RESERVATION STATE --------------------------------------------------------------
+  protected readonly reservation = {
+    dataList: computed<ReservationDetailModel[]>(() => this.getReservationRX.value() ?? []),
+    isLoading: computed<boolean>(() => this.getReservationRX.isLoading() && !this.getReservationRX.hasValue()),
+    isSaving: signal<boolean>(false),
+  }
+
+  // RESERVATION DETAIL STATE -------------------------------------------------------
+  protected readonly detail = {
+    data: computed<ReservationDetailModel | null>(() => this.getReservationByIdRX.value() ?? null),
+    isLoading: computed<boolean>(() => this.getReservationByIdRX.isLoading()),
+  }
+
+  // FETCHS -------------------------------------------------------------------------
   private readonly getPaginationPayload = computed<PaginationRequestModel<ReservationFilterModel>>(() => {
     return {
       page: this.currentPage(),
       limit: this.limit(),
       search: this.search(),
       filter: {
-        id_status: this.selectStatusId(),
+        id_status: this.selectFilterStatusId(),
       }
     }
   });
-  protected readonly computedPaginationAndReservationList = computed<PaginationResponseModel<ReservationDetailModel[]> | null>(() => this.getReservationRX.value() ?? null);
-  protected readonly computedReservationDetail = computed<ReservationDetailModel | null>(() => this.getReservationByIdRX.value() ?? null);
-  
+
   private readonly getReservationRX = rxResource({
     params: () => this.getPaginationPayload(),
     stream: ({ params }) => {
+      if (!params) return of(null);
+
       return this.reservationService.getAllPagination(params).pipe(
+        map(response => this.mapPaginated(response)),
         catchError(err => {
           console.error('[ReservationService::AdminReservationPage] getAllPagination:', err);
-          return of(null);
+          return of(this.emptyPaginated());
         })
       );
     },
@@ -82,6 +89,12 @@ export class AdminReservationPage {
     },
   });
 
+  // CRUD-PAGE INHERITANCE METHODS ---------------------------------------------------
+  protected override reload(): void {
+    this.getReservationRX.reload();
+  }
+
+  // RESERVATION ACTIONS -------------------------------------------------------------
   protected onClear(): void {
     this.clearCounter.update(e => e + 1);
     this.getReservationByIdPayload.set(null);
@@ -99,50 +112,33 @@ export class AdminReservationPage {
 
     this.mutation.run(
       this.reservationService.pickup(payload),
-      { isSaving: this.isSaving },
+      { isSaving: this.reservation.isSaving },
       {
         successMsg: 'Reserva convertida a préstamo correctamente',
         errorMsg: 'Error al convertir la Reserva a préstamo',
         onSuccess: () => {
-          this.reloadReservation();
+          this.reload();
           this.onClear();
         },
       }
     );
   }
 
-  protected reloadReservation(): void {
-    this.getReservationRX.reload();
-  }
-
   protected onUpdateExpireReservation(): void {
     this.mutation.run(
       this.reservationService.expire(),
-      { isSaving: this.isSaving },
+      { isSaving: this.reservation.isSaving },
       {
         successMsg: 'Estado de Reservas actualizado correctamente',
         errorMsg: 'Error al actualizar el estado de las Reservas',
-        onSuccess: () => this.reloadReservation(),
+        onSuccess: () => this.reload(),
       }
     );
   }
 
   protected onFilterByIdStatus(id: number): void {
-    this.selectStatusId.set(id);
-  }
-
-  nextPage() {
-    const totalPages = this.computedPaginationAndReservationList()?.pages ?? 1
-
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+    this.selectFilterStatusId.set(id);
+    this.currentPage.set(1);
   }
 
   protected async onCancelReservation(id_reservation: number): Promise<void> {
@@ -156,11 +152,11 @@ export class AdminReservationPage {
 
     this.mutation.run(
       this.reservationService.cancel(id_reservation),
-      { isSaving: this.isSaving },
+      { isSaving: this.reservation.isSaving },
       {
         successMsg: 'Reserva eliminada correctamente',
         errorMsg: 'Error al cancelar la Reserva',
-        onSuccess: () => this.reloadReservation(),
+        onSuccess: () => this.reload(),
       }
     );
   }

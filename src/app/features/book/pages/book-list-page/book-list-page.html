@@ -34,8 +34,8 @@
               <thead class="uppercase">
                 <tr>
                   <th></th>
-                  <th>Id Edicion</th>
-                  <th>Titulo / Author</th>
+                  <th>Id Libro / Autor</th>
+                  <th>Titulo / Género</th>
                   <th>Copias / Ediciones</th>
                   <th>Creación / Modificación</th>
                   <th>Acciones</th>
@@ -58,10 +58,11 @@
                     </td>
                     <td>
                       <p>{{ item.id_book }}</p>
+                      <p class="font-bold">{{ item.author_name }}</p>
                     </td>
                     <td>
                       <p class="font-bold">{{ item.title }}</p>
-                      <p class="font-bold">{{ item.author_name }}</p>
+                      <p>{{ item.genre_name }}</p>
                     </td>
                     <td>
                       <p>{{ item.copy_count }} Copia/s</p>

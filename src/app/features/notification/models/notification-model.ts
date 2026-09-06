@@ -23,7 +23,7 @@ export interface NotificationDetailModel extends NotificationModel {
 
 
 export interface NotificationFilterModel {
-  is_read?: boolean; // undefined = todos, false = no leídas, true = leídas
+  is_read?: boolean; // undefined/true = todos (sin filtro), false = solo no leídas
 }
 
 export interface CreateNotificationByEmailModel {

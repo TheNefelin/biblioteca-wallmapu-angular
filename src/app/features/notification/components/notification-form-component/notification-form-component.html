@@ -6,7 +6,7 @@
       <p class="text-sm text-base-content/60">Puedes enviar notificaciones y correo a usuarios registrados</p>
     </div>
 
-    <form (ngSubmit)="onSendClick()" class="grid grid-cols-1 gap-4">
+    <form class="grid grid-cols-1 gap-4">
       <fieldset class="fieldset">
         <label class="label">
           <input
@@ -63,9 +63,9 @@
         } @else {
           <app-button-component
             [icon]="'notification'"
-            [type]="'submit'"
             [isOpen]="false"
             [textBtn]="'Enviar Notificación'"
+            (clicked)="onSendClick()"
           />
           <app-button-component [icon]="'cancel'" [textBtn]="'Cancelar'" (clicked)="cancelForm.emit()" />
         }

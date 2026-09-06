@@ -46,7 +46,14 @@
 
         <tbody>
           @for(item of reservationList(); track item.id_reservation) {
-            <tr (click)="selectedReservation.emit(item)" class="hover:bg-my-purple/10 text-my-purple">
+            <tr
+              (click)="selectedReservation.emit(item)"
+              (keydown.enter)="selectedReservation.emit(item)"
+              (keydown.space)="selectedReservation.emit(item); $event.preventDefault()"
+              role="button"
+              tabindex="0"
+              class="hover:bg-my-purple/10 text-my-purple focus:bg-my-purple/10 focus:outline-none"
+            >
               <td>{{ item.id_reservation }}</td>
               <td>{{ item.book_title }}</td>
               <td>{{ item.user_name }} {{ item.user_lastname }}</td>
@@ -70,7 +77,11 @@
 
               <td class="whitespace-nowrap p-1">
                 @if (item.reservation_status_id === 1) {
-                  <app-button-component [icon]="'delete'" (clicked)="cancelReservation.emit(item.id_reservation)" />
+                  <app-button-component
+                    [icon]="'delete'"
+                    (click)="$event.stopPropagation()"
+                    (clicked)="cancelReservation.emit(item.id_reservation)"
+                  />
                 }
               </td>
             </tr>

@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ReservationService {
-  private apiService = inject(ApiService)
+  private apiService = inject(ApiService);
   private readonly endpoint = 'reservations';
 
   getAllPagination(params: PaginationRequestModel<ReservationFilterModel>): Observable<PaginationResponseModel<ReservationDetailModel[]>> {

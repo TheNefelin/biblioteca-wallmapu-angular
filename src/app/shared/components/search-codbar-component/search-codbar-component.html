@@ -1,12 +1,12 @@
-@if(errorMessage()) {
+@if(errorMsge()) {
   <app-message-error-component
-    [message]="errorMessage()"
+    [message]="errorMsge()"
   />
 }
 
-@if(successMessage()) {
-  <app-message-success-component 
-    [message]="successMessage()"
+@if(successMsge()) {
+  <app-message-success-component
+    [message]="successMsge()"
   />
 }
 
@@ -15,7 +15,7 @@
     <app-loading-component />
   </div>
 } @else {
-  <form (submit)="submit($event)" class="space-y-4">
+  <form (ngSubmit)="submit()" class="space-y-4">
     <!-- Campo de búsqueda -->
     <div class="fieldset">
       <div class="label">

@@ -6,17 +6,18 @@
   [class.bg-my-pink]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification' || icon() === 'book'"
   [class.bg-my-green]="icon() === 'edit' || icon() === 'goto'"
   [class.bg-my-purple]="icon() === 'refresh' || icon() === 'search' || icon() === 'save' || icon() === 'download'"
-  [class.bg-my-yellow]="icon() === 'help'"
-  [class.btn-outline]="icon() === 'refresh' || icon() === 'search' || icon() === 'book'"
+  [class.bg-my-yellow]="icon() === 'help' || icon() === 'expire'"
+  [class.btn-outline]="icon() === 'refresh' || icon() === 'search' || icon() === 'book' || icon() === 'expire'"
   [class.btn-ghost]="icon() === 'barcode'"
-  [class.text-my-light]="icon() !== 'barcode' && icon() !== 'help'"
-  [class.text-my-dark]="icon() === 'help'"
-  [class.fill-my-light]="icon() !== 'barcode' && icon() !== 'help'"
-  [class.fill-my-dark]="icon() === 'help' || icon() === 'barcode'"
+  [class.text-my-light]="icon() !== 'barcode' && icon() !== 'help' && icon() !== 'expire'"
+  [class.text-my-dark]="icon() === 'help' || icon() === 'expire'"
+  [class.fill-my-light]="icon() !== 'barcode' && icon() !== 'help' && icon() !== 'expire'"
+  [class.fill-my-dark]="icon() === 'help' || icon() === 'barcode' || icon() === 'expire'"
   [class.hover:bg-info]="icon() === 'barcode'"
   [class.hover:fill-my-light]="icon() === 'barcode'"
-  [class.hover:bg-my-pink]="icon() === 'help'"
-  [class.hover:text-my-light]="icon() === 'help'"
+  [class.hover:bg-my-pink]="icon() === 'help' || icon() === 'expire'"
+  [class.hover:text-my-light]="icon() === 'help' || icon() === 'expire'"
+  [class.hover:fill-my-light]="icon() === 'expire'"
   [class.hover:bg-my-pink/80]="icon() === 'create' || icon() === 'delete' || icon() === 'clear' || icon() === 'cancel' || icon() === 'notification' || icon() === 'book'"
   [class.hover:bg-my-green/80]="icon() === 'edit' || icon() === 'goto'"
   [class.hover:bg-my-purple/80]="icon() === 'refresh' || icon() === 'search' || icon() === 'save' || icon() === 'download'"
@@ -101,6 +102,11 @@
     @case ('book') {
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/>
+      </svg>
+    }
+    @case ('expire') {
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 21q-1.875 0-3.512-.712t-2.85-1.925t-1.925-2.85T3 12t.713-3.512t1.924-2.85t2.85-1.925T12 3q2.05 0 3.888.875T19 6.35V5q0-.425.288-.712T20 4t.713.288T21 5v4q0 .425-.288.713T20 10h-4q-.425 0-.712-.288T15 9t.288-.712T16 8h1.75q-1.025-1.4-2.525-2.2T12 5Q9.075 5 7.038 7.038T5 12t2.038 4.963T12 19q2.375 0 4.25-1.425t2.475-3.675q.125-.4.45-.6t.725-.15q.425.05.675.362t.15.688q-.725 2.975-3.15 4.888T12 21m1-9.4l2.5 2.5q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-2.8-2.8q-.15-.15-.225-.337T11 11.975V8q0-.425.288-.712T12 7t.713.288T13 8z"/>
       </svg>
     }
     @default {

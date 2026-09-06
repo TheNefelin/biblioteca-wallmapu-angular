@@ -11,6 +11,7 @@ import { LoanPolicyComponent } from "@features/loan-policies/components/loan-pol
 import { LoanStatusModel } from '@features/loan-status/models/loan-status-model';
 import { MutationService } from '@core/services/mutation-service';
 import { CrudPage } from '@shared/base/crud-page';
+import { ButtonComponent } from '@shared/components/button-component/button-component';
 
 @Component({
   selector: 'app-admin-loan-page',
@@ -18,7 +19,8 @@ import { CrudPage } from '@shared/base/crud-page';
     LoanListComponent,
     SectionHeaderComponent,
     LoanToReturnComponent,
-    LoanPolicyComponent
+    LoanPolicyComponent,
+    ButtonComponent
   ],
   templateUrl: './admin-loan-page.html',
 })

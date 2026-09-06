@@ -10,5 +10,5 @@ import { ReservationDetailModel } from '@features/reservation/models/reservation
   templateUrl: './reservation-detail-component.html',
 })
 export class ReservationDetailComponent {
-  readonly reservationModel = input<ReservationDetailModel | null>(null)
+  readonly reservationModel = input<ReservationDetailModel | null>(null);
 }

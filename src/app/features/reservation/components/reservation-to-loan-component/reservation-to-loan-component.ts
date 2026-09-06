@@ -20,7 +20,7 @@ export class ReservationToLoanComponent {
   readonly clearTrigger = input<number>(0);
   readonly isLoading = input<boolean>(false);
   protected readonly getReservationById = output<number>();
-  protected readonly reservationToLoan = output<ReservationDetailModel>()
+  protected readonly reservationToLoan = output<ReservationDetailModel>();
   protected readonly clear = output<void>();
 
   protected readonly disabledInput = signal<boolean>(false);
@@ -47,7 +47,7 @@ export class ReservationToLoanComponent {
     const reservation = this.reservationDetail();
     if (!reservation) return;
 
-    if (barcode != reservation.copy_barcode) {
+    if (barcode !== reservation.copy_barcode) {
       this.errorMessage.set("La Copia NO Coincide con la Reserva")
       return;
     }

@@ -16,15 +16,13 @@ import { ButtonComponent } from "../button-component/button-component";
 })
 export class SearchCodbarComponent {
   readonly disabled = input<boolean>(false);
-  readonly textTitle = input<string>('sin titulo')
-  readonly errorMessage = input<string | null>(null);
-  readonly successMessage = input<string | null>(null);
+  readonly textTitle = input<string>('sin titulo');
   readonly isLoading = input<boolean>(false);
   readonly clearTrigger = input<number>(0);
   protected readonly submitted = output<string | null>();
 
-  protected errorMsge = signal<string | null>(this.errorMessage());
-  protected successMsge = signal<string | null>(this.successMessage());
+  protected errorMsge = signal<string | null>(null);
+  protected successMsge = signal<string | null>(null);
   protected readonly formData = signal<string | null>(null);
 
   protected clearEffect = effect(() => {
@@ -32,19 +30,19 @@ export class SearchCodbarComponent {
 
     this.formData.set(null);
     this.errorMsge.set(null);
-    this.successMsge.set(null);  
+    this.successMsge.set(null);
   });
 
   protected updateCode(value: string) {
     this.formData.set(value);
+    this.errorMsge.set(null);
+    this.successMsge.set(null);
   }
 
-  protected submit(event: Event): void {
-    event.preventDefault();
-    
+  protected submit(): void {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
-    
+
     if (error) {
       this.errorMsge.set(error);
       return;

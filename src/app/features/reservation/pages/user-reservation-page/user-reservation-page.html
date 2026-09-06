@@ -11,7 +11,7 @@
 
   <div>
     <app-reservation-list-component
-      [isLoading]="reservation.isLoading() || this.reservation.isSaving()"
+      [isLoading]="reservation.isLoading() || reservation.isSaving()"
       [reservationList]="reservation.dataList()"
       [currentPage]="currentPage()"
       [totalPages]="totalPages()"

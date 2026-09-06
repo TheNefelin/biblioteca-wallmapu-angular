@@ -14,7 +14,8 @@ export type ButtonIcon =
   | 'notification'
   | 'help'
   | 'download'
-  | 'book';
+  | 'book'
+  | 'expire';
 
 @Component({
   selector: 'app-button-component',

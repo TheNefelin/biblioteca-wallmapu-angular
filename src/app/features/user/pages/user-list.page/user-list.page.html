@@ -4,7 +4,7 @@
     <app-section-header-component 
       title="Usuarios"
       searchPlaceholder="Buscar Usuario"
-      (searchChange)="searchText($event)"
+      (searchChange)="onSearchChange($event)"
     />
 
     @if (backendError()) {
@@ -16,11 +16,11 @@
     }
 
     <section class="p-4">
-      <app-user-list-components 
+      <app-user-list-component 
         [editRole]="editRole()"
         [isLoading]="isLoading()"
         [userDetailModelList]="userDetailListComputed()"
-        (onEditUser)="onNavigateToEdit($event)"
+        (editUser)="onNavigateToEdit($event)"
       />
     </section>
   </div>

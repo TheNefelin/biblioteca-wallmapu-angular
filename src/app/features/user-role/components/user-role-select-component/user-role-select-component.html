@@ -1,0 +1,10 @@
+<app-search-select-component
+  [items]="userRoleToSelectItemsList()"
+  [selectedId]="selectedId()"
+  [isLoading]="isLoading()"
+  [disabled]="disabled()"
+  [placeholder]="'Todos los Roles'"
+  [clearTrigger]="clearTrigger()"
+  (selectionChange)="selectItemToRole($event)"
+  (cleared)="selectedItem.emit(null)"
+/>

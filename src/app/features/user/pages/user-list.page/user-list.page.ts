@@ -2,9 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserService } from '@features/user/services/user-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { catchError, map, of } from 'rxjs';
-import { UserListComponents } from "@features/user/components/user-list-components/user-list-components";
+import { UserListComponent } from "@features/user/components/user-list-component/user-list-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { AuthStore } from '@features/auth/services/auth-store';
@@ -12,80 +11,53 @@ import { Role } from '@shared/constants/roles-enum';
 import { UserDetailModel } from '@features/user/models/user-model';
 import { Router } from '@angular/router';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
+import { CrudPage } from '@shared/base/crud-page';
 
 @Component({
   selector: 'app-user-list.page',
   imports: [
     SectionHeaderComponent,
-    UserListComponents,
+    UserListComponent,
     MessageErrorComponent,
     PaginationComponent
 ],
   templateUrl: './user-list.page.html',
 })
-export class UserListPage {
+export class UserListPage extends CrudPage<UserDetailModel> {
   // SERVICIO DE FEATURE
   private readonly authStore = inject(AuthStore);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
-  
-  readonly editRole = signal<Role>(this.authStore.user()?.role || Role.Reader);
 
-  // ATRIBUTOS
-  readonly currentPage = signal(1);
-  private readonly items = signal<number>(10);
-  readonly search = signal('');
-  readonly totalPages = signal<number>(0);
-
-  private readonly params = computed<PaginationRequestModel>(() => ({
-    page: this.currentPage(),
-    limit: this.items(),
-    search: this.search(),
-  })); 
+  protected readonly editRole = signal<Role>(this.authStore.user()?.role || Role.Reader);
 
   // FETCH
-  private readonly dataResourceRX = rxResource({
-    params: () => this.params(),
+  private readonly getUserRX = rxResource({
+    params: () => this.getAllPayload(),
     stream: ({ params }) => {
-      if (!params) return of(null);
+      if (!params) return of(this.emptyPaginated());
 
       return this.userService.getAllDetails(params).pipe(
-        map(response => {
-          this.totalPages.set(response.pages);
-          return response.data;
-        }),
-        catchError(err => {
-          return of(null);
-        })
+        map(response => this.mapPaginated(response)),
+        catchError(() => of(this.emptyPaginated()))
       );
     },
   });
 
-  readonly isLoading = this.dataResourceRX.isLoading;
-  readonly backendError = computed(() => this.dataResourceRX.error()?.message ?? null);
-  
+  protected readonly isLoading = computed(() => this.getUserRX.isLoading());
+  protected readonly backendError = computed(() => this.getUserRX.error()?.message ?? null);
+
   // PROCESAR USER
-  readonly userDetailListComputed = computed<UserDetailModel[] | []>(() => {
-    const data = this.dataResourceRX.value();
-    if (!data) return [];
-    return data
-  });
+  protected readonly userDetailListComputed = computed<UserDetailModel[]>(() => this.getUserRX.value() ?? []);
 
-  searchText(text: string) {
+  // CRUD-PAGE INHERITANCE METHODS
+  protected override reload(): void {
+    this.getUserRX.reload();
+  }
+
+  protected onSearchChange(text: string): void {
     this.search.set(text);
-    this.currentPage.set(1); 
-  }
-  
-  nextPage() {
-    if (this.currentPage() < this.totalPages()){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+    this.currentPage.set(1);
   }
 
   protected onNavigateToEdit(user: UserDetailModel): void {

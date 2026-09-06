@@ -6,21 +6,17 @@ import { NgOptimizedImage } from '@angular/common';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
-  selector: 'app-user-list-components',
+  selector: 'app-user-list-component',
   imports: [
     NgOptimizedImage,
     LoadingComponent,
     ButtonComponent
   ],
-  templateUrl: './user-list-components.html',
+  templateUrl: './user-list-component.html',
 })
-export class UserListComponents {
+export class UserListComponent {
   readonly editRole = input.required<Role>();
   readonly isLoading = input<boolean>(true);
   readonly userDetailModelList = input<UserDetailModel[]>([]);
-  readonly onEditUser = output<UserDetailModel>();
-
-  protected onEdit(user: UserDetailModel): void {
-    this.onEditUser.emit(user);
-  }
+  protected readonly editUser = output<UserDetailModel>();
 }

@@ -6,20 +6,16 @@ import { AuthUser } from '@features/auth/models/auth-user';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
-  selector: 'app-user-profile-components',
+  selector: 'app-user-profile-component',
   imports: [
     NgOptimizedImage,
     UserStatsComponents,
     ButtonComponent
 ],
-  templateUrl: './user-profile-components.html',
+  templateUrl: './user-profile-component.html',
 })
-export class UserProfileComponents {
+export class UserProfileComponent {
   readonly authUser = input<AuthUser | null>(null);
   readonly userDetailModel = input<UserDetailModel | null>(null);
-  readonly onEditProfile = output<void>();
-
-  protected onEdit(): void {
-    this.onEditProfile.emit();
-  }
+  protected readonly editProfile = output<void>();
 }

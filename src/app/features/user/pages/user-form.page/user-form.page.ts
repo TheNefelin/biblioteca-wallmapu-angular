@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { UserFormComponents } from "@features/user/components/user-form-components/user-form-components";
+import { UserFormComponent } from "@features/user/components/user-form-component/user-form-component";
 import { UserService } from '@features/user/services/user-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
@@ -12,21 +12,21 @@ import { UpdateUserByAdminModel, UpdateUserModel, UserModel } from '@features/us
 import { AuthStore } from '@features/auth/services/auth-store';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { extractErrorMessage } from '@core/utils/error-handler';
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
+import { MutationService } from '@core/services/mutation-service';
 
 @Component({
   selector: 'app-user-form.page',
   imports: [
     SectionHeaderComponent,
-    UserFormComponents,
-    MessageErrorComponent,
-    MessageSuccessComponent
+    UserFormComponent,
+    MessageErrorComponent
   ],
   templateUrl: './user-form.page.html',
 })
 export class UserFormPage {
   private location = inject(Location);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly mutation = inject(MutationService);
 
   readonly userId = toSignal(
     this.activatedRoute.paramMap.pipe(
@@ -35,14 +35,13 @@ export class UserFormPage {
     { initialValue: null }
   );
 
-  protected readonly successMessage = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isLoading = computed<boolean>(() => 
+  protected readonly isLoading = computed<boolean>(() =>
     [
       this.getUserRX,
-      this.updateRX,
     ].some((e) => e.isLoading())
   );
+  protected readonly isSaving = signal<boolean>(false);
 
   private readonly authStore = inject(AuthStore);
   protected readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
@@ -61,7 +60,6 @@ export class UserFormPage {
 
     return this.authUser()?.id_user ??  null
   });
-  private readonly submitPayload = signal<UpdateUserModel | UpdateUserByAdminModel | null>(null);
   protected readonly computedUser = computed<UserModel | null>(() => {
     const user = this.getUserRX.value()
     if(!user) return null
@@ -86,31 +84,9 @@ export class UserFormPage {
     params: () => this.getUserPayload(),
     stream: ({ params: id_user }) => {
       if (!id_user) return of(null);
-  
+
       return this.userService.getById(id_user).pipe(
         map(response => response),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly updateRX = rxResource({
-    params: () => this.submitPayload(),
-    stream: ({ params: payload }) => {
-      if (!payload) return of(null);
-  
-      const request$ = this.isUser()
-      ? this.userService.update_user(payload.id_user, payload as UpdateUserModel)
-      : this.userService.update_admin(payload.id_user, payload as UpdateUserByAdminModel);
-    
-        return request$.pipe(
-        map(response => {
-          this.successMessage.set('Usuario actualizado correctamente');
-          return response;
-        }),
         catchError(err => {
           this.handleError(err);
           return of(null);
@@ -142,7 +118,16 @@ export class UserFormPage {
         user_status_id: form.user_status_id,
       };
 
-      this.submitPayload.set(payload);
+    this.mutation.run(
+      this.isUser()
+        ? this.userService.update_user(payload.id_user, payload as UpdateUserModel)
+        : this.userService.update_admin(payload.id_user, payload as UpdateUserByAdminModel),
+      { isSaving: this.isSaving },
+      {
+        successMsg: 'Usuario actualizado correctamente',
+        errorMsg: 'Error al actualizar el usuario',
+      }
+    );
   }
 
   protected navigateBack(): void {
@@ -151,6 +136,5 @@ export class UserFormPage {
 
   private handleError(err: unknown): void {
     this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
   }
 }

@@ -40,19 +40,19 @@
       <section class="flex gap-2 flex-wrap">
         <div class="flex">
           <input value="Rol:" type="text" class="text-my-purple text-sm w-14 text-center" disabled />
-          <app-user-role-select-components
+          <app-user-role-select-component
             [selectedId]="userModel()?.user_role_id || 3"
             [disabled]="isUser()"
-            (newSelectedId)="onRoleChange($event)"
+            (selectedItem)="onRoleChange($event)"
           />
         </div>
   
         <div class="flex">
           <input value="Estado:" type="text" class="text-my-purple text-sm w-14 text-center" disabled />
-          <app-user-status-select-components 
+          <app-user-status-select-component 
             [selectedId]="userModel()?.user_status_id || 1"
             [disabled]="isUser()"
-            (newSelectedId)="onStatusChange($event)"
+            (selectedItem)="onStatusChange($event)"
           />
         </div>
       </section>
@@ -61,11 +61,12 @@
       <div class="divider text-base-content/40 mt-0">Datos</div>
 
       <fieldset class="fieldset flex flex-col">
-        <label class="label font-semibold mb-1">Teléfono</label>
+        <label for="phoneInput" class="label font-semibold mb-1">Teléfono</label>
         <div class="flex">
           <input value="+ 56" type="text" class="text-my-purple text-base w-12 text-center" disabled />
           <div class="flex gap-4">
             <input 
+              id="phoneInput"
               #phoneInput
               type="text" class="input validator" placeholder="987654321" required
               [value]="formData().phone"
@@ -77,8 +78,9 @@
       </fieldset>
       
       <fieldset class="fieldset flex flex-col">
-        <label class="label font-semibold mb-1">Nombre</label>
+        <label for="nameInput" class="label font-semibold mb-1">Nombre</label>
         <input
+          id="nameInput"
           #nameInput 
           type="text" class="input validator w-full" placeholder="Nombre" required 
           [value]="formData().name"
@@ -88,8 +90,9 @@
       </fieldset>
       
       <fieldset class="fieldset flex flex-col">
-        <label class="label font-semibold mb-1">Apellido</label>
+        <label for="lastnameInput" class="label font-semibold mb-1">Apellido</label>
         <input
+          id="lastnameInput"
           #lastnameInput
           type="text" class="input validator w-full" placeholder="Apellido" required
           [value]="formData().lastname"
@@ -99,22 +102,24 @@
       </fieldset>
 
       <fieldset class="fieldset flex flex-col max-w-">
-        <label class="label font-semibold mb-1">Rut</label>
+        <label for="rutInput" class="label font-semibold mb-1">Rut</label>
         <div class="flex gap-4">
           <input 
+            id="rutInput"
             #rutInput
             type="text" class="input validator max-w-52" placeholder="12345678-9" required
             [value]="formData().rut"
             (input)="updateRut($any($event.target).value, rutInput)"
           />
-          <label class="label text-sm font-bold text-my-purple">Ejemplo: 12345678-9</label>
+          <span class="label text-sm font-bold text-my-purple">Ejemplo: 12345678-9</span>
         </div>
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>
       
       <fieldset class="fieldset flex flex-col">
-        <label class="label font-semibold mb-1">Dirección</label>
+        <label for="addressInput" class="label font-semibold mb-1">Dirección</label>
         <input
+          id="addressInput"
           #addressInput
           type="text" class="input validator w-full" placeholder="Dirección" required
           [value]="formData().address"
@@ -124,7 +129,7 @@
       </fieldset>
 
       <fieldset class="fieldset flex flex-col">
-        <label class="label font-semibold mb-1">Comuna</label>
+        <span class="label font-semibold mb-1">Comuna</span>
         <!-- COMPONENTE FEATURE COMMUNE-->
         <app-commune-select-components
           [selectedId]="formData().commune_id ?? 0" 

@@ -5,7 +5,7 @@ import { UserService } from '@features/user/services/user-service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { catchError, map, of } from 'rxjs';
-import { UserProfileComponents } from "@features/user/components/user-profile-components/user-profile-components";
+import { UserProfileComponent } from "@features/user/components/user-profile-component/user-profile-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
 import { UserDetailModel } from '@features/user/models/user-model';
@@ -27,7 +27,7 @@ import { MutationService } from '@core/services/mutation-service';
   imports: [
     CommonModule,
     SectionHeaderComponent,
-    UserProfileComponents,
+    UserProfileComponent,
     MessageErrorComponent,
     NotificationListComponent,
     NotificationBellComponent

@@ -1,0 +1,10 @@
+<app-search-select-component
+  [items]="userStatusToSelectItemsList()"
+  [selectedId]="selectedId()"
+  [isLoading]="isLoading()"
+  [disabled]="disabled()"
+  [placeholder]="'Todos los Estados'"
+  [clearTrigger]="clearTrigger()"
+  (selectionChange)="selectItemToStatus($event)"
+  (cleared)="selectedItem.emit(null)"
+/>

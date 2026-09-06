@@ -7,10 +7,10 @@
     <app-message-error-component [message]="errorMessage()" />
   }
 
-  <app-user-profile-components
+  <app-user-profile-component
     [authUser]="authUser()"
     [userDetailModel]="userDetailComputed()"
-    (onEditProfile)="onNavigateToEdit()"
+    (editProfile)="onNavigateToEdit()"
   />
 
   <div class="text-my-purple flex justify-end pt-4">

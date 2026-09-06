@@ -1,42 +1,52 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { UserStatusSelectComponents } from "@features/user-status/components/user-status-select-components/user-status-select-components";
-import { UserRoleSelectComponents } from "@features/user-role/components/user-role-select-components/user-role-select-components";
+import { UserStatusSelectComponent } from "@features/user-status/components/user-status-select-component/user-status-select-component";
+import { UserRoleSelectComponent } from "@features/user-role/components/user-role-select-component/user-role-select-component";
+import { UserRoleModel } from '@features/user-role/models/user-role-model';
+import { UserStatusModel } from '@features/user-status/models/user-status-model';
 import { UserModel } from '@features/user/models/user-model';
 import { CommuneSelectComponents } from '@features/division-commune/components/commune-select-components/commune-select-components';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
-  selector: 'app-user-form-components',
+  selector: 'app-user-form-component',
   imports: [
     DatePipe,
     NgOptimizedImage,
     MessageErrorComponent,
     CommuneSelectComponents,
-    UserStatusSelectComponents,
-    UserRoleSelectComponents,
+    UserStatusSelectComponent,
+    UserRoleSelectComponent,
     LoadingComponent
 ],
-  templateUrl: './user-form-components.html',
+  templateUrl: './user-form-component.html',
 })
-export class UserFormComponents {
+export class UserFormComponent {
   readonly isLoading = input<boolean>(false);
   readonly isUser = input<boolean>(true);
   readonly userPicture = input<string | null>(null);
   readonly userModel = input<UserModel | null>(null);
-  readonly formSubmit = output<UserModel>();
+  protected readonly formSubmit = output<UserModel>();
 
-  readonly errorMessage = signal<string | null>(null);
-  readonly formData = signal<Partial<UserModel>>({});
-
-  private readonly syncFormEffect = effect(() => {
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly formData = linkedSignal<UserModel>(() => {
     const user = this.userModel();
-    if (!user) return; 
 
-    this.formData.set({
-      ...user
-    });
+    return {
+      id_user: user?.id_user ?? '',
+      email: user?.email ?? '',
+      name: user?.name ?? '',
+      lastname: user?.lastname ?? '',
+      rut: user?.rut ?? '',
+      address: user?.address ?? '',
+      phone: user?.phone ?? '',
+      created_at: user?.created_at ?? '',
+      updated_at: user?.updated_at ?? '',
+      commune_id: user?.commune_id ?? 0,
+      user_role_id: user?.user_role_id ?? 0,
+      user_status_id: user?.user_status_id ?? 0,
+    }
   });
 
   /* -- Form Updates -------------------------------------- */
@@ -56,7 +66,6 @@ export class UserFormComponents {
     this.updateField('address', value, input); 
   }
   protected updateCommune(id: number) {
-    if (!id) return;
     this.formData.update(data => ({ ...data, commune_id: id }));
   }
 
@@ -91,7 +100,7 @@ export class UserFormComponents {
         if (value.length > 10) return null;
         return value;   
       case 'address':
-        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s0-9\,\-\°\#\.]*$/.test(value)) return null; // solo texto, números y caracteres
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s0-9,°#.]+$/.test(value)) return null; // solo texto, números y caracteres
         if (value.length > 256) return null;
         return value;       
       default:
@@ -116,23 +125,11 @@ export class UserFormComponents {
       return;
     }
 
-    const completeData = this.userModel();
-    
-    if (!completeData) {
-      this.errorMessage.set('No se encontró el usuario original');
-      return;
-    }
-
-    const submitData: UserModel = { 
-      ...completeData,
-      ...data 
-    }
-
     this.errorMessage.set(null)
-    this.formSubmit.emit(submitData); // ✅ emite al padre
+    this.formSubmit.emit(data); // ✅ emite al padre
   }
   
-  private validateFormOnSubmit(data: Partial<UserModel>): string | null {
+  private validateFormOnSubmit(data: UserModel): string | null {
     if (!data.name?.trim())           return 'El nombre es requerido';
     if (data.name.length < 2)         return 'El nombre debe tener al menos 2 caracteres';
   
@@ -171,11 +168,15 @@ export class UserFormComponents {
     return dv.toLowerCase() === expected;
   }
 
-  protected onRoleChange(id: number) {
-    this.formData.update(data => ({ ...data, user_role_id: id }));
+  protected onRoleChange(role: UserRoleModel | null) {
+    if (role) {
+      this.formData.update(data => ({ ...data, user_role_id: role.id_user_role }));
+    }
   }
 
-  protected onStatusChange(id: number) {
-    this.formData.update(data => ({ ...data, user_status_id: id }));
+  protected onStatusChange(status: UserStatusModel | null) {
+    if (status) {
+      this.formData.update(data => ({ ...data, user_status_id: status.id_user_status }));
+    }
   }
 }

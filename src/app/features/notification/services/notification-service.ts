@@ -30,14 +30,14 @@ export class NotificationService {
     );
   }
 
-  markAsReadByUser(id: number): Observable<NotificationModel> {
-    return this.apiService.update<NotificationModel, null>(
+  markAsReadByUser(id: number): Observable<boolean> {
+    return this.apiService.update<boolean, null>(
       `${this.endpoint}/user`, `${id}/read`, null
     );
   }
 
-  markAllAsReadByUser(): Observable<NotificationModel> {
-    return this.apiService.update<NotificationModel, null>(
+  markAllAsReadByUser(): Observable<boolean> {
+    return this.apiService.update<boolean, null>(
       `${this.endpoint}/user`, `read-all`, null
     );
   }

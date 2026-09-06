@@ -28,8 +28,8 @@ Porque resuelve los problemas que matan a las apps Angular cuando crecen, con de
 | **`ErrorService` (modal) + `SuccessService` (toast) + `ConfirmService` (promise-based)** | Feedback de usuario centralizado: errores HTTP en modal vía interceptor (única fuente), éxitos en cola de toasts con auto-cierre, confirmaciones con `await confirm()` que resuelve `boolean` |
 | **ESLint con `angular-eslint`** | Lint de TS + templates (accesibilidad incluida) en `pnpm lint`, 0 errores — el refactor deja de ser a ciegas |
 | **Spinner solo en carga inicial** | `isLoading() && !hasValue()` en vez de `isLoading()`: al refetchear la lista no se desmonta (acordeón/expansión conserva su estado) |
-| **`(ngSubmit)` en lugar de `(submit)`** | `NgForm.onSubmit` devuelve `false` en forms normales y Angular llama `preventDefault()` automáticamente — Enter no recarga la página |
-| **Formularios con `(ngSubmit)` + validation local** | El Enter del form dispara el submit sin recargar; las validaciones se muestran con un componente de mensaje local, nunca como toast/modal |
+| **`(ngSubmit)` en lugar de `(submit)`** | `NgForm.onSubmit` devuelve `false` en forms normales y Angular llama `preventDefault()` automáticamente — Enter no recarga la página. **⚠️ IMPORTANTE**: `(ngSubmit)` es un evento del directive `NgForm`; sin **`FormsModule` importado** en el componente **nunca dispara** y el form hace submit nativo (recarga GET). Ver §7 Forms |
+| **Formularios con validación local** | Dos variantes senior: (a) `<form (ngSubmit)>` con `FormsModule` importado, o (b) `<form>` **sin** evento de submit + botón `type="button"` con `(clicked)="onSaveClick()"` — la variante (b) es la convención dominante en los modales CRUD (genre/author/subject/editorial/format/copy). Las validaciones se muestran con un componente de mensaje local, nunca como toast/modal |
 
 ---
 
@@ -204,7 +204,7 @@ protected readonly submitForm = output<{ id: number, data: SaveModel }>();
 - `clearTrigger` se usa en **select components** (para limpiar la selección visual), no en el form principal.
 - El form emite `{ id, data }`: `id = 0` en creación, `id = feature.id` en edición. El page decide create vs update.
 - Validaciones **locales** con `validateFormOnSubmit()`, nunca toast/modal. Retorna `string | null` (null = válido).
-- Submit con `(ngSubmit)` (no `(submit)`) — previene la recarga por Enter.
+- Submit con `(ngSubmit)` **solo si `FormsModule` está importado** (es el evento de `NgForm`; sin él no dispara y el form hace submit nativo). Alternativa senior: `<form>` sin evento + botón `type="button"` con `(clicked)` — la convención dominante en modales.
 - Template lee fechas/ids del **input** `model()`, no de `formData()`: `<p>ID: {{ model()?.id }}</p>` (no `formData().id`).
 
 ### 4.5 Componentes — outputs y accesibilidad
@@ -312,11 +312,12 @@ Antes de dar una app Angular por terminada:
 - [ ] `CrudPage<TModel>` para listados paginados; streams `rxResource` puros (`mapPaginated`/`emptyPaginated`)
 - [ ] Filtro por catálogo: `getPaginationPayload` privado por página + handler `onFilterByIdStatus(Model | null)` con sentinel `0 = todos`
 - [ ] Estado agrupado por feature (`{ dataList, isLoading, isSaving, showModal, selectedItem }`); handlers `onCreate*`/`onEdit*`/`onDelete*`/`onClear*`/`onSubmit*`
-- [ ] `linkedSignal` con `computation` en forms (reset por source change); `clearTrigger` solo en selects; form emite `{ id, data: SaveModel }`
+- [ ] `linkedSignal` con `computation` en forms (reset por source change); `clearTrigger` solo en selects; form emite `{ id, data: SaveModel }`; submit con `(ngSubmit)` + `FormsModule`, o botón `(clicked)` sin evento de form
 - [ ] Select emite `Model | null` (`selectedItem`); consumidor agrega el modelo directo a su lista; selected-list emite `delete`
 - [ ] Labels asociados a controles; elementos interactivos focusables con keydown
 - [ ] Auth consistente: **[CSR]** Bearer de `localStorage`/`sessionStorage`; **[SSR]** por namespace (sessionStorage + sessionSignal reactivo + interceptor con refresh/retry/logout)
 - [ ] Feedback: `ErrorService` (modal, vía interceptor) + `SuccessService` (toast) + `ConfirmService` (promise-based)
+- [ ] Badge/estado real-time: `NotificationBadgeState` con WebSocket primario (observador server 5s) + polling 30s solo como fallback; `disconnect()` en logout (efecto `isAuthenticated`)
 - [ ] Búsquedas con `encodeURIComponent()`; `limit` de paginación acotado
 - [ ] `strict: true`; comillas simples y semicolons uniformes; imports con aliases (`@core/*`, `@shared/*`, `@features/*`)
 - [ ] Nomenclatura singular: `-component` (sin `s`) en archivos, clases y selectores
@@ -331,6 +332,8 @@ Antes de dar una app Angular por terminada:
 | **[SSR]** `npm start` con `ng serve` | Es el dev server sin SSR; producción requiere el servidor Express (`node dist/.../server.mjs`) |
 | `subscribe()` manual en listados | Estado no reactivo, propenso a leaks y a estados stale; usar `rxResource` |
 | `(submit)` en lugar de `(ngSubmit)` | Enter recarga la página y pierde el form |
+| `(ngSubmit)` **sin `FormsModule` importado** | El evento `ngSubmit` lo emite el directive `NgForm`; sin `FormsModule` en los imports del componente **nunca dispara** y el form hace submit nativo (recarga GET sin enviar POST) — el botón `type="submit"` queda mudo |
+| WebSocket + polling simultáneos como canales de badge | Doble tráfico y complejidad; usar el WS como canal primario y el polling solo como fallback cuando el WS cae, con `disconnect()` limpio en logout |
 | Outputs `onXxx` (`onClick`, `onSubmit`, `onClose`) | Confunde con listeners DOM; la regla `no-output-on-prefix` lo prohíbe |
 | Outputs con nombre de evento nativo (`close`, `click`, `submit`) | La regla `no-output-native` lo prohíbe; usar `closed`/`clicked`/`submitted` |
 | `isLoading()` solo para el spinner | Desmonta la lista en cada refetch; usar `isLoading() && !hasValue()` |

@@ -9,32 +9,39 @@ export class NotificationBadgeState {
   private apiUrl = environment.apiUrl;
 
   readonly unreadCount = signal<number>(0);
+
   private websocket: WebSocket | null = null;
   private shouldReconnect = true;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private pollingTimer: ReturnType<typeof setInterval> | null = null;
 
   connect(): void {
-    const token = this.getToken();
-    if (!token || this.websocket) return;
+    if (!this.getToken()) return;
 
+    this.shouldReconnect = true;
     this.loadUnreadCount();
-    this.setupWebSocket(token);
-    this.startPolling();
+    this.setupWebSocket();
   }
 
   disconnect(): void {
     this.shouldReconnect = false;
-    this.stopPolling();
-    if (this.websocket) {
-      this.websocket.close();
-      this.websocket = null;
-    }
+    this.clearTimers();
+    this.closeWebSocket();
   }
 
-  private setupWebSocket(token: string): void {
-    const wsUrl = this.apiUrl.replace(/^http/, 'ws') + '/notifications/ws?token=' + token;
+  refresh(): void {
+    this.loadUnreadCount();
+  }
 
+  private setupWebSocket(): void {
+    if (this.websocket) return;
+
+    const wsUrl = this.apiUrl.replace(/^http/, 'ws') + '/notifications/ws?token=' + this.getToken();
     this.websocket = new WebSocket(wsUrl);
+
+    this.websocket.onopen = () => {
+      this.stopPolling();
+    };
 
     this.websocket.onmessage = (event) => {
       try {
@@ -48,20 +55,25 @@ export class NotificationBadgeState {
     };
 
     this.websocket.onclose = () => {
-      if (this.shouldReconnect) {
-        setTimeout(() => {
-          if (!this.getToken()) {
-            this.disconnect();
-          } else {
-            this.setupWebSocket(this.getToken());
-          }
-        }, 3000);
+      this.websocket = null;
+      if (this.shouldReconnect && this.getToken()) {
+        this.startPolling();
+        this.scheduleReconnect();
       }
     };
 
     this.websocket.onerror = () => {
-      // onclose will fire after onerror, reconnection handled there
+      // onclose will fire after onerror
     };
+  }
+
+  private scheduleReconnect(): void {
+    this.clearReconnectTimer();
+    this.reconnectTimer = setTimeout(() => {
+      if (this.shouldReconnect && this.getToken()) {
+        this.setupWebSocket();
+      }
+    }, 3000);
   }
 
   private startPolling(): void {
@@ -73,6 +85,26 @@ export class NotificationBadgeState {
     if (this.pollingTimer) {
       clearInterval(this.pollingTimer);
       this.pollingTimer = null;
+    }
+  }
+
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+  }
+
+  private clearTimers(): void {
+    this.stopPolling();
+    this.clearReconnectTimer();
+  }
+
+  private closeWebSocket(): void {
+    if (this.websocket) {
+      this.websocket.onclose = null;
+      this.websocket.close();
+      this.websocket = null;
     }
   }
 
@@ -95,9 +127,5 @@ export class NotificationBadgeState {
     } catch {
       // handled by catchError above
     }
-  }
-
-  refresh(): void {
-    this.loadUnreadCount();
   }
 }

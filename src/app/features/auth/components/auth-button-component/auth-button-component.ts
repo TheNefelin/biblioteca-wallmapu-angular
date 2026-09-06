@@ -21,6 +21,8 @@ export class AuthButtonComponent {
   private readonly connectNotification = effect(() => {
     if (this.isAuthenticated()) {
       this.badgeState.connect();
+    } else {
+      this.badgeState.disconnect();
     }
   });
   

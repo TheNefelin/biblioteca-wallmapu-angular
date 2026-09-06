@@ -4,10 +4,10 @@ import { SectionHeaderComponent } from "@shared/components/section-header-compon
 import { UserService } from '@features/user/services/user-service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthStore } from '@features/auth/services/auth-store';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { UserProfileComponents } from "@features/user/components/user-profile-components/user-profile-components";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { NotificationListComponents } from "@features/notification/components/notification-list-components/notification-list-components";
+import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
 import { UserDetailModel } from '@features/user/models/user-model';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { Role } from '@shared/constants/roles-enum';
@@ -15,11 +15,12 @@ import { extractErrorMessage } from '@core/utils/error-handler';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { NotificationBadgeState } from '@features/notification/services/notification-badge-state.service';
-import { NotificationBellComponents } from "@features/notification/components/notification-bell-components/notification-bell-components";
+import { NotificationBellComponent } from "@features/notification/components/notification-bell-component/notification-bell-component";
 import { Router } from '@angular/router';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
+import { CrudPage } from '@shared/base/crud-page';
+import { MutationService } from '@core/services/mutation-service';
 
 @Component({
   selector: 'app-user-profile.page',
@@ -28,65 +29,57 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
     SectionHeaderComponent,
     UserProfileComponents,
     MessageErrorComponent,
-    NotificationListComponents,
-    NotificationBellComponents
-],
+    NotificationListComponent,
+    NotificationBellComponent
+  ],
   templateUrl: './user-profile.page.html',
 })
-export class UserProfilePage {
+export class UserProfilePage extends CrudPage<NotificationDetailModel> {
   private readonly badgeState = inject(NotificationBadgeState);
   readonly unreadCount = this.badgeState.unreadCount;
-  
+
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
   readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
 
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isReadFilter = signal<boolean>(true);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
 
-  protected readonly isLoading = computed<boolean>(() => 
-    [
-      this.getUserRX,
-      this.getNotificationRX,
-      this.markNotificationAsReadRX,
-      this.markAllNotificationAsReadRX,
-    ].some(e => e.isLoading())
-  );
+  // NOTIFICATION STATE -------------------------------------------------------------
+  protected readonly showOnlyUnread = signal<boolean>(false);
+  protected readonly markAsReadSaving = signal<boolean>(false);
+  protected readonly markAllAsReadSaving = signal<boolean>(false);
+
+  protected readonly notification = {
+    dataList: computed<NotificationDetailModel[]>(() => {
+      if (!this.authUser()) return [];
+      return this.getAllNotificationRX.value() ?? [];
+    }),
+    isLoading: computed<boolean>(() => {
+      if (!this.authUser()) return false;
+      return (this.getAllNotificationRX.isLoading() && !this.getAllNotificationRX.hasValue()) ||
+        this.markAsReadSaving() ||
+        this.markAllAsReadSaving();
+    }),
+  };
 
   private readonly notificationService = inject(NotificationService);
-  private readonly markAsReadPayload = signal<number | null>(null);
-  private readonly markAllReadTrigger = signal<number>(0);
-  private readonly getNotificationPayload = computed<PaginationRequestModel<NotificationFilterModel>>(() => {
-    const user = this.authUser();
-    if (!user) return null as any;
-    return {
-      page: this.currentPage(),
-      limit: this.limit(),
-      search: this.search(),
-      filter: {
-        is_read: this.isReadFilter()
-      }
-    }
-  });
-  protected readonly computedPaginationAndNotificationList = computed<PaginationResponseModel<NotificationDetailModel[]> | null>(() => this.getNotificationRX.value() ?? null);
-  
+  private readonly mutation = inject(MutationService);
+
   private readonly userService = inject(UserService);
   readonly userDetailComputed = computed<UserDetailModel | null>(() => this.getUserRX.value() ?? null);
   readonly isProfileIncomplete = computed(() => {
     const user = this.getUserRX.value();
     if (!user) return false;
-  
+
     return !(user.name && user.lastname && user.address && user.rut && user.phone);
   });
 
+  // FETCHS ------------------------------------------------------------------------
   private readonly getUserRX = rxResource({
     params: () => this.authUser(),
     stream: ({ params }) => {
       if (!params) return of(null);
-  
+
       return this.userService.getById(params.id_user).pipe(
         map(response => response),
         catchError(err => {
@@ -97,87 +90,70 @@ export class UserProfilePage {
     },
   });
 
-  private readonly getNotificationRX = rxResource({
+  private readonly getNotificationPayload = computed<PaginationRequestModel<NotificationFilterModel> | null>(() => {
+    const user = this.authUser();
+    if (!user) return null;
+    return {
+      page: this.currentPage(),
+      limit: this.limit(),
+      search: this.search(),
+      filter: {
+        is_read: this.showOnlyUnread() ? false : undefined,
+      }
+    }
+  });
+
+  private readonly getAllNotificationRX = rxResource({
     params: () => this.getNotificationPayload(),
     stream: ({ params }) => {
-      if (!params) return of(null);
+      if (!params) return of(this.emptyPaginated());
 
       return this.notificationService.getAllPaginationByUser(params).pipe(
-        map(response => response),
+        map(response => this.mapPaginated(response)),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
+          console.error('[NotificationService::UserProfilePage] getAllPaginationByUser:', err);
+          return of(this.emptyPaginated());
         })
       );
     },
   });
 
-  private readonly markNotificationAsReadRX = rxResource({
-    params: () => this.markAsReadPayload(),
-    stream: ({ params }) => { 
-      if (!params) return of(null);
+  // CRUD-PAGE INHERITANCE METHODS -------------------------------------------------
+  protected override reload(): void {
+    this.getAllNotificationRX.reload();
+  }
 
-      return this.notificationService.markAsReadByUser(params).pipe(
-        map(response => response),
-        tap(() => {
-          this.getNotificationRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
-  private readonly markAllNotificationAsReadRX = rxResource({
-    params: () => this.markAllReadTrigger(),
-    stream: ({ params }) => { 
-      if (!params) return of(null);
-
-      return this.notificationService.markAllAsReadByUser().pipe(
-        map(response => response),
-        tap(() => {
-          this.getNotificationRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });  
+  // NOTIFICATION ACTIONS ----------------------------------------------------------
+  protected onFilterNotRead(showOnlyUnread: boolean): void {
+    this.showOnlyUnread.set(showOnlyUnread);
+    this.currentPage.set(1);
+  }
 
   protected onMarkAsRead(item: NotificationDetailModel): void {
-    this.markAsReadPayload.set(item.id_notification)
+    this.mutation.run(
+      this.notificationService.markAsReadByUser(item.id_notification),
+      { isSaving: this.markAsReadSaving },
+      {
+        successMsg: 'Notificación marcada como leída',
+        errorMsg: 'Error al marcar la notificación como leída',
+        onSuccess: () => this.reload(),
+      }
+    );
   }
 
   protected onMarkAllAsRead(): void {
-    this.markAllReadTrigger.update(c => c + 1);
-  }
-  
-  protected onFilterNotRead(is_read: boolean): void {
-    this.isReadFilter.set(is_read);
-  }
-
-  protected onReloadNotification(): void {
-    this.getNotificationRX.reload();
-  }
-
-  protected nextPage(): void {
-    const totalPages = this.computedPaginationAndNotificationList()?.pages ?? 1
-
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
+    this.mutation.run(
+      this.notificationService.markAllAsReadByUser(),
+      { isSaving: this.markAllAsReadSaving },
+      {
+        successMsg: 'Todas las notificaciones marcadas como leídas',
+        errorMsg: 'Error al marcar todas las notificaciones como leídas',
+        onSuccess: () => this.reload(),
+      }
+    );
   }
 
-  protected prevPage(): void {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
-  }
-  
+  // PROFILE ACTIONS ----------------------------------------------------------------
   protected onNavigateToEdit(): void {
     const id_user = this.userDetailComputed()?.id_user;
     const isAdmin = this.authUser()?.role == Role.Admin;

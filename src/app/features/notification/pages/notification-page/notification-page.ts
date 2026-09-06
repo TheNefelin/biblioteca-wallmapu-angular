@@ -1,120 +1,95 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { NotificationListComponents } from "@features/notification/components/notification-list-components/notification-list-components";
-import { NotificationFormComponents } from "@features/notification/components/notification-form-components/notification-form-components";
-import { MessageSuccessComponent } from "@shared/components/message-success-component/message-success-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
-import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
 import { NotificationService } from '@features/notification/services/notification-service';
-import { extractErrorMessage } from '@core/utils/error-handler';
+import { MutationService } from '@core/services/mutation-service';
+import { CrudPage } from '@shared/base/crud-page';
+import { SectionHeaderComponent } from '@shared/components/section-header-component/section-header-component';
+import { NotificationListComponent } from '@features/notification/components/notification-list-component/notification-list-component';
+import { NotificationFormComponent } from '@features/notification/components/notification-form-component/notification-form-component';
 
 @Component({
   selector: 'app-notification-page',
   imports: [
-    NotificationListComponents, 
-    NotificationFormComponents, 
-    MessageSuccessComponent, 
-    MessageErrorComponent
+    SectionHeaderComponent,
+    NotificationListComponent,
+    NotificationFormComponent,
   ],
   templateUrl: './notification-page.html',
 })
-export class NotificationPage {
-  protected readonly isReadFilter = signal<boolean>(true);
-  protected readonly cleanFormTrigger = signal<number>(0);
-  protected readonly successMessage = signal<string | null>(null);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(10);
-  private readonly search = signal<string>('');
-  
-  protected readonly isLoading = computed<boolean>(() => this.getNotificationRX.isLoading() || this.saveNotificationRX.isLoading())
-  protected readonly isLoadingCreateNotification = computed<boolean>(() => this.saveNotificationRX.isLoading())
-
+export class NotificationPage extends CrudPage<NotificationDetailModel> {
   private readonly notificationService = inject(NotificationService);
+  private readonly mutation = inject(MutationService);
+
+  // NOTIFICATION STATE -------------------------------------------------------------
+  protected readonly notification = {
+    dataList: computed<NotificationDetailModel[]>(() => this.getAllNotificationRX.value() ?? []),
+    isLoading: computed<boolean>(() => this.getAllNotificationRX.isLoading() && !this.getAllNotificationRX.hasValue()),
+    isSaving: signal<boolean>(false),
+    showModal: signal<boolean>(false),
+  };
+  protected readonly showOnlyUnread = signal<boolean>(false);
+
+  // FETCHS ------------------------------------------------------------------------
   private readonly getNotificationPayload = computed<PaginationRequestModel<NotificationFilterModel>>(() => {
     return {
       page: this.currentPage(),
       limit: this.limit(),
       search: this.search(),
       filter: {
-        is_read: this.isReadFilter()
+        is_read: this.showOnlyUnread() ? false : undefined,
       }
     }
   });
-  protected readonly computedPaginationAndNotificationList = computed<PaginationResponseModel<NotificationDetailModel[]> | null>(() => this.getNotificationRX.value() ?? null);
-  
-  private readonly getNotificationRX = rxResource({
+
+  private readonly getAllNotificationRX = rxResource({
     params: () => this.getNotificationPayload(),
-    stream: ({ params }) => { 
+    stream: ({ params }) => {
+      if (!params) return of(null);
 
       return this.notificationService.getAllPagination(params).pipe(
-        map(response => response),
+        map(response => this.mapPaginated(response)),
         catchError(err => {
-          this.handleError(err);
-          return of(null);
+          console.error('[NotificationService::NotificationPage] getAllPagination:', err);
+          return of(this.emptyPaginated());
         })
       );
     },
   });
 
-  private readonly saveNotificationPayload = signal<CreateNotificationByEmailModel | null>(null);
-
-  private readonly saveNotificationRX = rxResource({
-    params: () => this.saveNotificationPayload(),
-    stream: ({ params }) => {
-      if (!params) return of(null);
-
-      return this.notificationService.create(params).pipe(
-        map(response => {
-          this.successMessage.set('Notificación enviada correctamente');
-          return response;
-        }),
-        tap(() => {
-          this.cleanFormTrigger.update(e => e + 1);
-          this.getNotificationRX.reload();
-        }),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    }
-  });
-
-  protected onFormSubmit(item: CreateNotificationByEmailModel): void {
-    this.errorMessage.set(null);
-    this.saveNotificationPayload.set(item);
+  // CRUD-PAGE INHERITANCE METHODS -------------------------------------------------
+  protected override reload(): void {
+    this.getAllNotificationRX.reload();
   }
 
-  protected onFilterNotRead(is_read: boolean): void {
-    this.isReadFilter.set(is_read);
+  // NOTIFICATION ACTIONS ----------------------------------------------------------
+  protected onFilterNotRead(showOnlyUnread: boolean): void {
+    this.showOnlyUnread.set(showOnlyUnread);
+    this.currentPage.set(1);
   }
 
-  protected onReloadNotification(): void {
-    this.getNotificationRX.reload();
-    this.successMessage.set(null);
-    this.errorMessage.set(null);
+  protected onCreateNotification(): void {
+    this.notification.showModal.set(true);
   }
 
-  protected nextPage(): void {
-    const totalPages = this.computedPaginationAndNotificationList()?.pages ?? 1
-
-    if (this.currentPage() < totalPages){
-      this.currentPage.update(e => e + 1);
-    }
+  protected onClearNotificationForm(): void {
+    this.notification.showModal.set(false);
   }
 
-  protected prevPage(): void {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-    this.successMessage.set(null);
+  protected onSubmitNotificationForm(item: CreateNotificationByEmailModel): void {
+    this.mutation.run(
+      this.notificationService.create(item),
+      { isSaving: this.notification.isSaving },
+      {
+        successMsg: 'Notificación enviada correctamente',
+        errorMsg: 'Error al enviar la notificación',
+        onSuccess: () => {
+          this.onClearNotificationForm();
+          this.reload();
+        },
+      }
+    );
   }
 }

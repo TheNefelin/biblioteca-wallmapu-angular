@@ -14,18 +14,21 @@
   />
 
   <div class="text-my-purple flex justify-end pt-4">
-    <app-notification-bell-components [textUnreadCount]="unreadCount()" />
+    <app-notification-bell-component [textUnreadCount]="unreadCount()" />
   </div>
 
-  <app-notification-list-components 
-    [isLoading]="isLoading()"
+  <app-notification-list-component
+    [isLoading]="notification.isLoading()"
     [isUser]="true"
-    [paginationAndNotificationList]="computedPaginationAndNotificationList()"
-    (onReload)="onReloadNotification()"
-    (onMarkAsRead)="onMarkAsRead($event)"
-    (onMarkAllAsRead)="onMarkAllAsRead()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"
-    (onFilterNotRead)="onFilterNotRead($event)"
+    [notificationList]="notification.dataList()"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [showOnlyUnread]="showOnlyUnread()"
+    (reload)="reload()"
+    (markAsRead)="onMarkAsRead($event)"
+    (markAllAsRead)="onMarkAllAsRead()"
+    (filterNotRead)="onFilterNotRead($event)"
+    (nextPage)="nextPage()"
+    (prevPage)="prevPage()"
   />
 </section>

@@ -1,27 +1,26 @@
+<app-section-header-component
+  [title]="'Notificaciones'"
+/>
 
 <section class="p-4 grid grid-cols-1 gap-4 max-w-7xl mx-auto">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <app-notification-form-components
-      [cleanFormTrigger]="cleanFormTrigger()"
-      [isLoading]="isLoadingCreateNotification()"
-      (onFormSubmit)="onFormSubmit($event)"
-    />
-  </div>
-  
-  @if (successMessage()) {
-    <app-message-success-component [message]="successMessage()"/>
-  }
-
-  @if (errorMessage()) {
-    <app-message-error-component [message]="errorMessage()"/>
-  }
-
-  <app-notification-list-components 
-    [isLoading]="isLoading()"
-    [paginationAndNotificationList]="computedPaginationAndNotificationList()"
-    (onReload)="onReloadNotification()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"
-    (onFilterNotRead)="onFilterNotRead($event)"
+  <app-notification-list-component
+    [isLoading]="notification.isLoading() || notification.isSaving()"
+    [notificationList]="notification.dataList()"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [showOnlyUnread]="showOnlyUnread()"
+    (reload)="reload()"
+    (filterNotRead)="onFilterNotRead($event)"
+    (nextPage)="nextPage()"
+    (prevPage)="prevPage()"
+    (sendNotification)="onCreateNotification()"
   />
 </section>
+
+@if (notification.showModal()) {
+  <app-notification-form-component
+    [isLoading]="notification.isSaving()"
+    (submitForm)="onSubmitNotificationForm($event)"
+    (cancelForm)="onClearNotificationForm()"
+  />
+}

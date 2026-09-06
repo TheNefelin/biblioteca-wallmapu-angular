@@ -1,19 +1,18 @@
 <section class="p-4 grid grid-cols-1 gap-4">
   <app-user-stats-components/>
 
-  @if(errorMessage()) {
-    <app-message-error-component [message]="errorMessage()"/>
-  }
-
-  <app-notification-list-components 
-    [isLoading]="isLoading()"
+  <app-notification-list-component
+    [isLoading]="notification.isLoading()"
     [isUser]="true"
-    [paginationAndNotificationList]="computedPaginationAndNotificationList()"
-    (onReload)="onReloadNotification()"
-    (onMarkAsRead)="onMarkAsRead($event)"
-    (onMarkAllAsRead)="onMarkAllAsRead()"
-    (onNextPage)="nextPage()"
-    (onPrevPage)="prevPage()"
-    (onFilterNotRead)="onFilterNotRead($event)"
-  />  
+    [notificationList]="notification.dataList()"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [showOnlyUnread]="showOnlyUnread()"
+    (reload)="reload()"
+    (markAsRead)="onMarkAsRead($event)"
+    (markAllAsRead)="onMarkAllAsRead()"
+    (filterNotRead)="onFilterNotRead($event)"
+    (nextPage)="nextPage()"
+    (prevPage)="prevPage()"
+  />
 </section>

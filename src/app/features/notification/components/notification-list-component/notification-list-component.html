@@ -1,5 +1,5 @@
 <ul class="list bg-base-100 rounded-box shadow-md overflow-hidden">
-  
+
   <header class="p-6 pb-2 flex gap-4 justify-between flex-wrap bg-my-light/90">
     <div>
       <h2 class="font-bold text-my-purple text-lg">
@@ -12,27 +12,34 @@
 
     <div class="flex gap-2 flex-col sm:flex-row items-baseline sm:items-center">
       <label class="label">
-        <input 
+        <input
           #isReadInput
-          type="checkbox" class="checkbox" 
-          (change)="handleCheckboxChange($event)"
+          type="checkbox" class="checkbox"
+          [checked]="showOnlyUnread()"
+          (change)="handleFilterNotReadChange($event)"
         />
         Filtrar No Leido
-      </label>  
+      </label>
+
       @if (isUser()) {
-        <app-button-component [icon]="'notification'" (clicked)="onMarkAllAsRead.emit()" [textBtn]="'Marcar todo como leído'" />
+        <app-button-component [icon]="'notification'" (clicked)="markAllAsRead.emit()" [textBtn]="'Marcar todo como leído'" />
       }
-      <app-button-component [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="onReload.emit()"/>
+
+      <app-button-component [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="reload.emit()" />
+
+      @if (!isUser()) {
+        <app-button-component [icon]="'notification'" [isOpen]="false" [textBtn]="'Enviar Notificación'" (clicked)="sendNotification.emit()" />
+      }
     </div>
   </header>
-  
+
   @if (isLoading()) {
     <div class="p-4 flex justify-center">
       <app-loading-component />
     </div>
   } @else {
 
-    @for (item of paginationAndNotificationList()?.data; track item.id_notification) {
+    @for (item of notificationList(); track item.id_notification) {
       <li class="list-row">
         <div>
           @if (item.is_read) {
@@ -50,17 +57,22 @@
             </div>
           }
         </div>
-  
+
         <div>
           <div>{{ item.created_at | date:'yyyy-MM-dd' }} </div>
           <div>{{ item.email }}</div>
           <div class="text-xs uppercase font-semibold opacity-60">{{ item.title }}</div>
           <p>{{ item.message }}</p>
         </div>
-  
+
         @if (!item.is_read && isUser()) {
           <div class="tooltip tooltip-left tooltip-warning font-bold" data-tip="Marcar como leído">
-            <button (click)="onMarkAsRead.emit(item)" class="btn btn-square btn-ghost">
+            <button
+              (click)="markAsRead.emit(item)"
+              class="btn btn-square btn-ghost"
+              aria-label="Marcar como leído"
+              title="Marcar como leído"
+            >
               <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
             </button>
           </div>
@@ -70,10 +82,10 @@
 
   }
 
-  <app-pagination-component 
-    [currentPage]="paginationAndNotificationList()?.page ?? 1"
+  <app-pagination-component
+    [currentPage]="currentPage()"
     [totalPages]="totalPages()"
-    (prevPage)="onPrevPage.emit()"
-    (nextPage)="onNextPage.emit()"
-    />
+    (prevPage)="prevPage.emit()"
+    (nextPage)="nextPage.emit()"
+  />
 </ul>

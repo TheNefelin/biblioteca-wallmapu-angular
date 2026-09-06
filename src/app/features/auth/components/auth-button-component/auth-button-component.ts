@@ -4,13 +4,13 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant'
 import { RouterLink } from "@angular/router";
 import { Role } from '@shared/constants/roles-enum';
 import { NotificationBadgeState } from '@features/notification/services/notification-badge-state.service';
-import { NotificationBellComponents } from "@features/notification/components/notification-bell-components/notification-bell-components";
+import { NotificationBellComponent } from "@features/notification/components/notification-bell-component/notification-bell-component";
 
 @Component({
   selector: 'app-auth-button-component',
   imports: [
     RouterLink,
-    NotificationBellComponents
+    NotificationBellComponent
 ],
   templateUrl: './auth-button-component.html',
 })

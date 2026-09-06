@@ -35,7 +35,7 @@
       @if (unreadCount() > 0) {
         <li>
           <a [routerLink]="navigateToProfile()" class="text-sm">
-            <app-notification-bell-components [textUnreadCount]="unreadCount()"/>
+            <app-notification-bell-component [textUnreadCount]="unreadCount()"/>
           </a>
         </li>
         <li><hr class="my-1"></li>

@@ -1,0 +1,76 @@
+<dialog class="modal modal-bottom modal-open sm:modal-middle">
+  <div class="modal-box overflow-visible grid">
+
+    <h3 class="card-title text-xl text-my-purple font-bold">Enviar Notificación</h3>
+    <div class="py-2">
+      <p class="text-sm text-base-content/60">Puedes enviar notificaciones y correo a usuarios registrados</p>
+    </div>
+
+    <form (ngSubmit)="onSendClick()" class="grid grid-cols-1 gap-4">
+      <fieldset class="fieldset">
+        <label class="label">
+          <input
+            #isPriorityInput
+            type="checkbox" class="checkbox"
+            [disabled]="isLoading()"
+            [checked]="formData().is_priority"
+            (change)="updatePriority($any($event.target).checked)"
+          />
+          Marcar mensaje como prioridad alta
+        </label>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <label for="emailInput" class="label font-semibold mb-1">Correo:</label>
+        <input
+          #emailInput
+          id="emailInput"
+          [disabled]="isLoading()" type="text" class="input w-full" placeholder="correo@dominio.cl"
+          [value]="formData().email"
+          (input)="updateEmail($any($event.target).value, emailInput)"
+        />
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <label for="titleInput" class="label font-semibold mb-1">Título</label>
+        <input
+          #titleInput
+          id="titleInput"
+          [disabled]="isLoading()" type="text" class="input w-full" placeholder="título..."
+          [value]="formData().title"
+          (input)="updateTitle($any($event.target).value, titleInput)"
+        />
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <label for="messageInput" class="label font-semibold mb-1">Mensaje</label>
+        <textarea
+          #messageInput
+          id="messageInput"
+          [disabled]="isLoading()" class="textarea min-h-40 w-full" placeholder="mensaje..."
+          [value]="formData().message"
+          (input)="updateMessage($any($event.target).value, messageInput)"
+        ></textarea>
+      </fieldset>
+
+      @if (errorMessage()) {
+        <app-message-error-component [message]="errorMessage()" />
+      }
+
+      <div class="justify-self-end flex gap-2 items-center">
+        @if (isLoading()) {
+          <app-loading-component />
+        } @else {
+          <app-button-component
+            [icon]="'notification'"
+            [type]="'submit'"
+            [isOpen]="false"
+            [textBtn]="'Enviar Notificación'"
+          />
+          <app-button-component [icon]="'cancel'" [textBtn]="'Cancelar'" (clicked)="cancelForm.emit()" />
+        }
+      </div>
+    </form>
+
+  </div>
+</dialog>

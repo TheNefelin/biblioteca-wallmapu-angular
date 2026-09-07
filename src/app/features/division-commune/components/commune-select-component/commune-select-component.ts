@@ -3,25 +3,25 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { CommuneService } from '@features/division-commune/services/commune-service';
 import { CommuneModel } from '@features/division-commune/models/commune-model';
 import { SearchSelectComponent, SelectItem } from '@shared/components/search-select-component/search-select-component';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 
 @Component({
-  selector: 'app-commune-select-components',
+  selector: 'app-commune-select-component',
   standalone: true,
   imports: [SearchSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './commune-select-components.html',
+  templateUrl: './commune-select-component.html',
 })
-export class CommuneSelectComponents {
-  readonly selectedId = input<number>(0);
-  readonly newSelectedId = output<number>();
+export class CommuneSelectComponent {
+  readonly selectedId = input<number | undefined>(undefined);
+  readonly clearTrigger = input<number>(0);
+  protected readonly selectedItem = output<CommuneModel | null>();
 
   private readonly communeService = inject(CommuneService);
 
   private readonly communeRX = rxResource({
     stream: () =>
       this.communeService.getAll().pipe(
-        map((res) => res),
         catchError(() => of([])),
       ),
   });
@@ -34,10 +34,9 @@ export class CommuneSelectComponents {
   });
 
   protected onSelectionChange(item: SelectItem): void {
-    this.newSelectedId.emit(item.id);
-  }
-
-  protected onCleared(): void {
-    this.newSelectedId.emit(0);
+    const selected = this.communeComputedList().find(c => c.id_commune === item.id);
+    if (selected) {
+      this.selectedItem.emit(selected);
+    }
   }
 }

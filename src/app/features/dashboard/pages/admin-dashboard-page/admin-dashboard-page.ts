@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { AdminStatsComponents } from "@features/stats/components/admin-stats-components/admin-stats-components";
+import { AdminStatsComponent } from "@features/stats/components/admin-stats-component/admin-stats-component";
 import { LoanOverdueListComponent } from "@features/loan/components/loan-overdue-list-component/loan-overdue-list-component";
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
@@ -17,7 +17,7 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
   selector: 'app-admin-dashboard-page',
   imports: [
     SectionHeaderComponent,
-    AdminStatsComponents,
+    AdminStatsComponent,
     LoanOverdueListComponent,
     LoanPolicyComponent,
     LoanStatusComponent,

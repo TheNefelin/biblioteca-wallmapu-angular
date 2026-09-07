@@ -131,9 +131,9 @@
       <fieldset class="fieldset flex flex-col">
         <span class="label font-semibold mb-1">Comuna</span>
         <!-- COMPONENTE FEATURE COMMUNE-->
-        <app-commune-select-components
-          [selectedId]="formData().commune_id ?? 0" 
-          (newSelectedId)="updateCommune($event)"
+        <app-commune-select-component
+          [selectedId]="formData().commune_id" 
+          (selectedItem)="updateCommune($event)"
         />
         <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
       </fieldset>

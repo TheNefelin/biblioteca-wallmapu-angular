@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { UserStatsComponents } from "@features/stats/components/user-stats-components/user-stats-components";
+import { UserStatsComponent } from "@features/stats/components/user-stats-component/user-stats-component";
 import { UserDetailModel } from '@features/user/models/user-model';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
@@ -9,7 +9,7 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
   selector: 'app-user-profile-component',
   imports: [
     NgOptimizedImage,
-    UserStatsComponents,
+    UserStatsComponent,
     ButtonComponent
 ],
   templateUrl: './user-profile-component.html',

@@ -6,7 +6,8 @@ import { UserRoleSelectComponent } from "@features/user-role/components/user-rol
 import { UserRoleModel } from '@features/user-role/models/user-role-model';
 import { UserStatusModel } from '@features/user-status/models/user-status-model';
 import { UserModel } from '@features/user/models/user-model';
-import { CommuneSelectComponents } from '@features/division-commune/components/commune-select-components/commune-select-components';
+import { CommuneSelectComponent } from '@features/division-commune/components/commune-select-component/commune-select-component';
+import { CommuneModel } from '@features/division-commune/models/commune-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
@@ -15,7 +16,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
     DatePipe,
     NgOptimizedImage,
     MessageErrorComponent,
-    CommuneSelectComponents,
+    CommuneSelectComponent,
     UserStatusSelectComponent,
     UserRoleSelectComponent,
     LoadingComponent
@@ -65,8 +66,8 @@ export class UserFormComponent {
   protected updateAddress(value: string, input: HTMLInputElement) { 
     this.updateField('address', value, input); 
   }
-  protected updateCommune(id: number) {
-    this.formData.update(data => ({ ...data, commune_id: id }));
+  protected updateCommune(commune: CommuneModel | null) {
+    this.formData.update(data => ({ ...data, commune_id: commune?.id_commune ?? 0 }));
   }
 
   private updateField<K extends keyof UserModel>(key: K, value: string, input?: HTMLInputElement) {

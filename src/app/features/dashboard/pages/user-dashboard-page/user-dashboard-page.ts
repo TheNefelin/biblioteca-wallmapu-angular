@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { UserStatsComponents } from "@features/stats/components/user-stats-components/user-stats-components";
+import { UserStatsComponent } from "@features/stats/components/user-stats-component/user-stats-component";
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@features/notification/services/notification-service';
@@ -12,7 +12,7 @@ import { MutationService } from '@core/services/mutation-service';
 @Component({
   selector: 'app-user-dashboard-page',
   imports: [
-    UserStatsComponents,
+    UserStatsComponent,
     NotificationListComponent,
   ],
   templateUrl: './user-dashboard-page.html',

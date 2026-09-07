@@ -1,6 +1,9 @@
 <section class="flex flex-wrap gap-2 sm:gap-4">
   <div 
-    (click)="onNavigateToReservations()"
+    role="button"
+    tabindex="0"
+    (click)="navigateToReservations.emit()"
+    (keydown.enter)="navigateToReservations.emit()"
     class="stats shadow bg-my-light text-my-purple w-full sm:w-auto cursor-pointer">
     <div class="stat">
       @if (isLoading()) {
@@ -20,7 +23,10 @@
   </div>
 
   <div
-    (click)="onNavigateToLoans()"
+    role="button"
+    tabindex="0"
+    (click)="navigateToLoans.emit()"
+    (keydown.enter)="navigateToLoans.emit()"
     class="stats shadow bg-my-light text-my-green w-full sm:w-auto cursor-pointer">
     <div class="stat">
       @if (isLoading()) {
@@ -40,7 +46,10 @@
   </div>  
 
   <div 
-    (click)="onNavigateToBooks()"
+    role="button"
+    tabindex="0"
+    (click)="navigateToBooks.emit()"
+    (keydown.enter)="navigateToBooks.emit()"
     class="stats shadow bg-my-light text-my-pink w-full sm:w-auto cursor-pointer">
     <div class="stat">
       @if (isLoading()) {
@@ -60,7 +69,10 @@
   </div>
     
   <div 
-    (click)="onNavigateToUsers()"
+    role="button"
+    tabindex="0"
+    (click)="navigateToUsers.emit()"
+    (keydown.enter)="navigateToUsers.emit()"
     class="stats shadow bg-my-light text-my-purple w-full sm:w-auto cursor-pointer">
     <div class="stat">
       @if (isLoading()) {
@@ -80,7 +92,10 @@
   </div>
 
   <div 
-    (click)="onNavigateToNews()"
+    role="button"
+    tabindex="0"
+    (click)="navigateToNews.emit()"
+    (keydown.enter)="navigateToNews.emit()"
     class="stats shadow bg-my-light text-my-green w-full sm:w-auto cursor-pointer">
     <div class="stat">
       @if (isLoading()) {

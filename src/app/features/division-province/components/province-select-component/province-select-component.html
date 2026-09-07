@@ -1,0 +1,10 @@
+<app-search-select-component
+  [items]="provinceToSelectItemsList()"
+  [selectedId]="selectedId()"
+  [isLoading]="isLoading()"
+  [disabled]="disabled()"
+  [placeholder]="'Todas las Provincias'"
+  [clearTrigger]="clearTrigger()"
+  (selectionChange)="onSelectionChange($event)"
+  (cleared)="selectedItem.emit(null)"
+/>

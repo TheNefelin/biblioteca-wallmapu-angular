@@ -1,5 +1,5 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { CommuneModel } from '@features/division-commune/models/commune-model';
 import { Observable } from 'rxjs';
 
@@ -7,12 +7,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class CommuneService {
-  private ApiResponseService = inject(ApiResponseService)
+  private apiService = inject(ApiService)
   private readonly endpoint = 'division-commune';
 
   getAll(): Observable<CommuneModel[]> {
-    return this.ApiResponseService.getAll<CommuneModel[]>(
-      `${this.endpoint}/`
-    );
+    return this.apiService.getAll<CommuneModel[]>(this.endpoint);
   }
 }

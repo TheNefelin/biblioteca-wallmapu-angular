@@ -1,5 +1,5 @@
 ﻿import { inject, Injectable } from '@angular/core';
-import { ApiResponseService } from '@core/services/api-response-service';
+import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
 import { AdminStatsModel, UserStatsModel } from '@features/stats/models/stat-model';
 
@@ -7,17 +7,17 @@ import { AdminStatsModel, UserStatsModel } from '@features/stats/models/stat-mod
   providedIn: 'root',
 })
 export class StatService {
-  private ApiResponseService = inject(ApiResponseService)
+  private apiService = inject(ApiService)
   private readonly endpoint = 'stat';
 
   getAdminStats(): Observable<AdminStatsModel> {
-    return this.ApiResponseService.getAll<AdminStatsModel>(
+    return this.apiService.getAll<AdminStatsModel>(
       `${this.endpoint}/admin-stats`
     );
   }
 
   getUserStats(): Observable<UserStatsModel> {
-    return this.ApiResponseService.getAll<UserStatsModel>(
+    return this.apiService.getAll<UserStatsModel>(
       `${this.endpoint}/user-stats`
     );
   }

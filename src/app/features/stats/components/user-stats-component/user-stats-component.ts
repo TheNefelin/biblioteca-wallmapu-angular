@@ -6,13 +6,13 @@ import { catchError, map, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
-  selector: 'app-user-stats-components',
+  selector: 'app-user-stats-component',
   imports: [
     LoadingComponent
   ],
-  templateUrl: './user-stats-components.html',
+  templateUrl: './user-stats-component.html',
 })
-export class UserStatsComponents {
+export class UserStatsComponent {
   private readonly statService = inject(StatService);
   protected readonly isLoading = computed(() => this.statRX.isLoading());
   protected readonly computedStats = computed<UserStatsModel | null>(() => this.statRX.value() ?? null);
@@ -21,9 +21,7 @@ export class UserStatsComponents {
     stream: () => {
       return this.statService.getUserStats().pipe(
         map(response => response),
-        catchError(err => {
-          return of(null);
-        })
+        catchError(() => of(null))
       );
     },
   });

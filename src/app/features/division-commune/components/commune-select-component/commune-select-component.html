@@ -4,5 +4,5 @@
   [isLoading]="isLoading()"
   [placeholder]="'Buscar comuna...'"
   (selectionChange)="onSelectionChange($event)"
-  (cleared)="onCleared()"
+  (cleared)="selectedItem.emit(null)"
 />

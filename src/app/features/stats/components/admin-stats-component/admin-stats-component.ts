@@ -6,13 +6,13 @@ import { catchError, map, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
-  selector: 'app-admin-stats-components',
+  selector: 'app-admin-stats-component',
   imports: [
     LoadingComponent
   ],
-  templateUrl: './admin-stats-components.html',
+  templateUrl: './admin-stats-component.html',
 })
-export class AdminStatsComponents {  
+export class AdminStatsComponent {  
   private readonly statService = inject(StatService);
   protected readonly isLoading = computed(() => this.statRX.isLoading());
   protected readonly computedStats = computed<AdminStatsModel | null>(() => this.statRX.value() ?? null);
@@ -27,30 +27,8 @@ export class AdminStatsComponents {
     stream: () => {    
       return this.statService.getAdminStats().pipe(
         map(response => response),
-        catchError(err => {
-          return of(null);
-        })
+        catchError(() => of(null))
       );
     },
   });
-
-  protected onNavigateToReservations(): void {
-    this.navigateToReservations.emit();
-  }
-
-  protected onNavigateToLoans(): void {
-    this.navigateToLoans.emit();
-  }
-
-  protected onNavigateToBooks(): void {
-    this.navigateToBooks.emit();
-  }
-
-  protected onNavigateToUsers(): void {
-    this.navigateToUsers.emit();
-  }
-
-  protected onNavigateToNews(): void {
-    this.navigateToNews.emit();
-  }
 }

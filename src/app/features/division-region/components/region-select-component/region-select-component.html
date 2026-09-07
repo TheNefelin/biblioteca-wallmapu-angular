@@ -1,0 +1,10 @@
+<app-search-select-component
+  [items]="regionToSelectItemsList()"
+  [selectedId]="selectedId()"
+  [isLoading]="isLoading()"
+  [disabled]="disabled()"
+  [placeholder]="'Todas las Regiones'"
+  [clearTrigger]="clearTrigger()"
+  (selectionChange)="onSelectionChange($event)"
+  (cleared)="selectedItem.emit(null)"
+/>

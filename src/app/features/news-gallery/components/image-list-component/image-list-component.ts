@@ -21,8 +21,4 @@ export class ImageListComponent {
   protected onUpdateImageAlt(item: Preview, alt: string) {
     this.updateAlt.emit({ item, alt });
   }
-
-  protected onDeleteImage(item: Preview): void {
-    this.deleteImage.emit(item);
-  }
 }

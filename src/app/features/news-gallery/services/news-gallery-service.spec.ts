@@ -40,7 +40,7 @@ describe('NewsGalleryService', () => {
       const body = req.request.body as FormData;
       expect(body.get('files')).toEqual(file);
       expect(body.get('alts')).toBe('Fachada');
-      req.flush({ id_news_gallery: 1, alt: 'Fachada', url: '/img/foto.png', news_id: 3 });
+      req.flush([{ id_news_gallery: 1, alt: 'Fachada', url: '/img/foto.png', news_id: 3 }]);
     });
   });
 

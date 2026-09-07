@@ -40,10 +40,12 @@ describe('ImageListComponent', () => {
     });
   });
 
-  describe('onDeleteImage', () => {
-    it('debería emitir deleteImage con el item', () => {
+  describe('deleteImage', () => {
+    it('debería emitir deleteImage con el item al hacer click en el botón eliminar', () => {
       const spy = vi.spyOn(component['deleteImage'], 'emit');
-      component['onDeleteImage'](existingImage);
+
+      const buttons = fixture.nativeElement.querySelectorAll('app-button-component button');
+      (buttons[0] as HTMLButtonElement).click();
 
       expect(spy).toHaveBeenCalledWith(existingImage);
     });

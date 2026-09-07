@@ -7,7 +7,7 @@
     />
     
     <app-news-list-component 
-      [isLoading]="isLoading()"
+      [isLoading]="isLoading() || isSaving()"
       [newsList]="dataList()"
       [totalPages]="totalPages()"
       [currentPage]="currentPage()"

@@ -1,17 +1,15 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { extractErrorMessage } from '@core/utils/error-handler';
 import { NewsService } from '@features/news/services/news-service';
 import { catchError, map, of } from 'rxjs';
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { NewsDetailComponent } from "@features/news/components/news-detail-component/news-detail-component";
 import { NewsDetailGalleryComponent } from "@features/news/components/news-detail-gallery-component/news-detail-gallery-component";
+import { NewsModel } from '@features/news/models/news-model';
 
 @Component({
   selector: 'app-news-detail-page',
   imports: [
-    MessageErrorComponent, 
     NewsDetailComponent, 
     NewsDetailGalleryComponent,
   ],
@@ -22,35 +20,30 @@ export class NewsDetailPage {
 
   readonly paramId = toSignal(
     this.route.paramMap.pipe(
-      map(params => Number(params.get('id')))
+      map(params => {
+        const parsed = Number(params.get('id'));
+        return Number.isFinite(parsed) ? parsed : 0;
+      })
     ),
     { initialValue: 0 }
   );
 
-  readonly errorMessage = signal<string | null>(null);
   readonly isLoading = computed(() => this.getNewsRX.isLoading());
 
   private readonly newsService = inject(NewsService);
-  readonly news = computed(() => this.getNewsRX.value() );
+  readonly news = computed<NewsModel | null>(() => this.getNewsRX.value() ?? null);
 
   private readonly getNewsRX = rxResource({
     params: () => this.paramId(),
     stream: ({ params }) => {    
       if (!params) return of(null);
 
-      return this.newsService.getById(
-        params
-      ).pipe(
-        map(response => response),
+      return this.newsService.getById(params).pipe(
         catchError(err => {
-          this.handleError(err);
+          console.error('[NewsService::NewsDetailPage] getById:', err);
           return of(null);
         })
       );
     },
   });
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
-  }
 }

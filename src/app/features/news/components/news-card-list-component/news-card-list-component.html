@@ -40,10 +40,9 @@
       
         <div class="p-6 border-t border-gray-50 flex justify-between items-center">
           <span class="text-xs text-my-dark/50">{{ item.created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</span>
-          <app-button-component [icon]="'goto'" [textBtn]="'Leer Noticia'" (clicked)="navigateToNews(item)" />
-          <a class="text-primary font-bold text-sm inline-flex items-center group/link">
+          <a [routerLink]="goToNews(item)" class="text-primary font-bold text-sm inline-flex items-center gap-1 group/link" aria-label="Leer noticia completa">
             Leer noticia
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>

@@ -102,13 +102,6 @@ export class NewsFormComponent {
       }
     }
 
-    //const newImages: ImagePreviewVM[] = files.map(file => ({
-    //  file,
-    //  preview: URL.createObjectURL(file),
-    //  isNew: true,
-    //  alt: ''
-    //}));
-
     const newImages: Preview[] = files.map(file => ({
       id: 0,
       file,

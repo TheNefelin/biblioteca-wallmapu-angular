@@ -25,7 +25,7 @@
         <div class="relative overflow-hidden size-10">
           <img
             placeholder="/images/layout.webp"
-            [ngSrc]="item.images[0]?.url || 'images/layout.webp'"
+            [ngSrc]="item.images[0]?.url || '/images/layout.webp'"
             [alt]="item.images[0]?.alt || 'Imagen por defecto'"
             fill
             class="object-cover rounded-box"
@@ -37,7 +37,7 @@
             <span>{{ item.created_at | date:'yyyy-MM-dd' }}</span>
             <span class="hidden md:inline"> - {{ item.created_at | date:'HH:mm:ss' }}</span>
           </div>
-          <div class="text-xs uppercase font-semibold opacity-60">{{ item?.title }}</div>
+          <div class="text-xs uppercase font-semibold opacity-60">{{ item.title }}</div>
         </div>
       
         <div class="flex gap-2">

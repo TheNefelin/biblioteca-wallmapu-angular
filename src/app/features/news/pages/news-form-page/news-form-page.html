@@ -6,19 +6,17 @@
 
 <section class="flex max-w-4xl flex-col gap-4 mx-auto p-4">
   <app-news-form-component 
-    [isLoading]="news.isLoading() || isSaving()"
+    [isLoading]="news.isLoading() || news.isSaving() || newsGallery.isSaving()"
     [actionText]="actionText()"
     [news]="news.data()"
     (formSubmit)="onSubmitNewsForm($event)"
-    (addImage)="onAddImages($event)"
-  />
+    (addImage)="onAddImages($event)" />
 </section>
 
 <section class="flex max-w-4xl mx-auto p-4">
   <app-image-list-component 
-    [isLoading]="isSaving()"
+    [isLoading]="news.isLoading() || news.isSaving() || newsGallery.isSaving()"
     [previewList]="newsGallery.previewList()"
     (updateAlt)="onUpdateAlt($event)"
-    (deleteImage)="onDeleteImage($event)"
-  />
+    (deleteImage)="onDeleteImage($event)" />
 </section>

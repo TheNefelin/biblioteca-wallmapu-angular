@@ -27,10 +27,6 @@ export class NewsFormPage {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly mutation = inject(MutationService);
   private readonly toast = inject(ToastSuccessService);
-  private readonly newsService = inject(NewsService);
-  private readonly newsGalleryService = inject(NewsGalleryService);
-
-  readonly isSaving = signal(false);
 
   readonly newsId = toSignal(
     this.activatedRoute.paramMap.pipe(
@@ -45,12 +41,16 @@ export class NewsFormPage {
   protected readonly isEditMode = computed(() => this.newsId() > 0);
   protected readonly actionText = computed<string>(() => this.isEditMode() ? 'Modificar Noticia' : 'Crear Noticia');
 
+  private readonly newsService = inject(NewsService);
   protected readonly news = {
     data: computed<NewsModel | null>(() => this.getNewsRX.value() ?? null),
     isLoading: computed<boolean>(() => this.getNewsRX.isLoading()),
+    isSaving: signal<boolean>(false),
   }
 
+  private readonly newsGalleryService = inject(NewsGalleryService);
   protected readonly newsGallery = {
+    isSaving: signal<boolean>(false),
     previewList: linkedSignal<Preview[]>(() => {
       const images = this.news.data()?.images ?? [];
 
@@ -100,23 +100,6 @@ export class NewsFormPage {
     );
   }
 
-  protected onDeleteImage(item: Preview): void {
-    if (item.id === 0) {
-      this.newsGallery.previewList.update(list => list.filter(i => i.url !== item.url));
-      return;
-    }
-
-    this.mutation.run(
-      this.newsGalleryService.delete(item.id),
-      { isSaving: this.isSaving },
-      {
-        successMsg: 'Imagen eliminada correctamente',
-        errorMsg: 'Error al eliminar la imagen',
-        onSuccess: () => this.newsGallery.previewList.update(list => list.filter(i => i.id !== item.id)),
-      }
-    );
-  }
-
   protected onSubmitNewsForm(form: { id: number, data: SaveNewsModel }): void {
     const id = form.id;
     const payload = form.data;
@@ -125,29 +108,60 @@ export class NewsFormPage {
       id > 0
         ? this.newsService.update(id, payload)
         : this.newsService.create(payload),
-      { isSaving: this.isSaving },
+      { isSaving: this.news.isSaving },
       {
         successMsg: 'Noticia guardada correctamente',
         errorMsg: 'Error al guardar la Noticia',
         onSuccess: (news) => {
           if (!news) return;
 
+          const newsId = news.id_news;
           const newImages = this.savePayload();
-          if (newImages.length === 0) { this.routeGoBack(); return; }
-          this.uploadImages(id > 0 ? id : news.id_news, newImages);
+
+          if (newImages.length === 0) { this.afterSave(newsId); return; }
+          this.onUploadImages(newsId, newImages);
         },
       }
     );
   }
 
-  private uploadImages(newsId: number, newImages: SaveNewsGalleryModel[]): void {
+  private afterSave(id_news: number): void {
+    if (this.newsId() === id_news) {
+      this.getNewsRX.reload();
+      return;
+    }
+
+    this.router.navigate(
+      [ROUTES_CONSTANTS.PROTECTED.ADMIN.NEWS.FORM(id_news)],
+      { replaceUrl: true }
+    );
+  }
+
+  private onUploadImages(newsId: number, newImages: SaveNewsGalleryModel[]): void {
     this.mutation.run(
       this.newsGalleryService.create(newsId, newImages),
-      { isSaving: this.isSaving },
+      { isSaving: this.newsGallery.isSaving },
       {
         successMsg: 'Galería actualizada correctamente',
         errorMsg: 'Error al subir la galería',
-        onSuccess: () => this.routeGoBack(),
+        onSuccess: () => { this.afterSave(newsId) },
+      }
+    );
+  }
+
+  protected onDeleteImage(item: Preview): void {
+    if (item.id === 0) {
+      this.newsGallery.previewList.update(list => list.filter(i => i.url !== item.url));
+      return;
+    }
+
+    this.mutation.run(
+      this.newsGalleryService.delete(item.id),
+      { isSaving: this.newsGallery.isSaving },
+      {
+        successMsg: 'Imagen eliminada correctamente',
+        errorMsg: 'Error al eliminar la imagen',
+        onSuccess: () => this.newsGallery.previewList.update(list => list.filter(i => i.id !== item.id)),
       }
     );
   }

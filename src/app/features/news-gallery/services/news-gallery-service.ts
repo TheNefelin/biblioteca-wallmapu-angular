@@ -10,7 +10,7 @@ export class NewsGalleryService {
   private apiService = inject(ApiService)
   private readonly endpoint = 'news-gallery';
 
-  create(news_id: number, files: SaveNewsGalleryModel[]): Observable<NewsGalleryModel> {
+  create(news_id: number, files: SaveNewsGalleryModel[]): Observable<NewsGalleryModel[]> {
     const formData = new FormData();
 
     files.forEach(e => {
@@ -18,7 +18,7 @@ export class NewsGalleryService {
       formData.append('alts', e.alt);
     });
 
-    return this.apiService.create<NewsGalleryModel, FormData>(
+    return this.apiService.create<NewsGalleryModel[], FormData>(
       `${this.endpoint}/news/${news_id}`, formData
     );
   }

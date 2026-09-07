@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { UserStatsComponent } from "@features/stats/components/user-stats-component/user-stats-component";
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -11,6 +11,7 @@ import { MutationService } from '@core/services/mutation-service';
 
 @Component({
   selector: 'app-user-dashboard-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     UserStatsComponent,
     NotificationListComponent,

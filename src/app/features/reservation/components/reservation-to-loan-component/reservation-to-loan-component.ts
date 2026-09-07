@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { SearchCodbarComponent } from "@shared/components/search-codbar-component/search-codbar-component";
 import { ReservationDetailComponent } from "../reservation-detail-component/reservation-detail-component";
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
@@ -6,6 +6,7 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-reservation-to-loan-component',
   imports: [
     SearchCodbarComponent,

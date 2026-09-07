@@ -1,5 +1,5 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { Component, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { EditorialSelectComponent } from "@features/book-editorial/components/editorial-select-component/editorial-select-component";
@@ -12,6 +12,7 @@ import { EditorialModel } from '@features/book-editorial/models/editorial-model'
 import { FormatModel } from '@features/format/models/format-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-edition-form-components',
   imports: [
     FormsModule,

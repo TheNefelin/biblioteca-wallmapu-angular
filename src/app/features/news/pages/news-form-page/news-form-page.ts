@@ -1,4 +1,4 @@
-import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NewsFormComponent } from "@features/news/components/news-form-component/news-form-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
@@ -14,6 +14,7 @@ import { NewsModel, SaveNewsModel } from '@features/news/models/news-model';
 import { Preview, SaveNewsGalleryModel } from '@features/news-gallery/models/news-gallery-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-news-form-page',
   imports: [
     NewsFormComponent,

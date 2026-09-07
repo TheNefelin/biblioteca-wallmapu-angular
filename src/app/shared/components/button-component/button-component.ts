@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 export type ButtonIcon =
   | 'create'
@@ -18,6 +18,7 @@ export type ButtonIcon =
   | 'expire';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-button-component',
   imports: [],
   templateUrl: './button-component.html',

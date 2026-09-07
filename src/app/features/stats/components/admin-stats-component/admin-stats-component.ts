@@ -1,4 +1,4 @@
-import { Component, computed, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AdminStatsModel } from '@features/stats/models/stat-model';
 import { StatService } from '@features/stats/services/stat-service';
@@ -7,6 +7,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 
 @Component({
   selector: 'app-admin-stats-component',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LoadingComponent
   ],

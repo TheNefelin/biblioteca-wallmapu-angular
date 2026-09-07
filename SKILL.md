@@ -216,6 +216,15 @@ protected readonly submitForm = output<{ id: number, data: SaveModel }>();
 - **Interactivos**: elementos clickeables no nativos necesitan `role="button"` + `tabindex="0"` + handler de teclado (`keydown.enter/space`) (`interactive-supports-focus`, `click-events-have-key-events`).
 - **Spinner de carga**: `isLoading() && !hasValue()` para no desmontar la lista en refetch.
 
+#### 4.5.1 `ChangeDetectionStrategy.OnPush` en todos los componentes
+
+- **Todos los componentes con selector `app-*` usan `changeDetection: ChangeDetectionStrategy.OnPush`**. No es exclusivo de zoneless: es la estrategia recomendada por Angular para apps con signals.
+- **Signals + OnPush = máximo rendimiento**: al re-renderizar solo se revisan los componentes que leen un signal que cambió; los presentacionales (input/output) se marcan y saltean su subárbol.
+- **En Angular 21+ (zoneless por defecto) OnPush no es estrictamente requerido**, pero sigue siendo **recomendado** para los componentes de la aplicación. La documentación oficial lo explicita (guía "Angular without ZoneJS (Zoneless)" → sección "OnPush-compatible components").
+- **Dependiendo de la versión de Angular, consultar la documentación oficial** antes de asumir el comportamiento de detección de cambios: `https://angular.dev/guide/zoneless` (y `https://angular.dev/best-practices/skipping-subtrees` para la semántica de OnPush).
+- **Excepción (no usar OnPush a ciegas)**: componentes que mutan estado en callbacks no reactive (timers, `Date.now()` en template, `subscribe()` manual) y no notifican a Angular; en esos casos el render puede congelarse. Si el componente fue migrado a signals puede adoptar OnPush sin riesgo.
+- **Import**: `ChangeDetectionStrategy` desde `@angular/core` (no desde otra ruta).
+
 ### 4.6 Select components, selected-list y resolución de modelos
 
 **Select component** (`{feature}-select-component/`):
@@ -307,6 +316,7 @@ Antes de dar una app Angular por terminada:
 - [ ] **Modo consistente**: el proyecto es CSR o SSR; si es CSR, sin `server.ts`; si es SSR, `npm start` = `node dist/.../server.mjs` (no `ng serve`)
 - [ ] **[SSR]** Proxy `/ssr-api/...` + handlers multipart validados con `req.is('multipart/form-data')`
 - [ ] Signals + `rxResource` para lecturas; sin `subscribe()` manual en componentes de listado
+- [ ] `ChangeDetectionStrategy.OnPush` en todos los componentes (señales + OnPush = máximo rendimiento); comportamiento verificado contra la doc oficial según la versión de Angular
 - [ ] `MutationService` con `onClose` solo en éxito (el modal no pierde datos al fallar)
 - [ ] Outputs sin prefijo `on` y sin nombres de eventos DOM nativos (`no-output-on-prefix`, `no-output-native`)
 - [ ] `CrudPage<TModel>` para listados paginados; streams `rxResource` puros (`mapPaginated`/`emptyPaginated`)
@@ -349,3 +359,4 @@ Antes de dar una app Angular por terminada:
 | Signals sueltas para estado de feature | `dataList`, `isLoading`, `isSaving`, `showModal`, `selectedItem` como signals individuales dispersos → difícil de rastrear; agrupar en un objeto por feature |
 | Select emitiendo `number` (`newSelectedId`) | Obliga al consumidor a un **segundo fetch** del catálogo para resolver id → modelo (doble fetch) y hace el contrato ambiguo; el select debe emitir el modelo completo (`selectedItem = output<Model \| null>()`) y el consumidor lo agrega directo |
 | `templateUrl` apuntando a nombre viejo tras renombrar archivo | El componente compila pero el template no se carga; actualizar `templateUrl` junto con el nombre del archivo |
+| Componentes sin `ChangeDetectionStrategy.OnPush` | Default revisa todo el árbol en cada ciclo; con signals y sensores dejados sin marcar se pierde rendimiento y consistencia — salvo componentes legacy que muten estado en callbacks no reactivos (ver §4.5.1) |

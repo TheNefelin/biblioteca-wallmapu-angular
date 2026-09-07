@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-modal-confirm-component',
   imports: [
     ButtonComponent,

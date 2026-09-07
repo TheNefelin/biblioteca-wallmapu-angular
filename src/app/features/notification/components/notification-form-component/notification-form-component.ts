@@ -1,10 +1,11 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LoadingComponent } from '@shared/components/loading-component/loading-component';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { CreateNotificationByEmailModel } from '@features/notification/models/notification-model';
 import { MessageErrorComponent } from '@shared/components/message-error-component/message-error-component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-notification-form-component',
   imports: [
     LoadingComponent,

@@ -15,16 +15,16 @@ import { EditionService } from '@features/edition/services/edition-service';
 import { EditionCardListComponent } from "@features/edition/components/edition-card-list-component/edition-card-list-component";
 import { SearchFilterComponent } from "@features/home/components/search-filter-component/search-filter-component";
 import { EditionDetailModel, EditionFilterModel } from '@features/edition/models/edition-model';
-import { extractErrorMessage } from '@core/utils/error-handler';
 import { AuthorModel } from '@features/book-author/models/author-model';
 import { FormatModel } from '@features/format/models/format-model';
 import { EditorialModel } from '@features/book-editorial/models/editorial-model';
 import { GenreModel } from '@features/book-genre/models/genre-model';
 import { SubjectModel } from '@features/book-subject/models/subject-model';
 import { NewsModel } from '@features/news/models/news-model';
+import { CrudPage } from '@shared/base/crud-page';
 
 @Component({
-  selector: 'app-home.page',
+  selector: 'app-home-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeaderComponent,
@@ -35,56 +35,40 @@ import { NewsModel } from '@features/news/models/news-model';
     NewsCardListComponent,
     EditionCardListComponent,
     SearchFilterComponent
-],
+  ],
   templateUrl: './home-page.html',
 })
-export class HomePage {
+export class HomePage extends CrudPage<EditionDetailModel> {
   private readonly router = inject(Router);
-  
-  protected readonly totalPages = signal<number>(0);
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isLoading = computed(() => 
-    [
-      this.newsRX,
-      this.editionRX
-    ].some(r => r.isLoading())
-  );
-  
   private readonly newsService = inject(NewsService);
-  protected readonly firstNews = computed<NewsModel | null>(() => {
-    const list = this.newsRX.value() ?? [];
-    return list.length > 0 ? list[0] : null;
-  });
-  protected readonly restNewsList= computed<NewsModel[]>(() => {
-    const list = this.newsRX.value() ?? [];
-    return list.slice(1);
-  });
-
-  private readonly newsRX = rxResource({
-    stream: () => {    
-      this.errorMessage.set(null);
-
-      return this.newsService.getAllPagination({ page: 1, limit: 4, search: '' }).pipe(
-        map(response => response.data),
-        catchError(err => {
-          this.handleError(err);
-          return of(null);
-        })
-      );
-    },
-  });
-
   private readonly editionService = inject(EditionService);
-  protected readonly editionListComputed = computed<EditionDetailModel[]>(() => this.editionRX.value() ?? []);
-  protected readonly currentPage = signal<number>(1);
-  private readonly limit = signal<number>(20);
-  private readonly search = signal<string>('');
+
+  // NEWS STATE -------------------------------------------------------------------
+  protected readonly news = {
+    first: computed<NewsModel | null>(() => {
+      const list = this.getNewsRX.value() ?? [];
+      return list.length > 0 ? list[0] : null;
+    }),
+    rest: computed<NewsModel[]>(() => {
+      const list = this.getNewsRX.value() ?? [];
+      return list.slice(1);
+    }),
+  };
+
+  // EDITION STATE -----------------------------------------------------------------
+  protected readonly edition = {
+    dataList: computed<EditionDetailModel[]>(() => this.getEditionRX.value() ?? []),
+    isLoading: computed<boolean>(() => this.getEditionRX.isLoading() && !this.getEditionRX.hasValue()),
+  };
+
+  // FILTER STATE ------------------------------------------------------------------
   private readonly id_author = signal<number>(0);
   private readonly id_format = signal<number>(0);
-  private readonly id_editorial  = signal<number>(0);
-  private readonly id_genre  = signal<number>(0);
-  private readonly id_subject  = signal<number>(0);
-  protected readonly editionPayload = computed<PaginationRequestModel<EditionFilterModel>>(() => ({
+  private readonly id_editorial = signal<number>(0);
+  private readonly id_genre = signal<number>(0);
+  private readonly id_subject = signal<number>(0);
+
+  protected readonly getPaginationPayload = computed<PaginationRequestModel<EditionFilterModel>>(() => ({
     page: this.currentPage(),
     limit: this.limit(),
     search: this.search(),
@@ -94,46 +78,54 @@ export class HomePage {
       id_genre: this.id_genre(),
       id_format: this.id_format(),
       id_subject: this.id_subject(),
-    }        
+    }
   }));
 
-  private readonly editionRX = rxResource({
-    params: () => this.editionPayload(),
-    stream: ({ params }) => {    
-      this.errorMessage.set(null);
-
-      return this.editionService.getAllPagination(params).pipe(
-        map(response => {
-          this.totalPages.set(response.pages);
-          return response.data;
-        }),
+  // FETCHS --------------------------------------------------------------------------
+  private readonly getNewsRX = rxResource({
+    stream: () => {
+      return this.newsService.getAllPagination({ page: 1, limit: 4, search: '' }).pipe(
+        map(response => response.data),
         catchError(err => {
-          this.handleError(err);
+          console.error('[NewsService::HomePage] getAllPagination:', err);
           return of(null);
         })
       );
     },
-  });  
+  });
 
-  protected actionClicked(){
-    this.router.navigate([ROUTES_CONSTANTS.HOME.NEWS.ROOT])
+  private readonly getEditionRX = rxResource({
+    params: () => this.getPaginationPayload(),
+    stream: ({ params }) => {
+      if (!params) return of(null);
+
+      return this.editionService.getAllPagination(params).pipe(
+        map(response => this.mapPaginated(response)),
+        catchError(err => {
+          console.error('[EditionService::HomePage] getAllPagination:', err);
+          return of(this.emptyPaginated());
+        })
+      );
+    },
+  });
+
+  constructor() {
+    super();
+    this.limit.set(20);
+  }
+
+  // CRUD-PAGE INHERITANCE METHODS --------------------------------------------------
+  protected override reload(): void {
+    this.getNewsRX.reload();
+    this.getEditionRX.reload();
+  }
+
+  actionClicked(): void {
+    this.router.navigate([ROUTES_CONSTANTS.HOME.NEWS.ROOT]);
   }
 
   searchText(text: string) {
-    this.search.set(text);
-    this.currentPage.set(1); 
-  }
-
-  nextPage() {
-    if (this.currentPage() < this.totalPages()){
-      this.currentPage.update(e => e + 1);
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage() > 1){
-      this.currentPage.update(e => e - 1);
-    }
+    this.onFilterChange({ search: text, limit: this.limit() });
   }
 
   protected onSelectedAuthor(item: AuthorModel | null): void {
@@ -158,9 +150,5 @@ export class HomePage {
 
   protected onNavigateTo(item: EditionDetailModel): void {
     this.router.navigate([ROUTES_CONSTANTS.HOME.RESERVATION.ROOT(item.book_id, item.id_edition)]);
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
   }
 }

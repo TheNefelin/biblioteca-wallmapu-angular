@@ -1,6 +1,4 @@
-import { Component, effect, input, output, signal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { GenreSelectComponent } from "@features/book-genre/components/genre-select-component/genre-select-component";
 import { EditorialSelectComponent } from "@features/book-editorial/components/editorial-select-component/editorial-select-component";
 import { AuthorSelectComponent } from "@features/book-author/components/author-select-component/author-select-component";
@@ -14,6 +12,7 @@ import { SubjectModel } from '@features/book-subject/models/subject-model';
 
 @Component({
   selector: 'app-search-filter-component',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     GenreSelectComponent,
     EditorialSelectComponent,
@@ -38,24 +37,15 @@ export class SearchFilterComponent {
   protected readonly clearTrigger = signal<number>(0);
 
   protected onSearchChange(event: Event) {
-    this.searchText.set((event.target as HTMLInputElement).value);
+    const value = (event.target as HTMLInputElement).value;
+    this.searchText.set(value);
+    this.searchChange.emit(value);
   }
-
-  private readonly emitSearch = effect(() => {
-    this.searchChange.emit(this.searchDebounced());
-  });
-
-  private readonly searchDebounced = toSignal(
-    toObservable(this.searchText).pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ),
-    { initialValue: '' }
-  );
 
   protected onClear(): void {
     this.clearTrigger.update(v => v + 1);
     this.searchText.set('');
+    this.searchChange.emit('');
     this.selectedAuthor.emit(null);
     this.selectedFormat.emit(null);
     this.selectedEditorial.emit(null);

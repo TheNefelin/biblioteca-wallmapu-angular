@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { NewsService } from '@features/news/services/news-service';
@@ -8,6 +8,7 @@ import { NewsDetailGalleryComponent } from "@features/news/components/news-detai
 import { NewsModel } from '@features/news/models/news-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-news-detail-page',
   imports: [
     NewsDetailComponent, 

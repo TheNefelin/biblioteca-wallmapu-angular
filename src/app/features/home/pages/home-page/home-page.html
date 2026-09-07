@@ -12,11 +12,11 @@
 />
 
 <app-news-featured-component 
-  [news]="firstNews()"
+  [news]="news.first()"
 />
 
 <app-news-card-list-component 
-  [newsList]="restNewsList()"
+  [newsList]="news.rest()"
 />
 
 <app-search-filter-component
@@ -32,8 +32,8 @@
 />
 
 <app-edition-card-list-component
-  [isLoading]="isLoading()"
-  [editionDetailList]="editionListComputed()"
+  [isLoading]="edition.isLoading()"
+  [editionDetailList]="edition.dataList()"
   (navigateTo)="onNavigateTo($event)"
 />
 

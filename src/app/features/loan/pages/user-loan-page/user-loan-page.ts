@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
@@ -11,6 +11,7 @@ import { LoanPolicyComponent } from "@features/loan-policies/components/loan-pol
 import { CrudPage } from '@shared/base/crud-page';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-user-loan-page',
   imports: [
     SectionHeaderComponent,

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { AdminStatsComponent } from "@features/stats/components/admin-stats-component/admin-stats-component";
@@ -15,6 +15,7 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 
 @Component({
   selector: 'app-admin-dashboard-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     SectionHeaderComponent,
     AdminStatsComponent,
@@ -28,14 +29,20 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 })
 export class AdminDashboardPage {
   private readonly router = inject(Router);
-  protected readonly isLoading = computed<boolean>(() => this.getLoanOverdueRX.isLoading());
   private readonly loanService = inject(LoanService);
-  protected readonly computedLoanOverdueList = computed<LoanDetailModel[]>(() => this.getLoanOverdueRX.value() ?? []);
+
+  protected readonly loanOverdue = {
+    dataList: computed<LoanDetailModel[]>(() => this.getLoanOverdueRX.value() ?? []),
+    isLoading: computed<boolean>(() => this.getLoanOverdueRX.isLoading()),
+  };
 
   private readonly getLoanOverdueRX = rxResource({
     stream: () => {
       return this.loanService.getAllOverdue().pipe(
-        catchError(() => of(null)),
+        catchError(err => {
+          console.error('[LoanService::AdminDashboardPage] getAllOverdue:', err);
+          return of([]);
+        })
       );
     },
   });

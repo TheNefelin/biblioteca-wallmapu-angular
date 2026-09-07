@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { ReservationDetailModel, ReservationFilterModel, ReservationPickupModel } from '@features/reservation/models/reservation-model';
@@ -15,6 +15,7 @@ import { CrudPage } from '@shared/base/crud-page';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-reservation-page',
   imports: [
     SectionHeaderComponent,

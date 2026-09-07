@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
 import { ReservationStatusModel } from '@features/reservation-status/models/reservation-status-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
@@ -8,6 +8,7 @@ import { PaginationComponent } from "@shared/components/pagination-component/pag
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-reservation-list-component',
   imports: [
     DatePipe,

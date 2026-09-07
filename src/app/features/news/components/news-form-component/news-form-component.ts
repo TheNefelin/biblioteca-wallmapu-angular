@@ -1,4 +1,4 @@
-import { Component, input, linkedSignal, output } from '@angular/core';
+import { Component, input, linkedSignal, output, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
@@ -6,6 +6,7 @@ import { NewsModel, SaveNewsModel } from '@features/news/models/news-model';
 import { Preview } from '@features/news-gallery/models/news-gallery-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-news-form-component',
   imports: [
     FormsModule,

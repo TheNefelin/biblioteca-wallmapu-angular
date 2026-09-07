@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { ReservationDetailModel, ReservationFilterModel } from '@features/reservation/models/reservation-model';
@@ -14,6 +14,7 @@ import { ModalConfirmService } from '@core/services/modal-confirm-service';
 import { CrudPage } from '@shared/base/crud-page';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-user-reservation-page',
   imports: [
     ReservationListComponent,

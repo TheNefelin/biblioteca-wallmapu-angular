@@ -1,10 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { SearchCodbarComponent } from "@shared/components/search-codbar-component/search-codbar-component";
 import { LoanDetailComponent } from "../loan-detail-component/loan-detail-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-loan-to-return-component',
   imports: [
     ButtonComponent,

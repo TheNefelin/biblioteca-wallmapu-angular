@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { NotificationDetailModel } from '@features/notification/models/notification-model';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 import { PaginationComponent } from '@shared/components/pagination-component/pagination-component';
@@ -7,6 +7,7 @@ import { LoadingComponent } from '@shared/components/loading-component/loading-c
 
 @Component({
   selector: 'app-notification-list-component',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     ButtonComponent,

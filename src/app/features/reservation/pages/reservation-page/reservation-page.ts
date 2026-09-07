@@ -1,5 +1,5 @@
 import { NgOptimizedImage, ViewportScroller } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { BookModel } from '@features/book/models/book-model';
@@ -37,6 +37,7 @@ export function pickInitialCopy(
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-reservation-page',
   imports: [
     NgOptimizedImage,

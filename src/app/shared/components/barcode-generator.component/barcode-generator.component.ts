@@ -1,9 +1,10 @@
-import { effect, Component, ElementRef, input, viewChild } from '@angular/core';
+import { effect, Component, ElementRef, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import BwipJs from 'bwip-js/browser';
 
 export type BarcodeFormat = 'qrcode' | 'code128' | 'ean13' | 'isbn';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-barcode-generator',
   imports: [],
   templateUrl: './barcode-generator.component.html',

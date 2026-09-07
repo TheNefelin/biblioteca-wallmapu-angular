@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   selector: 'app-loan-overdue-list-component',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     LoadingComponent

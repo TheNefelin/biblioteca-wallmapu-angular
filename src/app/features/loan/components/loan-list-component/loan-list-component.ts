@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
 import { LoanStatusModel } from '@features/loan-status/models/loan-status-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
@@ -8,6 +8,7 @@ import { PaginationComponent } from "@shared/components/pagination-component/pag
 import { LoanStatusSelectComponent } from "@features/loan-status/components/loan-status-select-component/loan-status-select-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-loan-list-component',
   imports: [
     DatePipe,

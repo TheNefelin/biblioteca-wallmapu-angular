@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { LoanDetailModel } from '@features/loan/models/loan-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-loan-detail-component',
   imports: [
     DatePipe,

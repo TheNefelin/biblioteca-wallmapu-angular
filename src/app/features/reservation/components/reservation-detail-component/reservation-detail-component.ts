@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-reservation-detail-component',
   imports: [
     DatePipe,

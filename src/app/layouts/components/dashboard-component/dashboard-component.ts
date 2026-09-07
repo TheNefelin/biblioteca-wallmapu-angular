@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationModel } from '@shared/models/navigation-model';
 import { RouterOutlet } from "@angular/router";
 import { DashboardNavbarComponent } from '@layouts/components/dashboard-navbar-component/dashboard-navbar-component';
@@ -7,6 +7,7 @@ import { ArrowUpComponent } from "@layouts/components/arrow-up-component/arrow-u
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dashboard-component',
   imports: [
     RouterOutlet,

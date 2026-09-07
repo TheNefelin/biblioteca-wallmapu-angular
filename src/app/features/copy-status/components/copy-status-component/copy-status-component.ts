@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CopyStatusModel } from '@features/copy-status/models/copy-status-model';
 import { CopyStatusService } from '@features/copy-status/services/copy-status-service';
@@ -7,6 +7,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
 
 @Component({
   selector: 'app-copy-status-component',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LoadingComponent],
   templateUrl: './copy-status-component.html',
 })

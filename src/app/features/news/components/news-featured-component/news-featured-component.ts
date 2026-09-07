@@ -1,10 +1,11 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { RouterLink } from "@angular/router";
 import { NewsModel } from '@features/news/models/news-model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-news-featured-component',
   imports: [
     DatePipe,

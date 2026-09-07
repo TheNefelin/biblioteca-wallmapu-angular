@@ -13,8 +13,8 @@
 
   <section class="grid grid-cols-1 md:grid-cols-2 gap-4">  
     <app-loan-overdue-list-component
-      [isLoading]="isLoading()"
-      [loanOverdueList]="computedLoanOverdueList()"
+      [isLoading]="loanOverdue.isLoading()"
+      [loanOverdueList]="loanOverdue.dataList()"
       (navigateTo)="onNavigateToLoans()"
     />
     <app-loan-policy-component/>

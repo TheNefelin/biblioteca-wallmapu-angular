@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LoanListComponent } from "@features/loan/components/loan-list-component/loan-list-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -14,6 +14,7 @@ import { CrudPage } from '@shared/base/crud-page';
 import { ButtonComponent } from '@shared/components/button-component/button-component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-loan-page',
   imports: [
     LoanListComponent,

@@ -1,10 +1,11 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MessageErrorComponent } from "../message-error-component/message-error-component";
 import { LoadingComponent } from "../loading-component/loading-component";
 import { MessageSuccessComponent } from "../message-success-component/message-success-component";
 import { ButtonComponent } from "../button-component/button-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-search-codbar-component',
   imports: [
     MessageErrorComponent, 

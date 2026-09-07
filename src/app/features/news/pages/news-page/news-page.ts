@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
 import { NewsService } from '@features/news/services/news-service';
@@ -10,6 +10,7 @@ import { NewsModel } from '@features/news/models/news-model';
 import { CrudPage } from '@shared/base/crud-page';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-news-page',
   imports: [
     HeaderComponent, 

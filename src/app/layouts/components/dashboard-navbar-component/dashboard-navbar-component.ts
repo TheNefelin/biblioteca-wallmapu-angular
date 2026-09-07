@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { environment } from '@environments/environment';
 import { AuthButtonComponent } from "@features/auth/components/auth-button-component/auth-button-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dashboard-navbar-component',
   imports: [
     AuthButtonComponent

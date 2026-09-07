@@ -1,8 +1,9 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import BwipJs from 'bwip-js/browser';
 import { ButtonComponent } from "../button-component/button-component";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-modal-barcode-label-component',
   imports: [ButtonComponent],
   templateUrl: './modal-barcode-label-component.html',

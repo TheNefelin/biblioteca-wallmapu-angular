@@ -1,13 +1,16 @@
-@if (!newsWithImages()) {
+@if (!news()) {
 
 } @else {
   <section class="mb-12">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       
-      @for (image of newsWithImages()?.images; track image.id_news_gallery) {
+      @for (image of news()?.images; track image.id_news_gallery) {
         <div 
           class="relative group cursor-pointer overflow-hidden rounded-xl shadow-lg"
-          (click)="isImageModalOpen.set(true); selectedImage.set(image.url)">
+          role="button"
+          tabindex="0"
+          (click)="isImageModalOpen.set(true); selectedImage.set(image.url)"
+          (keydown.enter)="isImageModalOpen.set(true); selectedImage.set(image.url)">
           
           <figure class="aspect-4/3">
             <img 

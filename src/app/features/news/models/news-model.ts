@@ -1,22 +1,14 @@
 import { NewsGalleryModel } from "@features/news-gallery/models/news-gallery-model";
 
-export interface CreateNewsModel {
+export interface SaveNewsModel {
   title: string;
   subtitle: string;
   body: string;
 }
 
-export interface UpdateNewsModel extends CreateNewsModel {
+export interface NewsModel extends SaveNewsModel {
   id_news: number;
-}
-
-export interface NewsModel extends UpdateNewsModel {
-  created_at: string,
-  updated_at: string
-}
-
-export interface NewsDetailModel extends NewsModel {
-  created_at: string,
-  updated_at: string
-  images: NewsGalleryModel[]
+  created_at: string;
+  updated_at: string;
+  images: NewsGalleryModel[];
 }

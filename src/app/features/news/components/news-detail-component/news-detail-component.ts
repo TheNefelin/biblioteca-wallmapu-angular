@@ -1,6 +1,6 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { NewsWithImagesModel } from '@features/news/models/news-with-images-model';
+import { NewsModel } from '@features/news/models/news-model';
 
 @Component({
   selector: 'app-news-detail-component',
@@ -12,11 +12,11 @@ import { NewsWithImagesModel } from '@features/news/models/news-with-images-mode
   templateUrl: './news-detail-component.html',
 })
 export class NewsDetailComponent {
-  readonly newsWithImages = input<NewsWithImagesModel | null>(null)
+  readonly news = input<NewsModel | null>(null)
   readonly shareMessage = signal<string | null>(null)
 
   async share(): Promise<void> {
-    const news = this.newsWithImages()
+    const news = this.news()
     if (!news) return
 
     const url = window.location.href

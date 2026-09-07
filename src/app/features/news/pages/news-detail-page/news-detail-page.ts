@@ -31,7 +31,7 @@ export class NewsDetailPage {
   readonly isLoading = computed(() => this.getNewsRX.isLoading());
 
   private readonly newsService = inject(NewsService);
-  readonly computedNewsWithImages = computed(() => this.getNewsRX.value() );
+  readonly news = computed(() => this.getNewsRX.value() );
 
   private readonly getNewsRX = rxResource({
     params: () => this.paramId(),

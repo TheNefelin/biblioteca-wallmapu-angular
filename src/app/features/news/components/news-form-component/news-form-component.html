@@ -1,75 +1,76 @@
-<!-- Formulario -->
 <div class="w-full max-w-4xl">
-  <form 
-    (submit)="formSubmit($event)"
+  <form
+    (ngSubmit)="onSubmit()"
     class="fieldset bg-my-light rounded-box border p-6 flex flex-col gap-4">
-    
+
     <!-- Título -->
     <fieldset class="fieldset flex flex-col">
-      <label class="label font-semibold mb-1">Título</label>
-      <input 
+      <label for="newsTitleInput" class="label font-semibold mb-1">Título</label>
+      <input
         #titleInput
-        type="text" class="input validator w-full" placeholder="Título" required 
+        id="newsTitleInput"
+        name="title"
+        type="text" class="input validator w-full" placeholder="Título" required
         [disabled]="isLoading()"
-        [value]="formData().title ?? ''"
+        [value]="formData().title"
         (input)="updateTitle($any($event.target).value, titleInput)"
       />
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
     </fieldset>
-    
+
     <!-- Subtítulo -->
     <fieldset class="fieldset flex flex-col">
-      <label class="label font-semibold mb-1">Subtítulo</label>
+      <label for="newsSubtitleInput" class="label font-semibold mb-1">Subtítulo</label>
       <input
         #subtitleInput
+        id="newsSubtitleInput"
+        name="subtitle"
         type="text" class="input validator w-full" placeholder="Subtítulo" required
         [disabled]="isLoading()"
-        [value]="formData().subtitle ?? ''"
+        [value]="formData().subtitle"
         (input)="updateSubtitle($any($event.target).value, subtitleInput)"
       />
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
     </fieldset>
-    
+
     <!-- Descripción -->
     <fieldset class="fieldset flex flex-col">
-      <label class="label font-semibold">Descripción</label>
-      <textarea 
+      <label for="newsBodyInput" class="label font-semibold">Descripción</label>
+      <textarea
         #bodyInput
+        id="newsBodyInput"
+        name="body"
         class="textarea validator mt-2 w-full min-h-56" placeholder="Descripción" required
         [disabled]="isLoading()"
-        [value]="formData().body ?? ''"
+        [value]="formData().body"
         (input)="updateBody($any($event.target).value, bodyInput)"
       ></textarea>
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
     </fieldset>
-    
+
     <!-- Carga de imágenes -->
     <fieldset class="fieldset flex flex-col">
-      <label class="label font-semibold">Cargar imágenes (1 a 3)</label>
-      <label class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
-        <span class="font-bold text-">Elegir Imagenes</span>
-        <input 
-          type="file" class="hidden" accept="image/*" multiple 
+      <label for="newsImageInput" class="label font-semibold">Cargar imágenes (1 a 3)</label>
+      <label for="newsImageInput" class="file-input-wrapper cursor-pointer flex items-center gap-2 border rounded px-4 py-3 bg-white hover:bg-gray-100">
+        <span class="font-bold">Elegir Imagenes</span>
+        <input
+          id="newsImageInput"
+          type="file" class="hidden" accept="image/*" multiple
           [disabled]="isLoading()"
-          (change)="onChangeImages($event)">
+          (change)="onAddImages($event)">
       </label>
       <p class="validator-hint hidden mt-1 text-sm text-red-500">Requerido</p>
     </fieldset>
-            
+
     <!-- Botón de envío -->
     @if (isLoading()) {
       <app-loading-component/>
     } @else {
-    <button class="btn bg-my-purple text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
-      {{ actionText() }}
-    </button>  
+      <app-button-component
+        [type]="'submit'"
+        [icon]="'save'"
+        [textBtn]="actionText()"
+      />
     }
-
   </form>
-
-  @if (errorMessage()) {
-    <div class="mt-4">
-      <app-message-error-component [message]="errorMessage()"/>
-    </div>
-  }
 </div>

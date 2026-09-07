@@ -1,31 +1,28 @@
-import { Component, input, output } from '@angular/core';
-import { ImagePreviewVM } from '@features/news-gallery/models/image-preview.vm';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Preview } from '@features/news-gallery/models/news-gallery-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-image-list-component',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    LoadingComponent
-],
+    LoadingComponent,
+    ButtonComponent
+  ],
   templateUrl: './image-list-component.html',
 })
 export class ImageListComponent {
   readonly isLoading = input<boolean>(false);
-  readonly imagesPreviewVMList = input.required<ImagePreviewVM[]>();
-  readonly updateImagesPreviewVMList = output<ImagePreviewVM[]>();
-  readonly deleteImagesPreviewVM = output<ImagePreviewVM>();
+  readonly previewList = input<Preview[]>([]);
+  protected readonly updateAlt = output<{ item: Preview, alt: string }>();
+  protected readonly deleteImage = output<Preview>();
 
-  protected updateImageAlt(item: ImagePreviewVM, alt: string) {
-    const updated = this.imagesPreviewVMList().map(e =>
-      e === item
-      ? { ...e, alt: alt.trim() || 'Imagen sin Nombre' }
-      : e
-    )
-
-    this.updateImagesPreviewVMList.emit(updated);
+  protected onUpdateImageAlt(item: Preview, alt: string) {
+    this.updateAlt.emit({ item, alt });
   }
 
-  protected onDeleteImagesPreviewVM(item: ImagePreviewVM) {
-    this.deleteImagesPreviewVM.emit(item)
+  protected onDeleteImage(item: Preview): void {
+    this.deleteImage.emit(item);
   }
 }

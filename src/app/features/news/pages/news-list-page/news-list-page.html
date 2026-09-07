@@ -6,23 +6,17 @@
       (searchChange)="searchText($event)"
     />
     
-    <div class="flex justify-between m-4">
-      <app-button-component [icon]="'refresh'" [textBtn]="'Refrescar'" (clicked)="refreshList()" />
-      <app-button-component [icon]="'create'" [textBtn]="'Crear Noticia'" (clicked)="onCreate()" />
-    </div>
-    
     <app-news-list-component 
       [isLoading]="isLoading()"
-      [newsWithImagesList]="newsWithImagesList()"
+      [newsList]="dataList()"
+      [totalPages]="totalPages()"
+      [currentPage]="currentPage()"
+      (prevPage)="prevPage()"
+      (nextPage)="nextPage()"
+      (reload)="reload()"
+      (create)="onCreate()"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)"
     />
   </div>
-
-  <app-pagination-component
-    [totalPages]="totalPages()"
-    [currentPage]="currentPage()"
-    (prevPage)="prevPage()"
-    (nextPage)="nextPage()" 
-  />  
 </section>

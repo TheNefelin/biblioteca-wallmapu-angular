@@ -1,4 +1,4 @@
-@if (!newsWithImages()) {
+@if (!news()) {
   <div class="skeleton h-96 w-full bg-my-light/50"></div>
 } @else {  
   <!-- Tarjeta principal de la noticia -->
@@ -8,8 +8,8 @@
     <figure class="w-full aspect-video relative overflow-hidden">
       <img 
         placeholder="/images/layout.webp"
-        [ngSrc]="newsWithImages()?.images?.[0]?.url ?? 'images/layout.webp'"
-        [alt]="newsWithImages()?.images?.[0]?.alt ?? 'Sin Imagen'"
+        [ngSrc]="news()?.images?.[0]?.url ?? 'images/layout.webp'"
+        [alt]="news()?.images?.[0]?.alt ?? 'Sin Imagen'"
         fill
         priority
         class="w-full h-full object-cover"
@@ -24,19 +24,19 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <span>{{ newsWithImages()?.created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</span>
+        <span>{{ news()?.created_at | date:'yyyy-MM-dd - HH:mm:ss' }}</span>
         <span class="mx-2">•</span>
-        <span>Código de la Noticia: [{{ newsWithImages()?.id_news }}]</span>
+        <span>Código de la Noticia: [{{ news()?.id_news }}]</span>
       </div>
 
       <!-- Título principal de la noticia -->
       <h1 class="text-4xl md:text-5xl font-bold text-base-content mb-4 leading-tight">
-        {{ newsWithImages()?.title }}
+        {{ news()?.title }}
       </h1>
 
       <!-- Subtítulo de la noticia -->
       <h2 class="text-xl md:text-2xl text-base-content/70 font-medium mb-6 leading-relaxed">
-        {{ newsWithImages()?.subtitle }}  
+        {{ news()?.subtitle }}  
       </h2>
 
       <!-- linea -->
@@ -45,7 +45,7 @@
       <!-- Body - Contenido de la noticia -->
       <div class="prose prose-lg max-w-none dark:prose-invert mb-8">
         <p class="mb-4 first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-3 first-letter:float-left">
-          {{ newsWithImages()?.body }}  
+          {{ news()?.body }}  
         </p>
       </div>
 

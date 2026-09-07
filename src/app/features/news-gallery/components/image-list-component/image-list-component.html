@@ -1,30 +1,31 @@
-@if (imagesPreviewVMList().length > 0) {
+@if (previewList().length > 0) {
   <div class="grid gap-4 w-full max-w-4xl">
-    @for (item of imagesPreviewVMList(); track item.preview) {
+    @for (item of previewList(); track item.url) {
       <div class="relative w-full aspect-video overflow-hidden rounded-lg border group">
-        
+
         <!-- Imagen -->
         <img
-          [src]="item.preview"
+          [src]="item.url"
           [alt]="item.alt || 'Imagen sin nombre'"
           class="object-cover w-full h-full"
         />
 
         <!-- Overlay semi-transparente con info -->
-        <div class="absolute top-0 left-0 w-full h-full bg-black/30 opacity-0 group-hover:opacity-100 transition flex justify-between items-start p-2">
+        <div class="absolute top-0 w-full bg-black/75 opacity-0 group-hover:opacity-100 transition flex justify-between p-4">
           <!-- ID o Nueva -->
-          <span class="text-white font-bold text-sm">
+          <span class="text-white font-bold text-sm my-auto">
             {{ item.id ? `ID: ${item.id}` : 'Nueva' }}
           </span>
 
           @if (item.id || isLoading()) {
-            <p class="text-my-light">{{ item.alt }}</p>               
+            <p class="text-my-light my-auto">{{ item.alt }}</p>               
           } @else {
             <input
-              class="input text-sm text-my-dark"
+              class="input text-sm text-my-dark my-auto"
               type="text"
               placeholder="Imagen sin nombre"
-              (input)="updateImageAlt(item, $any($event.target).value)"
+              aria-label="Texto alternativo de la nueva imagen"
+              (input)="onUpdateImageAlt(item, $any($event.target).value)"
             >
           }
 
@@ -32,13 +33,7 @@
           @if (isLoading()) {
             <app-loading-component/>
           } @else {
-            <button 
-              type="button"
-              class="bg-my-pink text-sm px-2 py-1 rounded hover:bg-my-pink/80 text-my-light"
-              (click)="onDeleteImagesPreviewVM(item)"
-            >
-              Eliminar
-            </button>
+            <app-button-component [icon]="'delete'" [textBtn]="'Eliminar'" (clicked)="onDeleteImage(item)" />
           }
         </div>
 

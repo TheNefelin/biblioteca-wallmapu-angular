@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { catchError, map, of } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { NewsWithImagesModel } from '@features/news/models/news-with-images-model';
 import { NewsService } from '@features/news/services/news-service';
 import { HeaderComponent } from "@shared/components/header-component/header-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
@@ -22,6 +21,7 @@ import { FormatModel } from '@features/format/models/format-model';
 import { EditorialModel } from '@features/book-editorial/models/editorial-model';
 import { GenreModel } from '@features/book-genre/models/genre-model';
 import { SubjectModel } from '@features/book-subject/models/subject-model';
+import { NewsModel } from '@features/news/models/news-model';
 
 @Component({
   selector: 'app-home.page',
@@ -51,11 +51,11 @@ export class HomePage {
   );
   
   private readonly newsService = inject(NewsService);
-  protected readonly firstNewsWithImages = computed<NewsWithImagesModel | null>(() => {
+  protected readonly firstNews = computed<NewsModel | null>(() => {
     const list = this.newsRX.value() ?? [];
     return list.length > 0 ? list[0] : null;
   });
-  protected readonly restNewsWithImages = computed<NewsWithImagesModel[]>(() => {
+  protected readonly restNewsList= computed<NewsModel[]>(() => {
     const list = this.newsRX.value() ?? [];
     return list.slice(1);
   });
@@ -64,7 +64,7 @@ export class HomePage {
     stream: () => {    
       this.errorMessage.set(null);
 
-      return this.newsService.getAll({ page: 1, limit: 4, search: '' }).pipe(
+      return this.newsService.getAllPagination({ page: 1, limit: 4, search: '' }).pipe(
         map(response => response.data),
         catchError(err => {
           this.handleError(err);

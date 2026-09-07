@@ -1,26 +1,31 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { NewsListRowComponent } from "../news-list-row-component/news-list-row-component";
-import { NewsWithImagesModel } from '@features/news/models/news-with-images-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { NewsModel } from '@features/news/models/news-model';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { ButtonComponent } from "@shared/components/button-component/button-component";
+import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 
 @Component({
   selector: 'app-news-list-component',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NewsListRowComponent, LoadingComponent],
+  imports: [
+    DatePipe,
+    NgOptimizedImage,
+    LoadingComponent,
+    ButtonComponent,
+    PaginationComponent
+  ],
   templateUrl: './news-list-component.html',
 })
 export class NewsListComponent {
-  readonly newsWithImagesList = input.required<NewsWithImagesModel[]>();
-  readonly isLoading = input.required<boolean>();
-  
-  readonly edit = output<NewsWithImagesModel>();
-  readonly delete = output<NewsWithImagesModel>();
-
-  protected onEdit(item: NewsWithImagesModel): void {
-    this.edit.emit(item);
-  }
-
-  protected onDelete(item: NewsWithImagesModel): void {
-    this.delete.emit(item);
-  }
+  readonly newsList = input<NewsModel[]>([]);
+  readonly isLoading = input<boolean>(false);
+  readonly totalPages = input<number>(0);
+  readonly currentPage = input<number>(0);
+  protected readonly prevPage = output<void>();
+  protected readonly nextPage = output<void>();  
+  protected readonly reload = output<void>();
+  protected readonly create = output<void>();
+  protected readonly edit = output<NewsModel>();
+  protected readonly delete = output<NewsModel>();
 }

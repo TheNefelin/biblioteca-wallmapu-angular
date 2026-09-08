@@ -1,0 +1,36 @@
+
+<div class="flex flex-col justify-between min-h-full">
+  <section>
+    <app-header-component
+      [title]="'Libros'"
+      [description]="'Revisa nuestro catálogo de libros y elige el que quieras leer.'"
+    />
+    
+    <app-search-filter-component
+      [textTitle]="'La lectura nos abre las puertas del mundo'"
+      [textDescription]="'Revisa nuestro catálogo de libros y elige el que quieras leer.'"
+      [searchPlaceholder]="'Buscar por Título o ISBN...'"
+      (searchChange)="searchText($event)"
+      (selectedAuthor)="onSelectedAuthor($event)"
+      (selectedFormat)="onSelectedFormat($event)"
+      (selectedEditorial)="onSelectedEditorial($event)"
+      (selectedGenre)="onSelectedGenre($event)"
+      (selectedSubject)="onSelectedSubject($event)"
+      [limit]="limit()"
+      (limitChange)="onLimitChange($event)"
+    />
+
+    <app-edition-card-list-component
+      [isLoading]="edition.isLoading()"
+      [editionDetailList]="edition.dataList()"
+      (navigateTo)="onNavigateTo($event)"
+    />
+  </section>
+
+  <app-pagination-component 
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    (prevPage)="prevPage()"
+    (nextPage)="nextPage()"
+  />
+</div>

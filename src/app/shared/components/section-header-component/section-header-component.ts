@@ -24,15 +24,11 @@ export class SectionHeaderComponent {
 
   private searchValue = signal<string>('');
 
-  private searchValue$ = toObservable(this.searchValue).pipe(
+  private readonly searchValue$ = toObservable(this.searchValue).pipe(
     debounceTime(300),
     distinctUntilChanged(),
     takeUntilDestroyed(),
-  );
-
-  constructor() {
-    this.searchValue$.subscribe(value => this.searchChange.emit(value));
-  }
+  ).subscribe(value => this.searchChange.emit(value));
 
   protected onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;

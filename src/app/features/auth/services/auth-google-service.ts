@@ -33,9 +33,7 @@ export class AuthGoogleService {
   // ✅ Señal interna opcional para saber si el script está listo
   private scriptReady = signal(false);
 
-  constructor() {
-    this.checkGoogleScript();
-  }
+  private readonly initGoogleCheck = this.checkGoogleScript();
 
   // 🔹 Espera a que window.google esté disponible
   private checkGoogleScript(): void {

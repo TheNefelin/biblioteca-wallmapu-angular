@@ -6,6 +6,9 @@ export const ROUTES_CONSTANTS = {
       ROOT: '/news',
       DETAIL: (id: number) => `/news/${id}`,
     },
+    EDITION: {
+      ROOT: `/editions`,
+    },
     RESERVATION: {
       ROOT: (bookId: number, editionId: number) => `reservation/book/${bookId}/edition/${editionId}`
     }
@@ -75,5 +78,6 @@ export const ROUTES_CONSTANTS = {
   PAGES: [
     { URI: "/", NAME: "Inicio" },
     { URI: "/news", NAME: "Noticias" },
+    { URI: "/editions", NAME: "Libros" },    
   ],
 }

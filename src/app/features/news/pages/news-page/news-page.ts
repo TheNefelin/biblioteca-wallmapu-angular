@@ -1,4 +1,4 @@
-import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
 import { NewsService } from '@features/news/services/news-service';
@@ -23,6 +23,8 @@ import { CrudPage } from '@shared/base/crud-page';
 export class NewsPage extends CrudPage<NewsModel> {
   private readonly newsService = inject(NewsService);
 
+  protected override readonly limit = signal<number>(6);
+
   readonly isLoading = computed(() => this.getNewsRX.isLoading());
   readonly newsList = computed<NewsModel[]>(() => this.getNewsRX.value() ?? []);
 
@@ -35,13 +37,8 @@ export class NewsPage extends CrudPage<NewsModel> {
         map(response => this.mapPaginated(response)),
         catchError(() => of(this.emptyPaginated()))
       );
-    },
+},
   });
-
-  constructor() {
-    super();
-    this.limit.set(6);
-  }
 
   protected override reload(): void {
     this.getNewsRX.reload();

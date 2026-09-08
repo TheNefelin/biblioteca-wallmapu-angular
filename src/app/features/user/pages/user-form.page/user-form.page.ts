@@ -1,9 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { UserFormComponent } from "@features/user/components/user-form-component/user-form-component";
 import { UserService } from '@features/user/services/user-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
@@ -11,16 +10,15 @@ import { Role } from '@shared/constants/roles-enum';
 import { UpdateUserByAdminModel, UpdateUserModel, UserModel } from '@features/user/models/user-model';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { AuthUser } from '@features/auth/models/auth-user';
-import { extractErrorMessage } from '@core/utils/error-handler';
 import { MutationService } from '@core/services/mutation-service';
 
 @Component({
   selector: 'app-user-form.page',
   imports: [
     SectionHeaderComponent,
-    UserFormComponent,
-    MessageErrorComponent
+    UserFormComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-form.page.html',
 })
 export class UserFormPage {
@@ -35,12 +33,7 @@ export class UserFormPage {
     { initialValue: null }
   );
 
-  protected readonly errorMessage = signal<string | null>(null);
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getUserRX,
-    ].some((e) => e.isLoading())
-  );
+  protected readonly isLoading = computed<boolean>(() => this.getUserRX.isLoading());
   protected readonly isSaving = signal<boolean>(false);
 
   private readonly authStore = inject(AuthStore);
@@ -86,9 +79,8 @@ export class UserFormPage {
       if (!id_user) return of(null);
 
       return this.userService.getById(id_user).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
+          console.error('[UserService::UserFormPage] getById:', err);
           return of(null);
         })
       );
@@ -132,9 +124,5 @@ export class UserFormPage {
 
   protected navigateBack(): void {
     this.location.back();
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
   }
 }

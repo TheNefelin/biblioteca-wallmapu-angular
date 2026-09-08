@@ -1,10 +1,9 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserService } from '@features/user/services/user-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { catchError, map, of } from 'rxjs';
 import { UserListComponent } from "@features/user/components/user-list-component/user-list-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { AuthStore } from '@features/auth/services/auth-store';
 import { Role } from '@shared/constants/roles-enum';
@@ -18,9 +17,9 @@ import { CrudPage } from '@shared/base/crud-page';
   imports: [
     SectionHeaderComponent,
     UserListComponent,
-    MessageErrorComponent,
     PaginationComponent
 ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-list.page.html',
 })
 export class UserListPage extends CrudPage<UserDetailModel> {
@@ -39,13 +38,15 @@ export class UserListPage extends CrudPage<UserDetailModel> {
 
       return this.userService.getAllDetails(params).pipe(
         map(response => this.mapPaginated(response)),
-        catchError(() => of(this.emptyPaginated()))
+        catchError(err => {
+          console.error('[UserService::UserListPage] getAllPagination:', err);
+          return of(this.emptyPaginated())
+        })
       );
     },
   });
 
   protected readonly isLoading = computed(() => this.getUserRX.isLoading());
-  protected readonly backendError = computed(() => this.getUserRX.error()?.message ?? null);
 
   // PROCESAR USER
   protected readonly userDetailListComputed = computed<UserDetailModel[]>(() => this.getUserRX.value() ?? []);

@@ -17,7 +17,7 @@
   <!-- Formulario -->
   <div class="w-full max-w-4xl">
     <form 
-      (submit)="onSubmit($event)"
+      (ngSubmit)="onSubmit()"
       class="fieldset bg-my-light rounded-box border p-6 flex flex-col gap-4">
       
       <section class="flex gap-4 flex-wrap">
@@ -139,15 +139,17 @@
       </fieldset>
 
       @if (errorMessage()) {
-        <app-message-error-component [message]="errorMessage()"/>
+        <div role="alert" class="alert alert-error">
+          <span>{{ errorMessage() }}</span>
+        </div>
       }
 
       @if (isLoading()) {
         <app-loading-component/>
       } @else {
-        <button class="btn bg-my-purple hover:bg-my-purple/50 text-my-light mt-4 self-start px-6 py-2 rounded-lg font-semibold" type="submit">
-          Modificar
-        </button>
+        <div class="justify-self-end flex gap-2 items-center">
+          <app-button-component [icon]="'save'" [textBtn]="'Modificar'" (clicked)="onSubmit()" />
+        </div>
       }
     </form>
   </div>

@@ -7,14 +7,6 @@
       (searchChange)="onSearchChange($event)"
     />
 
-    @if (backendError()) {
-      <section class="p-4">
-        <app-message-error-component 
-          [message]="backendError()"
-        />
-      </section>
-    }
-
     <section class="p-4">
       <app-user-list-component 
         [editRole]="editRole()"

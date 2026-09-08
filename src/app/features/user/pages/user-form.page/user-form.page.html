@@ -5,12 +5,6 @@
   (actionClicked)="navigateBack()"
 />
 
-@if (errorMessage()) {
-  <section class="p-4">
-    <app-message-error-component [message]="errorMessage()"/>
-  </section>
-}
-
 @if (!computedUser()) {
   <div class="flex max-w-4xl flex-col gap-4 mx-auto">
     <div class="flex items-center gap-4">

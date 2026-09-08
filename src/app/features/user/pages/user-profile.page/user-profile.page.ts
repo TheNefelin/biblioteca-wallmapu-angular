@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { UserService } from '@features/user/services/user-service';
@@ -6,12 +6,10 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { catchError, map, of } from 'rxjs';
 import { UserProfileComponent } from "@features/user/components/user-profile-component/user-profile-component";
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
 import { UserDetailModel } from '@features/user/models/user-model';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { Role } from '@shared/constants/roles-enum';
-import { extractErrorMessage } from '@core/utils/error-handler';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
@@ -28,10 +26,10 @@ import { MutationService } from '@core/services/mutation-service';
     CommonModule,
     SectionHeaderComponent,
     UserProfileComponent,
-    MessageErrorComponent,
     NotificationListComponent,
     NotificationBellComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-profile.page.html',
 })
 export class UserProfilePage extends CrudPage<NotificationDetailModel> {
@@ -41,8 +39,6 @@ export class UserProfilePage extends CrudPage<NotificationDetailModel> {
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
   readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
-
-  protected readonly errorMessage = signal<string | null>(null);
 
   // NOTIFICATION STATE -------------------------------------------------------------
   protected readonly showOnlyUnread = signal<boolean>(false);
@@ -81,9 +77,8 @@ export class UserProfilePage extends CrudPage<NotificationDetailModel> {
       if (!params) return of(null);
 
       return this.userService.getById(params.id_user).pipe(
-        map(response => response),
         catchError(err => {
-          this.handleError(err);
+          console.error('[UserService::UserProfilePage] getById:', err);
           return of(null);
         })
       );
@@ -165,9 +160,5 @@ export class UserProfilePage extends CrudPage<NotificationDetailModel> {
 
       this.router.navigate([formRoute]);
     }
-  }
-
-  private handleError(err: unknown): void {
-    this.errorMessage.set(extractErrorMessage(err));
   }
 }

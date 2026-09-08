@@ -1,5 +1,4 @@
-import { Component, input, linkedSignal, output, signal } from '@angular/core';
-import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { ChangeDetectionStrategy, Component, input, linkedSignal, output, signal } from '@angular/core';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { UserStatusSelectComponent } from "@features/user-status/components/user-status-select-component/user-status-select-component";
 import { UserRoleSelectComponent } from "@features/user-role/components/user-role-select-component/user-role-select-component";
@@ -9,18 +8,20 @@ import { UserModel } from '@features/user/models/user-model';
 import { CommuneSelectComponent } from '@features/division-commune/components/commune-select-component/commune-select-component';
 import { CommuneModel } from '@features/division-commune/models/commune-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
+import { ButtonComponent } from "@shared/components/button-component/button-component";
 
 @Component({
   selector: 'app-user-form-component',
   imports: [
     DatePipe,
     NgOptimizedImage,
-    MessageErrorComponent,
     CommuneSelectComponent,
     UserStatusSelectComponent,
     UserRoleSelectComponent,
-    LoadingComponent
+    LoadingComponent,
+    ButtonComponent
 ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-form-component.html',
 })
 export class UserFormComponent {
@@ -110,9 +111,7 @@ export class UserFormComponent {
   }
 
   /* -- Submit -------------------------------------------- */
-  onSubmit(event: Event) {
-    event.preventDefault();
-
+  onSubmit() {
     const data = this.formData();
     const error = this.validateFormOnSubmit(data);
 

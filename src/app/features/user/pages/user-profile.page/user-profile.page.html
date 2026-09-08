@@ -3,10 +3,6 @@
 />
 
 <section class="p-4 grid grid-cols-1 gap-4">
-  @if(errorMessage()) {
-    <app-message-error-component [message]="errorMessage()" />
-  }
-
   <app-user-profile-component
     [authUser]="authUser()"
     [userDetailModel]="userDetailComputed()"

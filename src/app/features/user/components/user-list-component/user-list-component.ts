@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 import { Role } from '@shared/constants/roles-enum';
 import { UserDetailModel } from '@features/user/models/user-model';
@@ -12,6 +12,7 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
     LoadingComponent,
     ButtonComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-list-component.html',
 })
 export class UserListComponent {

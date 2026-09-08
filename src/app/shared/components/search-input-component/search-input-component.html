@@ -1,8 +1,6 @@
 <section class="grid grid-cols-1 items-center">
   @if (textTitle()) {
-    <label class="label mb-1">
-      <span class="label-text text-sm font-semibold">{{ textTitle() }}</span>
-    </label>  
+    <span class="label-text text-sm font-semibold">{{ textTitle() }}</span>
   }
 
   <label class="input focus-within:border-my-green focus-within:outline-none">
@@ -15,7 +13,7 @@
     <input type="search"
       [placeholder]="textPlaceholder()"
       [value]="inputText()"
-      (input)="inputTextChange($event)"
+      (input)="onInputTextChange($event)"
     />
   </label>
 </section>

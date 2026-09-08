@@ -11,7 +11,7 @@
       </div>
 
       <div class="flex gap-2 items-center">
-        <app-search-input-component (onInputTextChange)="searchFilter.emit($event)" />
+        <app-search-input-component (inputTextChange)="searchFilter.emit($event)" />
         <app-button-component [icon]="'refresh'" textBtn="Refrescar" (clicked)="reload.emit()" />
         <app-button-component [icon]="'create'" textBtn="Crear Descriptor" (clicked)="create.emit()" />
       </div>

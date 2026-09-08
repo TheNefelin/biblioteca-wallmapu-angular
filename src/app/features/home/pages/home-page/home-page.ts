@@ -63,9 +63,9 @@ export class HomePage extends CrudPage<EditionDetailModel> {
 
   // FILTER STATE ------------------------------------------------------------------
   private readonly id_author = signal<number>(0);
-  private readonly id_format = signal<number>(0);
   private readonly id_editorial = signal<number>(0);
   private readonly id_genre = signal<number>(0);
+  private readonly id_format = signal<number>(0);  
   private readonly id_subject = signal<number>(0);
 
   protected readonly getPaginationPayload = computed<PaginationRequestModel<EditionFilterModel>>(() => ({
@@ -109,23 +109,26 @@ export class HomePage extends CrudPage<EditionDetailModel> {
     },
   });
 
-  constructor() {
-    super();
-    this.limit.set(20);
-  }
-
   // CRUD-PAGE INHERITANCE METHODS --------------------------------------------------
+  protected override readonly limit = signal<number>(20);
+
   protected override reload(): void {
     this.getNewsRX.reload();
     this.getEditionRX.reload();
   }
 
+  // ACTIONS ------------------------------------------------------------------------  
   actionClicked(): void {
     this.router.navigate([ROUTES_CONSTANTS.HOME.NEWS.ROOT]);
   }
 
   searchText(text: string) {
     this.onFilterChange({ search: text, limit: this.limit() });
+  }
+
+  onLimitChange(limit: number): void {
+    this.limit.set(limit);
+    this.currentPage.set(1);
   }
 
   protected onSelectedAuthor(item: AuthorModel | null): void {

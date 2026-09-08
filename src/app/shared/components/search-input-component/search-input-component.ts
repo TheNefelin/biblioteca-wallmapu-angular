@@ -12,18 +12,18 @@ export class SearchInputComponent {
   readonly textTitle = input<string>("");
   readonly textPlaceholder = input<string>('Buscar...');
   readonly debounceMs = input<number>(300);
-  readonly onInputTextChange = output<string>();
+  readonly inputTextChange = output<string>();
 
   protected readonly inputText = signal<string>('');
 
-  protected inputTextChange(event: Event) {
+  protected onInputTextChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     this.inputText.set(value);
   }
 
   private readonly emitInputText = effect(() => {
     const value = this.searchDebounced();
-    this.onInputTextChange.emit(value);
+    this.inputTextChange.emit(value);
   });
 
   private readonly searchDebounced = toSignal(

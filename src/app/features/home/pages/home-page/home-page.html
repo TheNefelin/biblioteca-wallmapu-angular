@@ -29,6 +29,8 @@
   (selectedEditorial)="onSelectedEditorial($event)"
   (selectedGenre)="onSelectedGenre($event)"
   (selectedSubject)="onSelectedSubject($event)"
+  [limit]="limit()"
+  (limitChange)="onLimitChange($event)"
 />
 
 <app-edition-card-list-component

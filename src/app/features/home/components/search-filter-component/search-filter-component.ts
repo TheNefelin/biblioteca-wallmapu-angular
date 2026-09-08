@@ -18,7 +18,7 @@ import { SubjectModel } from '@features/book-subject/models/subject-model';
     EditorialSelectComponent,
     AuthorSelectComponent,
     FormatSelectComponent,
-    SubjectSelectComponent
+    SubjectSelectComponent,
   ],
   templateUrl: './search-filter-component.html',
 })
@@ -26,12 +26,20 @@ export class SearchFilterComponent {
   readonly textTitle = input<string | null>(null);
   readonly textDescription = input<string | null>(null);
   readonly searchPlaceholder = input<string | null>(null);
-  readonly searchChange = output<string>();
-  readonly selectedAuthor = output<AuthorModel | null>();
-  readonly selectedFormat = output<FormatModel | null>();
-  readonly selectedEditorial = output<EditorialModel | null>();
-  readonly selectedGenre = output<GenreModel | null>();
-  readonly selectedSubject = output<SubjectModel | null>();
+  readonly limit = input<number>(20);
+  readonly limitOptions = input<number[]>([20, 40, 60, 80, 100]);
+  protected readonly searchChange = output<string>();
+  protected readonly selectedAuthor = output<AuthorModel | null>();
+  protected readonly selectedFormat = output<FormatModel | null>();
+  protected readonly selectedEditorial = output<EditorialModel | null>();
+  protected readonly selectedGenre = output<GenreModel | null>();
+  protected readonly selectedSubject = output<SubjectModel | null>();
+  protected readonly limitChange = output<number>();
+
+  protected onLimitSelect(event: Event): void {
+    const value = Number((event.target as HTMLSelectElement).value);
+    this.limitChange.emit(value);
+  }
 
   protected readonly searchText = signal<string>('');
   protected readonly clearTrigger = signal<number>(0);

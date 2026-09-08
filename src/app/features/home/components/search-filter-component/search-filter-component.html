@@ -28,7 +28,7 @@
           [value]="limit()"
           (change)="onLimitSelect($event)">
           @for (option of limitOptions(); track option) {
-            <option [value]="option">Filtrar por {{ option }} libros</option>
+            <option [value]="option" [selected]="limit() === option">Filtrar por {{ option }} libros</option>
           }
         </select>
       </label>

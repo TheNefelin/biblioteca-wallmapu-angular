@@ -65,8 +65,7 @@ export class BookFormPage {
     stream: ({ params: idBook }) => {
       if (!idBook) return of(null);
 
-      return this.bookService.getById(idBook).pipe(
-        map(response => response),
+return this.bookService.getById(idBook).pipe(
         catchError(err => {
           this.logger.error('BookService::BookFormPage', 'getBook', err);
           return of(null);
@@ -80,8 +79,7 @@ export class BookFormPage {
     stream: ({ params: idBook }) => {
       if (!idBook) return of(null);
 
-      return this.editionService.getAllDetailByBook(idBook).pipe(
-        map(response => response),
+return this.editionService.getAllDetailByBook(idBook).pipe(
         catchError(err => {
           this.logger.error('EditionService::BookFormPage', 'getEdition', err);
           return of(null);

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserStatsModel } from '@features/stats/models/stat-model';
 import { StatService } from '@features/stats/services/stat-service';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
@@ -21,7 +21,6 @@ export class UserStatsComponent {
   private readonly statRX = rxResource({
     stream: () => {
       return this.statService.getUserStats().pipe(
-        map(response => response),
         catchError(() => of(null))
       );
     },

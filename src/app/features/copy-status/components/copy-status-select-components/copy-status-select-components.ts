@@ -2,7 +2,7 @@ import { Component, computed, inject, input, output, ChangeDetectionStrategy } f
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CopyStatusModel } from '@features/copy-status/models/copy-status-model';
 import { CopyStatusService } from '@features/copy-status/services/copy-status-service';
-import { catchError, map, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
@@ -23,7 +23,6 @@ export class CopyStatusSelectComponents {
   private readonly getCopyStatusRX = rxResource({
     stream: () => {    
       return this.copyStatusService.getAll().pipe(
-        map(response => response),
         catchError(() => {
           return of(null);
         })

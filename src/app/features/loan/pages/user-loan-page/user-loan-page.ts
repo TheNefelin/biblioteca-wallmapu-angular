@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
@@ -21,6 +22,7 @@ import { CrudPage } from '@shared/base/crud-page';
   templateUrl: './user-loan-page.html',
 })
 export class UserLoanPage extends CrudPage<LoanDetailModel> {
+  private readonly logger = inject(LoggerService);
   // STATE ------------------------------------------------------------------------
   protected readonly selectFilterStatusId = signal<number>(0);
 
@@ -53,7 +55,7 @@ export class UserLoanPage extends CrudPage<LoanDetailModel> {
       return this.loanService.getAllPaginationByUser(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[LoanService::UserLoanPage] getAllPaginationByUser:', err);
+          this.logger.error('LoanService::UserLoanPage', 'getAllPaginationByUser', err);
           return of(this.emptyPaginated());
         })
       );

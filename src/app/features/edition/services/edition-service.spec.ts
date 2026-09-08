@@ -1,26 +1,45 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ApiService } from '@core/services/api-service';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
+import { EditionFilterModel, SaveEditionModel } from '@features/edition/models/edition-model';
 import { EditionService } from './edition-service';
-import { SaveEditionModel } from '@features/edition/models/edition-model';
 
 describe('EditionService', () => {
   let service: EditionService;
-  let httpMock: HttpTestingController;
+  let apiServiceSpy: {
+    getAllPagination: ReturnType<typeof vi.fn>;
+    getById: ReturnType<typeof vi.fn>;
+    create: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
+
+  const saveEdition: SaveEditionModel = {
+    edition: 'Primera',
+    isbn: '1234567890',
+    publication_year: 2020,
+    pages: 100,
+    cover_image: null,
+    editorial_id: 1,
+    book_id: 1,
+    format_ids: [1, 2],
+  };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
-    });
-    service = TestBed.inject(EditionService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
+    apiServiceSpy = {
+      getAllPagination: vi.fn(),
+      getById: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
 
-  afterEach(() => {
-    httpMock.verify();
+    TestBed.configureTestingModule({
+      providers: [{ provide: ApiService, useValue: apiServiceSpy }],
+    });
+
+    service = TestBed.inject(EditionService);
   });
 
   it('debería crearse', () => {
@@ -28,106 +47,78 @@ describe('EditionService', () => {
   });
 
   describe('getAllPagination', () => {
-    it('debería hacer GET a apiUrl/edition/pagination', () => {
-      service.getAllPagination({ page: 1, limit: 10, search: '', filter: undefined }).subscribe();
+    it('debería delegar a ApiService.getAllPagination con el endpoint edition', () => {
+      const params: PaginationRequestModel<EditionFilterModel> = {
+        page: 1,
+        limit: 60,
+        search: '',
+        filter: { id_author: 5, id_editorial: 0, id_genre: 0, id_format: 0, id_subject: 0 },
+      };
+      apiServiceSpy.getAllPagination.mockReturnValue({ subscribe: vi.fn() } as never);
 
-      const req = httpMock.expectOne(r => r.method === 'GET');
-      expect(req.request.url).toContain('/api/edition/pagination');
-      req.flush({ pages: 1, data: [] });
-    });
-  });
+      service.getAllPagination(params);
 
-  describe('getAllByBook', () => {
-    it('debería hacer GET a apiUrl/edition/book/{id} (contrato backend)', () => {
-      service.getAllByBook(9).subscribe();
-
-      const req = httpMock.expectOne(r => r.method === 'GET');
-      expect(req.request.url).toContain('/api/edition/book/9');
-      req.flush([]);
+      expect(apiServiceSpy.getAllPagination).toHaveBeenCalledWith('edition', params);
     });
   });
 
   describe('getAllDetailByBook', () => {
-    it('debería hacer GET a apiUrl/edition/book/{id}/detail (contrato backend)', () => {
-      service.getAllDetailByBook(4).subscribe();
+    it('debería delegar a ApiService.getById con la ruta edition/book/{id}/detail', () => {
+      apiServiceSpy.getById.mockReturnValue({ subscribe: vi.fn() } as never);
 
-      const req = httpMock.expectOne(r => r.method === 'GET');
-      expect(req.request.url).toContain('/api/edition/book/4/detail');
-      req.flush([]);
+      service.getAllDetailByBook(3);
+
+      expect(apiServiceSpy.getById).toHaveBeenCalledWith('edition/book', '3/detail');
+    });
+  });
+
+  describe('getAllByBook', () => {
+    it('debería delegar a ApiService.getById con la ruta edition/book/{id}', () => {
+      apiServiceSpy.getById.mockReturnValue({ subscribe: vi.fn() } as never);
+
+      service.getAllByBook(3);
+
+      expect(apiServiceSpy.getById).toHaveBeenCalledWith('edition/book', 3);
     });
   });
 
   describe('getById', () => {
-    it('debería hacer GET a apiUrl/edition/{id} (contrato backend)', () => {
-      service.getById(11).subscribe();
+    it('debería delegar a ApiService.getById con el endpoint edition', () => {
+      apiServiceSpy.getById.mockReturnValue({ subscribe: vi.fn() } as never);
 
-      const req = httpMock.expectOne(r => r.method === 'GET');
-      expect(req.request.url).toContain('/api/edition/11');
-      req.flush({
-        id_edition: 11,
-        edition: '1ra Edición',
-        isbn: '123',
-        publication_year: 2020,
-        pages: 100,
-        cover_image: null,
-        editorial_id: 2,
-        book_id: 3,
-        formats: [],
-        created_at: '2026-01-01T00:00:00',
-        updated_at: '2026-01-01T00:00:00',
-      });
+      service.getById(3);
+
+      expect(apiServiceSpy.getById).toHaveBeenCalledWith('edition', 3);
     });
   });
 
   describe('create', () => {
-    it('debería hacer POST a apiUrl/edition con SaveEditionModel (format_ids)', () => {
-      const payload: SaveEditionModel = {
-        edition: '1ra Edición',
-        isbn: '978-1234',
-        publication_year: 2020,
-        pages: 120,
-        cover_image: null,
-        book_id: 3,
-        editorial_id: 2,
-        format_ids: [1, 5],
-      };
-      service.create(payload).subscribe();
+    it('debería delegar a ApiService.create con el endpoint edition', () => {
+      apiServiceSpy.create.mockReturnValue({ subscribe: vi.fn() } as never);
 
-      const req = httpMock.expectOne(r => r.method === 'POST');
-      expect(req.request.url).toContain('/api/edition');
-      expect(req.request.body).toEqual(payload);
-      req.flush({ id_edition: 1 });
+      service.create(saveEdition);
+
+      expect(apiServiceSpy.create).toHaveBeenCalledWith('edition', saveEdition);
     });
   });
 
   describe('update', () => {
-    it('debería hacer PUT a apiUrl/edition/{id} con SaveEditionModel (format_ids)', () => {
-      const payload: SaveEditionModel = {
-        edition: '1ra Edición',
-        isbn: '978-1234',
-        publication_year: 2020,
-        pages: 120,
-        cover_image: 'https://res.cloudinary.com/x/cover.png',
-        book_id: 3,
-        editorial_id: 2,
-        format_ids: [1],
-      };
-      service.update(11, payload).subscribe();
+    it('debería delegar a ApiService.update con el endpoint edition y el id', () => {
+      apiServiceSpy.update.mockReturnValue({ subscribe: vi.fn() } as never);
 
-      const req = httpMock.expectOne(r => r.method === 'PUT');
-      expect(req.request.url).toContain('/api/edition/11');
-      expect(req.request.body).toEqual(payload);
-      req.flush({ id_edition: 11 });
+      service.update(5, saveEdition);
+
+      expect(apiServiceSpy.update).toHaveBeenCalledWith('edition', 5, saveEdition);
     });
   });
 
   describe('delete', () => {
-    it('debería hacer DELETE a apiUrl/edition/{id} (contrato backend)', () => {
-      service.delete(7).subscribe();
+    it('debería delegar a ApiService.delete con el endpoint edition y el id', () => {
+      apiServiceSpy.delete.mockReturnValue({ subscribe: vi.fn() } as never);
 
-      const req = httpMock.expectOne(r => r.method === 'DELETE');
-      expect(req.request.url).toContain('/api/edition/7');
-      req.flush(true);
+      service.delete(7);
+
+      expect(apiServiceSpy.delete).toHaveBeenCalledWith('edition', 7);
     });
   });
 });

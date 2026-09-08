@@ -12,6 +12,7 @@ import { NewsCardListComponent } from "@features/news/components/news-card-list-
 import { AboutComponent } from '@features/home/components/about-component/about-component';
 import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { EditionService } from '@features/edition/services/edition-service';
+import { LoggerService } from '@core/services/logger-service';
 import { EditionCardListComponent } from "@features/edition/components/edition-card-list-component/edition-card-list-component";
 import { SearchFilterComponent } from "@features/home/components/search-filter-component/search-filter-component";
 import { EditionDetailModel, EditionFilterModel } from '@features/edition/models/edition-model';
@@ -42,6 +43,7 @@ export class HomePage extends CrudPage<EditionDetailModel> {
   private readonly router = inject(Router);
   private readonly newsService = inject(NewsService);
   private readonly editionService = inject(EditionService);
+  private readonly logger = inject(LoggerService);
 
   // NEWS STATE -------------------------------------------------------------------
   protected readonly news = {
@@ -87,7 +89,7 @@ export class HomePage extends CrudPage<EditionDetailModel> {
       return this.newsService.getAllPagination({ page: 1, limit: 4, search: '' }).pipe(
         map(response => response.data),
         catchError(err => {
-          console.error('[NewsService::HomePage] getAllPagination:', err);
+          this.logger.error('NewsService::HomePage', 'getAllPagination', err);
           return of(null);
         })
       );
@@ -102,7 +104,7 @@ export class HomePage extends CrudPage<EditionDetailModel> {
       return this.editionService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[EditionService::HomePage] getAllPagination:', err);
+          this.logger.error('EditionService::HomePage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

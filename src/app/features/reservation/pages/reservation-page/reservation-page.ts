@@ -8,6 +8,7 @@ import { CopyDetailModel } from '@features/copy/models/copy-model';
 import { CopyService } from '@features/copy/services/copy-service';
 import { EditionModel } from '@features/edition/models/edition-model';
 import { EditionService } from '@features/edition/services/edition-service';
+import { LoggerService } from '@core/services/logger-service';
 import { ReservationService } from '@features/reservation/services/reservation-service';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
@@ -29,6 +30,7 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
   templateUrl: './reservation-page.html',
 })
 export class ReservationPage {
+  private readonly logger = inject(LoggerService);
   // ROUTE PARAMS ------------------------------------------------------------------
   private readonly activatedRoute = inject(ActivatedRoute);
 
@@ -64,7 +66,7 @@ export class ReservationPage {
 
       return this.bookService.getById(id_book).pipe(
         catchError(err => {
-          console.error('[BookService::ReservationPage] getBook:', err);
+          this.logger.error('BookService::ReservationPage', 'getBook', err);
           return of(null);
         })
       );
@@ -78,7 +80,7 @@ export class ReservationPage {
 
       return this.editionService.getAllByBook(id_book).pipe(
         catchError(err => {
-          console.error('[EditionService::ReservationPage] getEdition:', err);
+          this.logger.error('EditionService::ReservationPage', 'getEdition', err);
           return of(null);
         })
       );
@@ -92,7 +94,7 @@ export class ReservationPage {
 
       return this.copyService.getAllByBookId(id_book).pipe(
         catchError(err => {
-          console.error('[CopyService::ReservationPage] getCopy:', err);
+          this.logger.error('CopyService::ReservationPage', 'getCopy', err);
           return of(null);
         })
       );

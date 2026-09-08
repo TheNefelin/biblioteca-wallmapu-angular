@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NewsService } from '@features/news/services/news-service';
@@ -22,6 +23,7 @@ import { NewsModel } from '@features/news/models/news-model';
   templateUrl: './news-list-page.html',
 })
 export class NewsListPage extends CrudPage<NewsModel> {
+  private readonly logger = inject(LoggerService);
   private router = inject(Router);
   private readonly newsService = inject(NewsService)
   private readonly newsGalleryService = inject(NewsGalleryService)
@@ -40,7 +42,7 @@ export class NewsListPage extends CrudPage<NewsModel> {
       return this.newsService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[NewsService::NewsListPage] getAllPagination:', err);
+          this.logger.error('NewsService::NewsListPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

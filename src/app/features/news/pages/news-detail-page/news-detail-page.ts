@@ -6,6 +6,7 @@ import { catchError, map, of } from 'rxjs';
 import { NewsDetailComponent } from "@features/news/components/news-detail-component/news-detail-component";
 import { NewsDetailGalleryComponent } from "@features/news/components/news-detail-gallery-component/news-detail-gallery-component";
 import { NewsModel } from '@features/news/models/news-model';
+import { LoggerService } from '@core/services/logger-service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +18,7 @@ import { NewsModel } from '@features/news/models/news-model';
   templateUrl: './news-detail-page.html',
 })
 export class NewsDetailPage {
+  private readonly logger = inject(LoggerService);
   private readonly route = inject(ActivatedRoute);
 
   readonly paramId = toSignal(
@@ -41,7 +43,7 @@ export class NewsDetailPage {
 
       return this.newsService.getById(params).pipe(
         catchError(err => {
-          console.error('[NewsService::NewsDetailPage] getById:', err);
+          this.logger.error('NewsService::NewsDetailPage', 'getById', err);
           return of(null);
         })
       );

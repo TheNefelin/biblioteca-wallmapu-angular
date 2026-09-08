@@ -2,10 +2,12 @@ import { inject, Injectable, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { environment } from '@environments/environment';
 import { NotificationService } from './notification-service';
+import { LoggerService } from '@core/services/logger-service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationBadgeState {
   private notificationService = inject(NotificationService);
+  private logger = inject(LoggerService);
   private apiUrl = environment.apiUrl;
 
   readonly unreadCount = signal<number>(0);
@@ -50,7 +52,7 @@ export class NotificationBadgeState {
           this.unreadCount.set(data.unread_count);
         }
       } catch (e) {
-        console.error('Error parsing WebSocket message:', e);
+        this.logger.error('NotificationBadgeState', 'Error parsing WebSocket message', e);
       }
     };
 

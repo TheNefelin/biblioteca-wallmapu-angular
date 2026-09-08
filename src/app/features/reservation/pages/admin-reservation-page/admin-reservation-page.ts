@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginationRequestModel } from '@shared/models/pagination-request-model';
@@ -27,6 +28,7 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
   templateUrl: './admin-reservation-page.html',
 })
 export class AdminReservationPage extends CrudPage<ReservationDetailModel> {
+  private readonly logger = inject(LoggerService);
   // STATE ------------------------------------------------------------------------
   protected readonly selectFilterStatusId = signal<number>(0);
   protected readonly clearCounter = signal<number>(0);
@@ -70,7 +72,7 @@ export class AdminReservationPage extends CrudPage<ReservationDetailModel> {
       return this.reservationService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[ReservationService::AdminReservationPage] getAllPagination:', err);
+          this.logger.error('ReservationService::AdminReservationPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );
@@ -84,7 +86,7 @@ export class AdminReservationPage extends CrudPage<ReservationDetailModel> {
 
       return this.reservationService.getById(id_reservation).pipe(
         catchError(err => {
-          console.error('[ReservationService::AdminReservationPage] getById:', err);
+          this.logger.error('ReservationService::AdminReservationPage', 'getById', err);
           return of(null);
         })
       );

@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
@@ -34,6 +35,7 @@ import { UserModel } from '@features/user/models/user-model';
   templateUrl: './user-profile.page.html',
 })
 export class UserProfilePage extends CrudPage<NotificationModel> {
+  private readonly logger = inject(LoggerService);
   private readonly router = inject(Router);
   private readonly mutation = inject(MutationService);
 
@@ -93,7 +95,7 @@ export class UserProfilePage extends CrudPage<NotificationModel> {
 
       return this.userService.getById(params.id_user).pipe(
         catchError(err => {
-          console.error('[UserService::UserProfilePage] getById:', err);
+          this.logger.error('UserService::UserProfilePage', 'getById', err);
           return of(null);
         })
       );
@@ -108,7 +110,7 @@ export class UserProfilePage extends CrudPage<NotificationModel> {
       return this.notificationService.getAllPaginationByUser(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[NotificationService::UserProfilePage] getAllPaginationByUser:', err);
+          this.logger.error('NotificationService::UserProfilePage', 'getAllPaginationByUser', err);
           return of(this.emptyPaginated());
         })
       );

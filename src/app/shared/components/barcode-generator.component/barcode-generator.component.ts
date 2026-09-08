@@ -1,5 +1,6 @@
-import { effect, Component, ElementRef, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
+import { effect, Component, ElementRef, inject, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import BwipJs from 'bwip-js/browser';
+import { LoggerService } from '@core/services/logger-service';
 
 export type BarcodeFormat = 'qrcode' | 'code128' | 'ean13' | 'isbn';
 
@@ -12,7 +13,9 @@ export type BarcodeFormat = 'qrcode' | 'code128' | 'ean13' | 'isbn';
 export class BarcodeGeneratorComponent {
   readonly value = input.required<string>();
   readonly format = input<BarcodeFormat>('code128');
-  readonly altText = input<string>('');
+readonly altText = input<string>('');
+
+  private readonly logger = inject(LoggerService);
 
   private readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly renderEffect = effect(() => {
@@ -39,8 +42,8 @@ export class BarcodeGeneratorComponent {
         barcolor: '#000000',
         alttext: this.altText() || this.value(),
       });
-    } catch (error) {
-      console.error('Error generating barcode:', error);
+} catch (error) {
+      this.logger.error('BarcodeGenerator', 'Error generating barcode', error);
     }
   }
 }

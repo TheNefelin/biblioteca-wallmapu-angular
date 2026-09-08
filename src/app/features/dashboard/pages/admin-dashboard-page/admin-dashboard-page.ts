@@ -12,6 +12,7 @@ import { LoanStatusComponent } from "@features/loan-status/components/loan-statu
 import { ReservationStatusComponent } from "@features/reservation-status/components/reservation-status-component/reservation-status-component";
 import { CopyStatusComponent } from "@features/copy-status/components/copy-status-component/copy-status-component";
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
+import { LoggerService } from '@core/services/logger-service';
 
 @Component({
   selector: 'app-admin-dashboard-page',
@@ -28,6 +29,7 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
   templateUrl: './admin-dashboard-page.html',
 })
 export class AdminDashboardPage {
+  private readonly logger = inject(LoggerService);
   private readonly router = inject(Router);
   private readonly loanService = inject(LoanService);
 
@@ -40,7 +42,7 @@ export class AdminDashboardPage {
     stream: () => {
       return this.loanService.getAllOverdue().pipe(
         catchError(err => {
-          console.error('[LoanService::AdminDashboardPage] getAllOverdue:', err);
+          this.logger.error('LoanService::AdminDashboardPage', 'getAllOverdue', err);
           return of([]);
         })
       );

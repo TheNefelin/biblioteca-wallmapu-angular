@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { environment } from '@environments/environment';
+import { LoggerService } from '@core/services/logger-service';
 
 interface AuthTokenResponse {
   access_token?: string;
@@ -33,6 +34,8 @@ export class AuthGoogleService {
   // ✅ Señal interna opcional para saber si el script está listo
   private scriptReady = signal(false);
 
+  private readonly logger = inject(LoggerService);
+
   private readonly initGoogleCheck = this.checkGoogleScript();
 
   // 🔹 Espera a que window.google esté disponible
@@ -54,7 +57,8 @@ export class AuthGoogleService {
         this.scriptReady.set(true);
       } else if (attempts >= 100) {
         clearInterval(interval);
-        console.error(
+        this.logger.error(
+          'AuthGoogleService',
           'Google Identity Services no se cargó después de 10 segundos. Revisa que el script esté en index.html'
         );
       }

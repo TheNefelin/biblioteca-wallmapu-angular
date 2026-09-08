@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { EditionService } from '@features/edition/services/edition-service';
+import { LoggerService } from '@core/services/logger-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { catchError, map, of, switchMap } from 'rxjs';
@@ -28,6 +29,7 @@ import { CopyFormComponents } from "@features/copy/components/copy-form-componen
   templateUrl: './edition-form-page.html',
 })
 export class EditionFormPage {
+  private readonly logger = inject(LoggerService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly mutation = inject(MutationService);
@@ -96,7 +98,7 @@ export class EditionFormPage {
 
       return this.bookService.getById(id_book).pipe(
         catchError(err => {
-          console.error('[BookService::EditionFormPage] getBook:', err);
+          this.logger.error('BookService::EditionFormPage', 'getBook', err);
           return of(null);
         })
       );
@@ -110,7 +112,7 @@ export class EditionFormPage {
 
       return this.editionService.getById(id_edition).pipe(
         catchError(err => {
-          console.error('[EditionService::EditionFormPage] getEdition:', err);
+          this.logger.error('EditionService::EditionFormPage', 'getEdition', err);
           return of(null);
         })
       );
@@ -124,7 +126,7 @@ export class EditionFormPage {
 
       return this.copyService.getAllByEditionId(id_edition).pipe(
         catchError(err => {
-          console.error('[CopyService::EditionFormPage] getCopy:', err);
+          this.logger.error('CopyService::EditionFormPage', 'getCopy', err);
           return of(null);
         })
       );

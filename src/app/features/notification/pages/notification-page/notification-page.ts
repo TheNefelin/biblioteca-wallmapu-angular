@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
@@ -21,6 +22,7 @@ import { NotificationFormComponent } from '@features/notification/components/not
   templateUrl: './notification-page.html',
 })
 export class NotificationPage extends CrudPage<NotificationModel> {
+  private readonly logger = inject(LoggerService);
   private readonly notificationService = inject(NotificationService);
   private readonly mutation = inject(MutationService);
 
@@ -53,7 +55,7 @@ export class NotificationPage extends CrudPage<NotificationModel> {
       return this.notificationService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[NotificationService::NotificationPage] getAllPagination:', err);
+          this.logger.error('NotificationService::NotificationPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

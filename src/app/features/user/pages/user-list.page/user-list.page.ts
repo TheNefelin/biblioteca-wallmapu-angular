@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserService } from '@features/user/services/user-service';
@@ -21,6 +22,7 @@ import { UserModel } from '@features/user/models/user-model';
   templateUrl: './user-list.page.html',
 })
 export class UserListPage extends CrudPage<UserModel> {
+  private readonly logger = inject(LoggerService);
   // SERVICIO DE FEATURE
   private readonly authStore = inject(AuthStore);
   private readonly userService = inject(UserService);
@@ -37,7 +39,7 @@ export class UserListPage extends CrudPage<UserModel> {
       return this.userService.getAllDetails(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[UserService::UserListPage] getAllPagination:', err);
+          this.logger.error('UserService::UserListPage', 'getAllPagination', err);
           return of(this.emptyPaginated())
         })
       );

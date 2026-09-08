@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginationRequestModel } from '@shared/models/pagination-request-model';
@@ -25,6 +26,7 @@ import { CrudPage } from '@shared/base/crud-page';
   templateUrl: './user-reservation-page.html',
 })
 export class UserReservationPage extends CrudPage<ReservationDetailModel> {
+  private readonly logger = inject(LoggerService);
   // STATE ------------------------------------------------------------------------
   protected readonly selectedReservation = signal<ReservationDetailModel | null>(null);
   protected readonly selectFilterStatusId = signal<number>(0);
@@ -61,7 +63,7 @@ export class UserReservationPage extends CrudPage<ReservationDetailModel> {
       return this.reservationService.getByUserPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[ReservationService::UserReservationPage] getByUserPagination:', err);
+          this.logger.error('ReservationService::UserReservationPage', 'getByUserPagination', err);
           return of(this.emptyPaginated());
         })
       );

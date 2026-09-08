@@ -11,6 +11,7 @@ import { SaveUserByAdminModel, SaveUserModel, UserModel } from '@features/user/m
 import { AuthStore } from '@features/auth/services/auth-store';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { MutationService } from '@core/services/mutation-service';
+import { LoggerService } from '@core/services/logger-service';
 
 @Component({
   selector: 'app-user-form.page',
@@ -22,6 +23,7 @@ import { MutationService } from '@core/services/mutation-service';
   templateUrl: './user-form.page.html',
 })
 export class UserFormPage {
+  private readonly logger = inject(LoggerService);
   private location = inject(Location);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly mutation = inject(MutationService);
@@ -53,7 +55,7 @@ export class UserFormPage {
 
       return this.userService.getById(id_user).pipe(
         catchError(err => {
-          console.error('[UserService::UserFormPage] getById:', err);
+          this.logger.error('UserService::UserFormPage', 'getById', err);
           return of(null);
         })
       );

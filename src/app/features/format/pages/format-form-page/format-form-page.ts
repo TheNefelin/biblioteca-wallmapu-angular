@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -21,6 +22,7 @@ import { SectionHeaderComponent } from '@shared/components/section-header-compon
   templateUrl: './format-form-page.html',
 })
 export class FormatFormPage extends CrudPage<FormatModel> {
+  private readonly logger = inject(LoggerService);
   private location = inject(Location);
   private mutation = inject(MutationService);
   private confirmService = inject(ModalConfirmService);
@@ -44,7 +46,7 @@ export class FormatFormPage extends CrudPage<FormatModel> {
       return this.formatService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[FormatService::FormatFormPage] getAllPagination:', err);
+          this.logger.error('FormatService::FormatFormPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LoanListComponent } from "@features/loan/components/loan-list-component/loan-list-component";
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
@@ -26,6 +27,7 @@ import { ButtonComponent } from '@shared/components/button-component/button-comp
   templateUrl: './admin-loan-page.html',
 })
 export class AdminLoanPage extends CrudPage<LoanDetailModel> {
+  private readonly logger = inject(LoggerService);
   // STATE ------------------------------------------------------------------------
   protected readonly selectFilterStatusId = signal<number>(0);
   protected readonly clearCounter = signal<number>(0);
@@ -68,7 +70,7 @@ export class AdminLoanPage extends CrudPage<LoanDetailModel> {
       return this.loanService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[LoanService::AdminLoanPage] getAllPagination:', err);
+          this.logger.error('LoanService::AdminLoanPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );
@@ -82,7 +84,7 @@ export class AdminLoanPage extends CrudPage<LoanDetailModel> {
 
       return this.loanService.getByCopyBarCode(codebar).pipe(
         catchError(err => {
-          console.error('[LoanService::AdminLoanPage] getByCopyBarCode:', err);
+          this.logger.error('LoanService::AdminLoanPage', 'getByCopyBarCode', err);
           return of(null);
         })
       );

@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { UserStatsComponent } from "@features/stats/components/user-stats-component/user-stats-component";
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
@@ -19,6 +20,7 @@ import { MutationService } from '@core/services/mutation-service';
   templateUrl: './user-dashboard-page.html',
 })
 export class UserDashboardPage extends CrudPage<NotificationModel> {
+  private readonly logger = inject(LoggerService);
   private readonly notificationService = inject(NotificationService);
   private readonly mutation = inject(MutationService);
 
@@ -56,7 +58,7 @@ export class UserDashboardPage extends CrudPage<NotificationModel> {
       return this.notificationService.getAllPaginationByUser(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[NotificationService::UserDashboardPage] getAllPaginationByUser:', err);
+          this.logger.error('NotificationService::UserDashboardPage', 'getAllPaginationByUser', err);
           return of(this.emptyPaginated());
         })
       );

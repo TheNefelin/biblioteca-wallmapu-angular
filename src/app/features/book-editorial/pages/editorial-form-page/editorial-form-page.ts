@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -21,6 +22,7 @@ import { SectionHeaderComponent } from '@shared/components/section-header-compon
   templateUrl: './editorial-form-page.html',
 })
 export class EditorialFormPage extends CrudPage<EditorialModel> {
+  private readonly logger = inject(LoggerService);
   private location = inject(Location);
   private mutation = inject(MutationService);
   private confirmService = inject(ModalConfirmService);
@@ -44,7 +46,7 @@ export class EditorialFormPage extends CrudPage<EditorialModel> {
       return this.editorialService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[EditorialService::EditorialFormPage] getAllPagination:', err);
+          this.logger.error('EditorialService::EditorialFormPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

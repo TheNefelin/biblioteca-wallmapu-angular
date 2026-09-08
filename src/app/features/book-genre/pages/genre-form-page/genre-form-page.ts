@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/services/logger-service';
 import { Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -21,6 +22,7 @@ import { GenreListComponent } from "@features/book-genre/components/genre-list-c
   templateUrl: './genre-form-page.html',
 })
 export class GenreFormPage extends CrudPage<GenreModel> {
+  private readonly logger = inject(LoggerService);
   private location = inject(Location);
   private mutation = inject(MutationService);
   private confirmService = inject(ModalConfirmService);
@@ -44,7 +46,7 @@ export class GenreFormPage extends CrudPage<GenreModel> {
       return this.genreService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[GenreService::GenreFormPage] getAllPagination:', err);
+          this.logger.error('GenreService::GenreFormPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

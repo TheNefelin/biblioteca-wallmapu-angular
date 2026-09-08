@@ -12,6 +12,7 @@ import { CrudPage } from '@shared/base/crud-page';
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { LoggerService } from '@core/services/logger-service';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
@@ -27,6 +28,7 @@ import { LoadingComponent } from "@shared/components/loading-component/loading-c
   templateUrl: './book-list-page.html',
 })
 export class BookListPage extends CrudPage<BookDetailModel> {
+  private readonly logger = inject(LoggerService);
   // SERVICES ----------------------------------------------------------------------
   private router = inject(Router);
   private readonly bookService = inject(BookService);
@@ -45,7 +47,7 @@ export class BookListPage extends CrudPage<BookDetailModel> {
       return this.bookService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[BookService::BookListPage] getAllPagination:', err);
+          this.logger.error('BookService::BookListPage', 'getAllPagination', err);
           return of(this.emptyPaginated());
         })
       );

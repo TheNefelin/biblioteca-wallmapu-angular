@@ -7,6 +7,7 @@ import { SearchFilterComponent } from "@features/home/components/search-filter-c
 import { EditionCardListComponent } from "@features/edition/components/edition-card-list-component/edition-card-list-component";
 import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { Router } from '@angular/router';
+import { LoggerService } from '@core/services/logger-service';
 import { EditionService } from '@features/edition/services/edition-service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
@@ -29,6 +30,7 @@ import { SubjectModel } from '@features/book-subject/models/subject-model';
 })
 export class EditionPage extends CrudPage<EditionDetailModel> {
   private readonly router = inject(Router);
+  private readonly logger = inject(LoggerService);
 
   // FILTER STATE ------------------------------------------------------------------
   private readonly id_author = signal<number>(0);
@@ -66,7 +68,7 @@ export class EditionPage extends CrudPage<EditionDetailModel> {
       return this.editionService.getAllPagination(params).pipe(
         map(response => this.mapPaginated(response)),
         catchError(err => {
-          console.error('[EditionService::EditionPage] getEditionRX:', err);
+          this.logger.error('EditionService::EditionPage', 'getEditionRX', err);
           return of(this.emptyPaginated());
         })
       );

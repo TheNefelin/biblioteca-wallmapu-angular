@@ -8,6 +8,7 @@ import { catchError, map, of } from 'rxjs';
 import { BookService } from '@features/book/services/book-service';
 import { EditionListComponents } from "@features/edition/components/edition-list-components/edition-list-components";
 import { EditionService } from '@features/edition/services/edition-service';
+import { LoggerService } from '@core/services/logger-service';
 import { BookModel, SaveBookModel } from '@features/book/models/book-model';
 import { EditionDetailModel } from '@features/edition/models/edition-model';
 import { MutationService } from '@core/services/mutation-service';
@@ -23,6 +24,7 @@ import { ModalConfirmService } from '@core/services/modal-confirm-service';
   templateUrl: './book-form-page.html',
 })
 export class BookFormPage {
+  private readonly logger = inject(LoggerService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly mutation = inject(MutationService);
@@ -66,7 +68,7 @@ export class BookFormPage {
       return this.bookService.getById(idBook).pipe(
         map(response => response),
         catchError(err => {
-          console.error('[BookService::BookFormPage] getBook:', err);
+          this.logger.error('BookService::BookFormPage', 'getBook', err);
           return of(null);
         })
       );
@@ -81,7 +83,7 @@ export class BookFormPage {
       return this.editionService.getAllDetailByBook(idBook).pipe(
         map(response => response),
         catchError(err => {
-          console.error('[EditionService::BookFormPage] getEdition:', err);
+          this.logger.error('EditionService::BookFormPage', 'getEdition', err);
           return of(null);
         })
       );

@@ -1,6 +1,7 @@
 import { Injectable, inject, type WritableSignal } from '@angular/core';
 import { finalize, type Observable } from 'rxjs';
 import { ToastSuccessService } from '@core/services/toast-success-service';
+import { LoggerService } from '@core/services/logger-service';
 
 export interface MutationOptions<T = unknown> {
   successMsg: string;
@@ -15,6 +16,7 @@ export interface MutationOptions<T = unknown> {
 })
 export class MutationService {
   private readonly successService = inject(ToastSuccessService);
+  private readonly logger = inject(LoggerService);
 
   run<T>(
     action: Observable<T>,
@@ -36,7 +38,7 @@ export class MutationService {
         options.onSuccess?.(result);
       },
       error: (err) => {
-        console.error(`[${options.errorMsg}]:`, err);
+        this.logger.error('MutationService', options.errorMsg, err);
       }
     });
   }

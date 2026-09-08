@@ -4,14 +4,14 @@ import { CopyDetailModel } from '@features/copy/models/copy-model';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
-  selector: 'app-copy-list-for-reservation-components',
+  selector: 'app-copy-list-for-reservation-component',
   imports: [
     NgOptimizedImage,
     LoadingComponent,
   ],
-  templateUrl: './copy-list-for-reservation-components.html',
+  templateUrl: './copy-list-for-reservation-component.html',
 })
-export class CopyListForReservationComponents {
+export class CopyListForReservationComponent {
   readonly isLoading = input<boolean>(false);
   readonly copyDetailList = input<CopyDetailModel[]>([])
   protected readonly selectedCopy = output<CopyDetailModel>();

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant'
 import { RouterLink } from "@angular/router";
@@ -12,6 +12,7 @@ import { NotificationBellComponent } from "@features/notification/components/not
     RouterLink,
     NotificationBellComponent
 ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './auth-button-component.html',
 })
 export class AuthButtonComponent {

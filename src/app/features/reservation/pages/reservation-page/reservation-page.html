@@ -101,9 +101,8 @@
 
   <div class="divider px-4 text-base-content/40 max-w-7xl mx-auto">Lista de Copias</div>
 
-  <app-copy-list-for-reservation-components 
+  <app-copy-list-for-reservation-component 
     [isLoading]="isLoading() || isSaving()"
     [copyDetailList]="copy.dataList()"
-    (selectedCopy)="onSelectedCopy($event)"
-  />
+    (selectedCopy)="onSelectedCopy($event)" />
 </section>

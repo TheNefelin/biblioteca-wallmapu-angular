@@ -14,27 +14,8 @@ import { ModalConfirmService } from '@core/services/modal-confirm-service';
 import { MutationService } from '@core/services/mutation-service';
 import { catchError, map, of } from 'rxjs';
 import { LoadingComponent } from "@shared/components/loading-component/loading-component";
-import { CopyListForReservationComponents } from "@features/copy/components/copy-list-for-reservation-components/copy-list-for-reservation-components";
+import { CopyListForReservationComponent } from "@features/copy/components/copy-list-for-reservation-component/copy-list-for-reservation-component";
 import { ButtonComponent } from "@shared/components/button-component/button-component";
-
-export function pickInitialCopy(
-  editions: readonly EditionModel[],
-  copies: readonly CopyDetailModel[],
-  idEdition: number,
-): { copy: CopyDetailModel; edition: EditionModel } | null {
-  const selectedEdition = editions.find(edition => edition.id_edition === idEdition);
-  if (!selectedEdition) return null;
-
-  const candidateCopies = copies.filter(copy => copy.edition_id === idEdition);
-  if (candidateCopies.length === 0) return null;
-
-  const copy =
-    candidateCopies.find(candidate => candidate.is_availability) ??
-    candidateCopies.find(candidate => !candidate.is_availability);
-  if (!copy) return null;
-
-  return { copy, edition: selectedEdition };
-}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,16 +23,14 @@ export function pickInitialCopy(
   imports: [
     NgOptimizedImage,
     LoadingComponent,
-    CopyListForReservationComponents,
+    CopyListForReservationComponent,
     ButtonComponent,
   ],
   templateUrl: './reservation-page.html',
 })
 export class ReservationPage {
+  // ROUTE PARAMS ------------------------------------------------------------------
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly viewportScroller = inject(ViewportScroller);
-  private readonly confirmService = inject(ModalConfirmService);
-  private readonly mutation = inject(MutationService);
 
   readonly bookId = toSignal(
     this.activatedRoute.paramMap.pipe(
@@ -67,48 +46,17 @@ export class ReservationPage {
     { initialValue: 0 }
   );
 
-  // SERVICES -------------------------------------------------------------------------
-  protected readonly isLoading = computed<boolean>(() =>
-    [
-      this.getBookRX,
-      this.getEditionRX,
-      this.getCopyRX,
-    ].some(r => r.isLoading())
-  );
-
+  // SERVICES ------------------------------------------------------------------------
+  private readonly viewportScroller = inject(ViewportScroller);
+  private readonly confirmService = inject(ModalConfirmService);
+  private readonly mutation = inject(MutationService);
   private readonly auth = inject(AuthStore);
-  protected readonly isAuthenticated = computed<boolean>(() => this.auth.isAuthenticated());
-
   private readonly reservationService = inject(ReservationService);
-  protected readonly isSaving = signal<boolean>(false);
-
   private readonly bookService = inject(BookService);
-  protected readonly book = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
-
   private readonly editionService = inject(EditionService);
-  protected readonly edition = {
-    dataList: computed<EditionModel[]>(() => this.getEditionRX.value() ?? []),
-    selectedItem: signal<EditionModel | null>(null),
-  }
-
   private readonly copyService = inject(CopyService);
-  protected readonly copy = {
-    dataList: computed<CopyDetailModel[]>(() => this.getCopyRX.value() ?? []),
-    selectedItem: signal<CopyDetailModel | null>(null),
-  }
 
-  private readonly autoSelectEffect = effect(() => {
-    const result = pickInitialCopy(
-      this.edition.dataList(),
-      this.copy.dataList(),
-      this.editionId(),
-    );
-    if (!result) return;
-
-    this.copy.selectedItem.set(result.copy);
-    this.edition.selectedItem.set(result.edition);
-  });
-
+  // FETCHS ----------------------------------------------------------------------------
   private readonly getBookRX = rxResource({
     params: () => this.bookId(),
     stream: ({ params: id_book }) => {
@@ -150,15 +98,51 @@ export class ReservationPage {
       );
     }
   });
-   
+
+  // STATE ------------------------------------------------------------------------------
+  protected readonly book = computed<BookModel | null>(() => this.getBookRX.value() ?? null);
+
+  protected readonly edition = {
+    dataList: computed<EditionModel[]>(() => this.getEditionRX.value() ?? []),
+    selectedItem: signal<EditionModel | null>(null),
+  }
+
+  protected readonly copy = {
+    dataList: computed<CopyDetailModel[]>(() => this.getCopyRX.value() ?? []),
+    selectedItem: signal<CopyDetailModel | null>(null),
+  }
+
+  protected readonly isAuthenticated = computed<boolean>(() => this.auth.isAuthenticated());
+  protected readonly isSaving = signal<boolean>(false);
+  protected readonly isLoading = computed<boolean>(() =>
+    [
+      this.getBookRX,
+      this.getEditionRX,
+      this.getCopyRX,
+    ].some(r => r.isLoading())
+  );
+
+  // AUTO-SELECT ---------------------------------------------------------------------
+  private readonly autoSelectEffect = effect(() => {
+    // 1️⃣ Siempre seleccionar la edición de la ruta (portada + datos mínimos)
+    const idEdition = this.editionId();
+    const selectedEdition = this.edition.dataList().find(e => e.id_edition === idEdition);
+    this.edition.selectedItem.set(selectedEdition ?? null);
+    if (!selectedEdition) {
+      this.copy.selectedItem.set(null);
+      return;
+    }
+
+    // 2️⃣ Auto-seleccionar copia: primera disponible, sino primera de la edición
+    const copies = this.copy.dataList().filter(c => c.edition_id === idEdition);
+    const copy = copies.find(c => c.is_availability) ?? copies[0];
+    this.copy.selectedItem.set(copy ?? null);
+  });
+
   // RESERVATION ACTIONS ----------------------------------------------------------------
   protected onSelectedCopy(item: CopyDetailModel): void {
-    const selectedEdition = this.edition.dataList().find(e => e.id_edition === item.edition_id); 
-    if (!selectedEdition) return;
-
+    this.onSelectedEdition(item.edition_id);
     this.copy.selectedItem.set(item);
-    this.edition.selectedItem.set(selectedEdition);
-
     this.viewportScroller.scrollToPosition([0, 0]);
   }
 
@@ -181,5 +165,11 @@ export class ReservationPage {
         onSuccess: () => this.getCopyRX.reload(),
       }
     );
+  }
+
+  // ACTIONS ----------------------------------------------------------------------------
+  protected onSelectedEdition(id: number): void {
+    const selectedEdition = this.edition.dataList().find(e => e.id_edition === id);
+    this.edition.selectedItem.set(selectedEdition ?? null);
   }
 }

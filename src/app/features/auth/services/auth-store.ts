@@ -30,7 +30,14 @@ export class AuthStore {
 
   private getStoredUser(): AuthUser | null {
     const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    if (!saved) return null;
+
+    try {
+      return JSON.parse(saved) as AuthUser;
+    } catch {
+      localStorage.removeItem('user');
+      return null;
+    }
   }
 
    // 🔹 Login principal
@@ -68,8 +75,15 @@ export class AuthStore {
       }
 
       this.router.navigate([navigateTo]);
-    } catch (error: any) {
-      this.errorModal.openError(error?.status || 0, error?.message || 'Error al iniciar sesión. Intenta nuevamente.');
+    } catch (error: unknown) {
+      const status = typeof error === 'object' && error !== null && 'status' in error
+        ? Number((error as { status: unknown }).status) || 0
+        : 0;
+      const message = (typeof error === 'string' && error)
+        || (error instanceof Error && error.message)
+        || 'Error al iniciar sesión. Intenta nuevamente.';
+
+      this.errorModal.openError(status, message);
     } finally {
       this.isLoading.set(false);
     }

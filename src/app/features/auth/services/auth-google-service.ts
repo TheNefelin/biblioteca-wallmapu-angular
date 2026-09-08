@@ -1,6 +1,31 @@
 import { Injectable, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 
+interface AuthTokenResponse {
+  access_token?: string;
+  error?: string;
+}
+
+interface TokenClient {
+  requestAccessToken(): void;
+}
+
+interface OAuth2Client {
+  initTokenClient(config: {
+    client_id: string;
+    scope: string;
+    callback: (response: AuthTokenResponse) => void;
+    error_callback: (error: unknown) => void;
+  }): TokenClient;
+}
+
+interface GoogleAccounts {
+  oauth2?: OAuth2Client;
+}
+
+const getGoogle = (): { accounts?: GoogleAccounts } | undefined =>
+  (window as unknown as { google?: { accounts?: GoogleAccounts } }).google;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -14,7 +39,7 @@ export class AuthGoogleService {
 
   // 🔹 Espera a que window.google esté disponible
   private checkGoogleScript(): void {
-    const google = (window as any).google;
+    const google = getGoogle();
 
     if (google?.accounts?.oauth2) {
       this.scriptReady.set(true);
@@ -25,7 +50,7 @@ export class AuthGoogleService {
     let attempts = 0;
     const interval = setInterval(() => {
       attempts++;
-      const google = (window as any).google;
+      const google = getGoogle();
       if (google?.accounts?.oauth2) {
         clearInterval(interval);
         this.scriptReady.set(true);
@@ -44,23 +69,23 @@ export class AuthGoogleService {
     await this.waitForScript();
 
     return new Promise((resolve, reject) => {
-      const google = (window as any).google;
-      if (!google?.accounts?.oauth2?.initTokenClient) {
+      const oauth2 = getGoogle()?.accounts?.oauth2;
+      if (!oauth2?.initTokenClient) {
         reject('Google OAuth2 no disponible');
         return;
       }
 
-      const client = google.accounts.oauth2.initTokenClient({
+      const client = oauth2.initTokenClient({
         client_id: environment.googleClientId,
         scope: 'email profile',
-        callback: (response: any) => {
+        callback: (response) => {
           if (response.access_token) {
             resolve(response.access_token);
           } else {
             reject(response.error || 'No se recibió access_token');
           }
         },
-        error_callback: (error: any) => {
+        error_callback: (error) => {
           reject(error);
         },
       });

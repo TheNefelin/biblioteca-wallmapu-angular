@@ -4,7 +4,6 @@ import { UserService } from '@features/user/services/user-service';
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { catchError, map, of } from 'rxjs';
 import { UserListComponent } from "@features/user/components/user-list-component/user-list-component";
-import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { AuthStore } from '@features/auth/services/auth-store';
 import { Role } from '@shared/constants/roles-enum';
 import { UserDetailModel } from '@features/user/models/user-model';
@@ -17,7 +16,6 @@ import { CrudPage } from '@shared/base/crud-page';
   imports: [
     SectionHeaderComponent,
     UserListComponent,
-    PaginationComponent
 ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-list.page.html',

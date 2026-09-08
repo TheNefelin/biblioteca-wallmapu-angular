@@ -17,6 +17,6 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
 })
 export class UserProfileComponent {
   readonly authUser = input<AuthUser | null>(null);
-  readonly userDetailModel = input<UserDetailModel | null>(null);
+  readonly user = input<UserDetailModel | null>(null);
   protected readonly editProfile = output<void>();
 }

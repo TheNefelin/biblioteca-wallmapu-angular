@@ -25,4 +25,11 @@
       </li>
     }
   }
+
+  <app-pagination-component
+    [totalPages]="totalPages()"
+    [currentPage]="currentPage()"
+    (prevPage)="prevPage.emit()"
+    (nextPage)="nextPage.emit()" 
+  />
 </ul>

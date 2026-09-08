@@ -2,7 +2,7 @@ import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@a
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
+import { CreateNotificationByEmailModel, NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { MutationService } from '@core/services/mutation-service';
 import { CrudPage } from '@shared/base/crud-page';
@@ -20,13 +20,13 @@ import { NotificationFormComponent } from '@features/notification/components/not
   ],
   templateUrl: './notification-page.html',
 })
-export class NotificationPage extends CrudPage<NotificationDetailModel> {
+export class NotificationPage extends CrudPage<NotificationModel> {
   private readonly notificationService = inject(NotificationService);
   private readonly mutation = inject(MutationService);
 
   // NOTIFICATION STATE -------------------------------------------------------------
   protected readonly notification = {
-    dataList: computed<NotificationDetailModel[]>(() => this.getAllNotificationRX.value() ?? []),
+    dataList: computed<NotificationModel[]>(() => this.getAllNotificationRX.value() ?? []),
     isLoading: computed<boolean>(() => this.getAllNotificationRX.isLoading() && !this.getAllNotificationRX.hasValue()),
     isSaving: signal<boolean>(false),
     showModal: signal<boolean>(false),
@@ -40,7 +40,7 @@ export class NotificationPage extends CrudPage<NotificationDetailModel> {
       limit: this.limit(),
       search: this.search(),
       filter: {
-        is_read: this.showOnlyUnread() ? false : undefined,
+        is_read: this.showOnlyUnread(),
       }
     }
   });

@@ -3,7 +3,7 @@ import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
-import { CreateNotificationByEmailModel, NotificationDetailModel, NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
+import { CreateNotificationByEmailModel, NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,14 +12,14 @@ export class NotificationService {
   private apiService = inject(ApiService)
   private readonly endpoint = 'notifications';
 
-  getAllPagination(params: PaginationRequestModel<NotificationFilterModel>): Observable<PaginationResponseModel<NotificationDetailModel[]>> {
-    return this.apiService.getAllPagination<PaginationResponseModel<NotificationDetailModel[]>, NotificationFilterModel>(
+  getAllPagination(params: PaginationRequestModel<NotificationFilterModel>): Observable<PaginationResponseModel<NotificationModel[]>> {
+    return this.apiService.getAllPagination<PaginationResponseModel<NotificationModel[]>, NotificationFilterModel>(
       this.endpoint, params
     );
   }
 
-  getAllPaginationByUser(params: PaginationRequestModel<NotificationFilterModel>): Observable<PaginationResponseModel<NotificationDetailModel[]>> {
-    return this.apiService.getAllPaginationByPath<PaginationResponseModel<NotificationDetailModel[]>, NotificationFilterModel>(
+  getAllPaginationByUser(params: PaginationRequestModel<NotificationFilterModel>): Observable<PaginationResponseModel<NotificationModel[]>> {
+    return this.apiService.getAllPaginationByPath<PaginationResponseModel<NotificationModel[]>, NotificationFilterModel>(
       `${this.endpoint}/user/pagination`, params
     );
   }

@@ -1,21 +1,5 @@
-export interface NotificationModel {
-  id_notification: number;
-  title: string;
-  message: string;
-  is_priority: boolean;
-  user_id: string;
-  is_read: boolean;
-  created_at: string;
-}
-
-
-export interface NotificationDetailModel extends NotificationModel {
-  email: string;
-}
-
-
 export interface NotificationFilterModel {
-  is_read?: boolean; // undefined/true = todos (sin filtro), false = solo no leídas
+  is_read: boolean;
 }
 
 export interface CreateNotificationByEmailModel {
@@ -23,4 +7,10 @@ export interface CreateNotificationByEmailModel {
   title: string;
   message: string;
   is_priority: boolean;
+}
+
+export interface NotificationModel extends CreateNotificationByEmailModel, NotificationFilterModel {
+  id_notification: number;
+  user_id: string;
+  created_at: string;
 }

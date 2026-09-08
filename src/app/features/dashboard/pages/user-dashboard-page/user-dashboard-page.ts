@@ -3,7 +3,7 @@ import { UserStatsComponent } from "@features/stats/components/user-stats-compon
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@features/notification/services/notification-service';
-import { NotificationDetailModel, NotificationFilterModel } from '@features/notification/models/notification-model';
+import { NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { catchError, map, of } from 'rxjs';
 import { CrudPage } from '@shared/base/crud-page';
@@ -18,7 +18,7 @@ import { MutationService } from '@core/services/mutation-service';
   ],
   templateUrl: './user-dashboard-page.html',
 })
-export class UserDashboardPage extends CrudPage<NotificationDetailModel> {
+export class UserDashboardPage extends CrudPage<NotificationModel> {
   private readonly notificationService = inject(NotificationService);
   private readonly mutation = inject(MutationService);
 
@@ -28,7 +28,7 @@ export class UserDashboardPage extends CrudPage<NotificationDetailModel> {
   protected readonly markAllAsReadSaving = signal<boolean>(false);
 
   protected readonly notification = {
-    dataList: computed<NotificationDetailModel[]>(() => this.getAllNotificationRX.value() ?? []),
+    dataList: computed<NotificationModel[]>(() => this.getAllNotificationRX.value() ?? []),
     isLoading: computed<boolean>(() =>
       (this.getAllNotificationRX.isLoading() && !this.getAllNotificationRX.hasValue()) ||
       this.markAsReadSaving() ||
@@ -43,7 +43,7 @@ export class UserDashboardPage extends CrudPage<NotificationDetailModel> {
       limit: this.limit(),
       search: this.search(),
       filter: {
-        is_read: this.showOnlyUnread() ? false : undefined,
+        is_read: this.showOnlyUnread()
       }
     }
   });
@@ -74,7 +74,7 @@ export class UserDashboardPage extends CrudPage<NotificationDetailModel> {
     this.currentPage.set(1);
   }
 
-  protected onMarkAsRead(item: NotificationDetailModel): void {
+  protected onMarkAsRead(item: NotificationModel): void {
     this.mutation.run(
       this.notificationService.markAsReadByUser(item.id_notification),
       { isSaving: this.markAsReadSaving },

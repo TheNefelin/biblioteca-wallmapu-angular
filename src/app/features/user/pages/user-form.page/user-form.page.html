@@ -5,7 +5,7 @@
   (actionClicked)="navigateBack()"
 />
 
-@if (!computedUser()) {
+@if (!user()) {
   <div class="flex max-w-4xl flex-col gap-4 mx-auto">
     <div class="flex items-center gap-4">
       <div class="skeleton h-28 w-28 shrink-0 rounded-full m-4 bg-my-light/50"></div>
@@ -24,9 +24,9 @@
     <div class="max-w-4xl mx-auto">
       <app-user-form-component 
         [isLoading]="isLoading() || isSaving()"
-        [isUser]="isUser()"
+        [isAdmin]="isAdmin()"
         [userPicture]="userPicture()"
-        [userModel]="computedUser()"
+        [user]="user()"
         (formSubmit)="onFormSubmit($event)"
       />
     </div>

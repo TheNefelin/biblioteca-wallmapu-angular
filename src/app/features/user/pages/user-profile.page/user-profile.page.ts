@@ -7,7 +7,6 @@ import { AuthStore } from '@features/auth/services/auth-store';
 import { catchError, map, of } from 'rxjs';
 import { UserProfileComponent } from "@features/user/components/user-profile-component/user-profile-component";
 import { NotificationListComponent } from "@features/notification/components/notification-list-component/notification-list-component";
-import { UserDetailModel } from '@features/user/models/user-model';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { Role } from '@shared/constants/roles-enum';
 import { NotificationService } from '@features/notification/services/notification-service';
@@ -20,6 +19,7 @@ import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { CrudPage } from '@shared/base/crud-page';
 import { MutationService } from '@core/services/mutation-service';
 import { ModalConfirmService } from '@core/services/modal-confirm-service';
+import { UserModel } from '@features/user/models/user-model';
 
 @Component({
   selector: 'app-user-profile.page',
@@ -61,7 +61,7 @@ export class UserProfilePage extends CrudPage<NotificationModel> {
   protected readonly showOnlyUnread = signal<boolean>(false);
 
   private readonly userService = inject(UserService);
-  protected readonly user = computed<UserDetailModel | null>(() => this.getUserRX.value() ?? null);
+  protected readonly user = computed<UserModel | null>(() => this.getUserRX.value() ?? null);
   protected readonly isProfileIncomplete = computed(() => {
     const user = this.user();
     if (!user) return false;

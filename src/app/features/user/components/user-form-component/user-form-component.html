@@ -1,4 +1,4 @@
-@if (!userModel()) {
+@if (!user()) {
   <div class="flex max-w-2xl flex-col gap-4">
     <div class="flex items-center gap-4">
       <div class="skeleton h-28 w-28 shrink-0 rounded-full m-4 bg-my-light/50"></div>
@@ -23,14 +23,14 @@
       <section class="flex gap-4 flex-wrap">
         <img 
           [ngSrc]="userPicture() ?? 'images/book.png'" 
-          [alt]="userModel()?.name ?? 'User image'" 
+          [alt]="user()?.name ?? 'User image'" 
           width="100" height="100" class="rounded-full" priority
         />
         <div class="grid w-md">
-          <input [value]="userModel()?.id_user"  type="text" placeholder="Sin Id" class="text-my-purple text-md font-bold" disabled />
-          <input [value]="(userModel()?.created_at | date:'yyyy-MM-dd HH:mm:ss') + ' (Creado)'" type="text" placeholder="Fecha" class="text-my-purple text-md font-bold" disabled />
-          <input [value]="(userModel()?.updated_at | date:'yyyy-MM-dd HH:mm:ss') + ' (Modificado)'" type="text" placeholder="Fecha" class="text-my-purple text-md font-bold" disabled />
-          <input [value]="userModel()?.email" type="text" placeholder="Sin Email" class="text-my-purple text-xl font-bold" disabled />
+          <input [value]="user()?.id_user"  type="text" placeholder="Sin Id" class="text-my-purple text-md font-bold" disabled />
+          <input [value]="(user()?.created_at | date:'yyyy-MM-dd HH:mm:ss') + ' (Creado)'" type="text" placeholder="Fecha" class="text-my-purple text-md font-bold" disabled />
+          <input [value]="(user()?.updated_at | date:'yyyy-MM-dd HH:mm:ss') + ' (Modificado)'" type="text" placeholder="Fecha" class="text-my-purple text-md font-bold" disabled />
+          <input [value]="user()?.email" type="text" placeholder="Sin Email" class="text-my-purple text-xl font-bold" disabled />
         </div>
       </section>
 
@@ -41,8 +41,8 @@
         <div class="flex">
           <input value="Rol:" type="text" class="text-my-purple text-sm w-14 text-center" disabled />
           <app-user-role-select-component
-            [selectedId]="userModel()?.user_role_id || 3"
-            [disabled]="isUser()"
+            [selectedId]="user()?.user_role_id || 3"
+            [disabled]="!isAdmin()"
             (selectedItem)="onRoleChange($event)"
           />
         </div>
@@ -50,8 +50,8 @@
         <div class="flex">
           <input value="Estado:" type="text" class="text-my-purple text-sm w-14 text-center" disabled />
           <app-user-status-select-component 
-            [selectedId]="userModel()?.user_status_id || 1"
-            [disabled]="isUser()"
+            [selectedId]="user()?.user_status_id || 1"
+            [disabled]="!isAdmin()"
             (selectedItem)="onStatusChange($event)"
           />
         </div>

@@ -31,7 +31,7 @@ export class SearchSelectComponent {
   protected readonly selectedItemInternal = signal<SelectItem | null>(null);
 
   private readonly clearEffect = effect(() => {
-    this.clearTrigger();
+    if (!this.clearTrigger()) return;
     this.clearSelection();
   });
 

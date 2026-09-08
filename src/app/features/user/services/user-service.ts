@@ -1,6 +1,6 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UpdateUserByAdminModel, UpdateUserModel, UserDetailModel, UserModel } from '@features/user/models/user-model';
+import { SaveUserByAdminModel, SaveUserModel, UserModel } from '@features/user/models/user-model';
 import { ApiService } from '@core/services/api-service';
 import { PaginationRequestModel } from '@core/models/pagination-request-model';
 import { PaginationResponseModel } from '@core/models/pagination-response-model';
@@ -12,26 +12,26 @@ export class UserService {
   private apiService = inject(ApiService)
   private readonly endpoint = 'users';
 
-  getAllDetails(params: PaginationRequestModel<null>): Observable<PaginationResponseModel<UserDetailModel[]>> {
-    return this.apiService.getAllPagination<PaginationResponseModel<UserDetailModel[]>>(
+  getAllDetails(params: PaginationRequestModel<null>): Observable<PaginationResponseModel<UserModel[]>> {
+    return this.apiService.getAllPagination<PaginationResponseModel<UserModel[]>>(
       this.endpoint, params
     );
   }
 
-  getById(id: string): Observable<UserDetailModel | null> {
-    return this.apiService.getById<UserDetailModel | null>(
+  getById(id: string): Observable<UserModel | null> {
+    return this.apiService.getById<UserModel | null>(
       this.endpoint, id
     );
   }
 
-  update_user(id_user: string, item: UpdateUserModel): Observable<UserModel> {
-    return this.apiService.update<UserModel, UpdateUserModel>(
+  update_user(id_user: string, item: SaveUserModel): Observable<UserModel> {
+    return this.apiService.update<UserModel, SaveUserModel>(
       this.endpoint, id_user, item
     );
   }
 
-  update_admin(id_user: string, item: UpdateUserByAdminModel): Observable<UserModel> {
-    return this.apiService.update<UserModel, UpdateUserByAdminModel>(
+  update_admin(id_user: string, item: SaveUserByAdminModel): Observable<UserModel> {
+    return this.apiService.update<UserModel, SaveUserByAdminModel>(
       `${this.endpoint}/admin`, id_user, item
     );
   }

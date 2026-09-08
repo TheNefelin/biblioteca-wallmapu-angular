@@ -7,7 +7,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { Role } from '@shared/constants/roles-enum';
-import { UpdateUserByAdminModel, UpdateUserModel, UserModel } from '@features/user/models/user-model';
+import { SaveUserByAdminModel, SaveUserModel, UserModel } from '@features/user/models/user-model';
 import { AuthStore } from '@features/auth/services/auth-store';
 import { AuthUser } from '@features/auth/models/auth-user';
 import { MutationService } from '@core/services/mutation-service';
@@ -36,42 +36,15 @@ export class UserFormPage {
   protected readonly isLoading = computed<boolean>(() => this.getUserRX.isLoading());
   protected readonly isSaving = signal<boolean>(false);
 
+  // SERVICES ----------------------------------------------------------------
   private readonly authStore = inject(AuthStore);
   protected readonly authUser = computed<AuthUser | null>(() => this.authStore.user());
-  protected readonly isUser = computed<boolean>(() => this.authUser()?.role == Role.Reader)
-  protected userPicture = computed<string | null>(() => {
-    if (this.authUser()?.id_user == this.userId())
-      return this.authUser()?.picture ?? null
-
-    return null
-  });
+  protected readonly isAdmin = computed<boolean>(() => this.authUser()?.role == Role.Admin)
+  protected readonly userPicture = computed<string | null>(() => this.authUser()?.id_user === this.userId() ? this.authUser()?.picture ?? null : null);
 
   private readonly userService = inject(UserService);
-  private readonly getUserPayload = computed<string | null>(() => {
-    if (this.authUser()?.role == Role.Admin)
-      return this.userId();
-
-    return this.authUser()?.id_user ??  null
-  });
-  protected readonly computedUser = computed<UserModel | null>(() => {
-    const user = this.getUserRX.value()
-    if(!user) return null
-
-    return {
-      id_user: user.id_user,
-      email: user.email,
-      name: user.name,
-      lastname: user.lastname,
-      rut: user.rut,
-      address: user.address,
-      phone: user.phone,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-      commune_id: user.commune_id,
-      user_role_id: user.user_role_id,
-      user_status_id: user.user_status_id,
-    }
-  });
+  private readonly getUserPayload = computed<string | null>(() => this.isAdmin() ? this.userId() : this.authUser()?.id_user ??  null);
+  protected readonly user = computed<UserModel | null>(() => this.getUserRX.value() ?? null);
 
   private readonly getUserRX = rxResource({
     params: () => this.getUserPayload(),
@@ -87,18 +60,10 @@ export class UserFormPage {
     },
   });
 
+  // ACTIONS -----------------------------------------------------------------  
   protected onFormSubmit(form: UserModel): void {
-    const payload: UpdateUserModel | UpdateUserByAdminModel = this.isUser()
+    const payload: SaveUserByAdminModel | SaveUserModel = this.isAdmin()
     ? {
-        id_user: form.id_user,
-        name: form.name,
-        lastname: form.lastname,
-        rut: form.rut,
-        address: form.address,
-        phone: form.phone,
-        commune_id: form.commune_id,
-      }
-    : {
         id_user: form.id_user,
         name: form.name,
         lastname: form.lastname,
@@ -108,12 +73,21 @@ export class UserFormPage {
         commune_id: form.commune_id,
         user_role_id: form.user_role_id,
         user_status_id: form.user_status_id,
+      }
+    : {
+        id_user: form.id_user,
+        name: form.name,
+        lastname: form.lastname,
+        rut: form.rut,
+        address: form.address,
+        phone: form.phone,
+        commune_id: form.commune_id,
       };
 
     this.mutation.run(
-      this.isUser()
-        ? this.userService.update_user(payload.id_user, payload as UpdateUserModel)
-        : this.userService.update_admin(payload.id_user, payload as UpdateUserByAdminModel),
+      this.isAdmin()
+        ? this.userService.update_admin(payload.id_user, payload as SaveUserByAdminModel)
+        : this.userService.update_user(payload.id_user, payload as SaveUserModel),
       { isSaving: this.isSaving },
       {
         successMsg: 'Usuario actualizado correctamente',

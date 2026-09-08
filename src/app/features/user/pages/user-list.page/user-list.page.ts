@@ -6,10 +6,10 @@ import { catchError, map, of } from 'rxjs';
 import { UserListComponent } from "@features/user/components/user-list-component/user-list-component";
 import { AuthStore } from '@features/auth/services/auth-store';
 import { Role } from '@shared/constants/roles-enum';
-import { UserDetailModel } from '@features/user/models/user-model';
 import { Router } from '@angular/router';
 import { ROUTES_CONSTANTS } from '@shared/constants/routes-constant';
 import { CrudPage } from '@shared/base/crud-page';
+import { UserModel } from '@features/user/models/user-model';
 
 @Component({
   selector: 'app-user-list.page',
@@ -20,7 +20,7 @@ import { CrudPage } from '@shared/base/crud-page';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-list.page.html',
 })
-export class UserListPage extends CrudPage<UserDetailModel> {
+export class UserListPage extends CrudPage<UserModel> {
   // SERVICIO DE FEATURE
   private readonly authStore = inject(AuthStore);
   private readonly userService = inject(UserService);
@@ -47,7 +47,7 @@ export class UserListPage extends CrudPage<UserDetailModel> {
   protected readonly isLoading = computed(() => this.getUserRX.isLoading());
 
   // PROCESAR USER
-  protected readonly userDetailListComputed = computed<UserDetailModel[]>(() => this.getUserRX.value() ?? []);
+  protected readonly userDetailListComputed = computed<UserModel[]>(() => this.getUserRX.value() ?? []);
 
   // CRUD-PAGE INHERITANCE METHODS
   protected override reload(): void {
@@ -59,7 +59,7 @@ export class UserListPage extends CrudPage<UserDetailModel> {
     this.currentPage.set(1);
   }
 
-  protected onNavigateToEdit(user: UserDetailModel): void {
+  protected onNavigateToEdit(user: UserModel): void {
     this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.USERS.FORM(user.id_user)]);
   }
 }

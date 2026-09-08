@@ -26,28 +26,31 @@ import { ButtonComponent } from "@shared/components/button-component/button-comp
 })
 export class UserFormComponent {
   readonly isLoading = input<boolean>(false);
-  readonly isUser = input<boolean>(true);
+  readonly isAdmin = input<boolean>(false);
   readonly userPicture = input<string | null>(null);
-  readonly userModel = input<UserModel | null>(null);
+  readonly user = input<UserModel | null>(null);
   protected readonly formSubmit = output<UserModel>();
 
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly formData = linkedSignal<UserModel>(() => {
-    const user = this.userModel();
+    const payload = this.user();
 
     return {
-      id_user: user?.id_user ?? '',
-      email: user?.email ?? '',
-      name: user?.name ?? '',
-      lastname: user?.lastname ?? '',
-      rut: user?.rut ?? '',
-      address: user?.address ?? '',
-      phone: user?.phone ?? '',
-      created_at: user?.created_at ?? '',
-      updated_at: user?.updated_at ?? '',
-      commune_id: user?.commune_id ?? 0,
-      user_role_id: user?.user_role_id ?? 0,
-      user_status_id: user?.user_status_id ?? 0,
+      id_user: payload?.id_user ?? '',
+      email: payload?.email ?? '',
+      name: payload?.name ?? '',
+      lastname: payload?.lastname ?? '',
+      rut: payload?.rut ?? '',
+      address: payload?.address ?? '',
+      phone: payload?.phone ?? '',
+      created_at: payload?.created_at ?? '',
+      updated_at: payload?.updated_at ?? '',
+      commune_id: payload?.commune_id ?? 0,
+      commune_name: payload?.commune_name ?? '',
+      user_role_id: payload?.user_role_id ?? 0,
+      user_role_name: payload?.user_role_name ?? '',     
+      user_status_id: payload?.user_status_id ?? 0,
+      user_status_name: payload?.user_status_name ?? '',
     }
   });
 

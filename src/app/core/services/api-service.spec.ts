@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApiService } from './api-service';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 
 describe('ApiService', () => {
   let service: ApiService;

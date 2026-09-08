@@ -1,6 +1,6 @@
-﻿import { inject, Injectable } from '@angular/core';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { inject, Injectable } from '@angular/core';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
+import { PaginationResponseModel } from '@shared/models/pagination-response-model';
 import { NewsModel, SaveNewsModel } from '@features/news/models/news-model';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';

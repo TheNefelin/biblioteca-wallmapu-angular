@@ -1,6 +1,6 @@
 import { computed, signal } from '@angular/core';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
+import { PaginationResponseModel } from '@shared/models/pagination-response-model';
 
 export abstract class CrudPage<TModel> {
   protected readonly totalPages = signal<number>(1);

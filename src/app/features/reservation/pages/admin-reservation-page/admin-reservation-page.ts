@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { ReservationDetailModel, ReservationFilterModel, ReservationPickupModel } from '@features/reservation/models/reservation-model';
 import { ReservationService } from '@features/reservation/services/reservation-service';
 import { ReservationStatusModel } from '@features/reservation-status/models/reservation-status-model';

@@ -24,7 +24,7 @@ export class CopyStatusSelectComponents {
     stream: () => {    
       return this.copyStatusService.getAll().pipe(
         map(response => response),
-        catchError(err => {
+        catchError(() => {
           return of(null);
         })
       );

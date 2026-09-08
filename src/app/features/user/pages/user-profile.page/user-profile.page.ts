@@ -10,7 +10,7 @@ import { NotificationListComponent } from "@features/notification/components/not
 import { AuthUser } from '@features/auth/models/auth-user';
 import { Role } from '@shared/constants/roles-enum';
 import { NotificationService } from '@features/notification/services/notification-service';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
 import { NotificationBadgeState } from '@features/notification/services/notification-badge-state.service';
 import { NotificationBellComponent } from "@features/notification/components/notification-bell-component/notification-bell-component";

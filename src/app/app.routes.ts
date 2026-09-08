@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth-guard';
-import { ForbiddenPage } from '@core/pages/forbidden-page/forbidden-page';
-import { NotFoundPage } from '@core/pages/not-found-page/not-found-page';
+import { ForbiddenPage } from '@shared/pages/forbidden-page/forbidden-page';
+import { NotFoundPage } from '@shared/pages/not-found-page/not-found-page';
 import { LayoutAdmin } from '@layouts/layout-admin/layout-admin';
 import { LayoutUser } from '@layouts/layout-user/layout-user';
 import { Layout } from '@layouts/layout/layout';

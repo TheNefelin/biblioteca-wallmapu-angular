@@ -10,7 +10,7 @@ import { NewsFeaturedComponent } from "@features/news/components/news-featured-c
 import { PaginationComponent } from "@shared/components/pagination-component/pagination-component";
 import { NewsCardListComponent } from "@features/news/components/news-card-list-component/news-card-list-component";
 import { AboutComponent } from '@features/home/components/about-component/about-component';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { EditionService } from '@features/edition/services/edition-service';
 import { EditionCardListComponent } from "@features/edition/components/edition-card-list-component/edition-card-list-component";
 import { SearchFilterComponent } from "@features/home/components/search-filter-component/search-filter-component";

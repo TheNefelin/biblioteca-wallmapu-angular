@@ -15,5 +15,5 @@ export class ModalImageComponent {
   readonly altText = input<string>('Imagen sin Nombre');
 
   // Evento de cerrar
-  readonly close = output<void>();
+  readonly closeModal = output<void>();
 }

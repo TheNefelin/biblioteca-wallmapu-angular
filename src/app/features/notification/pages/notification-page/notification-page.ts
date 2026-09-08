@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { CreateNotificationByEmailModel, NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { MutationService } from '@core/services/mutation-service';

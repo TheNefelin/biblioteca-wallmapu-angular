@@ -3,7 +3,7 @@ import { LoanListComponent } from "@features/loan/components/loan-list-component
 import { SectionHeaderComponent } from "@shared/components/section-header-component/section-header-component";
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { LoanDetailModel, LoanFilterModel } from '@features/loan/models/loan-model';
 import { LoanService } from '@features/loan/services/loan-service';
 import { LoanToReturnComponent } from "@features/loan/components/loan-to-return-component/loan-to-return-component";

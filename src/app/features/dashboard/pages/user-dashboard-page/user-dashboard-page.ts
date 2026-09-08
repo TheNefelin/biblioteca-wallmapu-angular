@@ -4,7 +4,7 @@ import { NotificationListComponent } from "@features/notification/components/not
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@features/notification/services/notification-service';
 import { NotificationFilterModel, NotificationModel } from '@features/notification/models/notification-model';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { catchError, map, of } from 'rxjs';
 import { CrudPage } from '@shared/base/crud-page';
 import { MutationService } from '@core/services/mutation-service';

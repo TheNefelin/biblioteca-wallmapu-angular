@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of } from 'rxjs';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
 import { LoanDetailModel, LoanFilterModel } from '@features/loan/models/loan-model';
 import { LoanStatusModel } from '@features/loan-status/models/loan-status-model';
 import { LoanService } from '@features/loan/services/loan-service';

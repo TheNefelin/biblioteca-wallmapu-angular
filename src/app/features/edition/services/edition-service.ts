@@ -1,9 +1,9 @@
-﻿import { inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApiService } from '@core/services/api-service';
 import { Observable } from 'rxjs';
 import { EditionDetailModel, EditionFilterModel, EditionModel, SaveEditionModel } from '@features/edition/models/edition-model';
-import { PaginationRequestModel } from '@core/models/pagination-request-model';
-import { PaginationResponseModel } from '@core/models/pagination-response-model';
+import { PaginationRequestModel } from '@shared/models/pagination-request-model';
+import { PaginationResponseModel } from '@shared/models/pagination-response-model';
 
 @Injectable({
   providedIn: 'root',

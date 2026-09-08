@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { BookNotFoundPage } from "@core/pages/book-not-found-page/book-not-found-page";
+import { BookNotFoundPage } from "@shared/pages/book-not-found-page/book-not-found-page";
 import { EditionDetailModel } from '@features/edition/models/edition-model';
 
 @Component({

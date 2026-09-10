@@ -1,42 +1,32 @@
 @if(errorMsge()) {
-  <app-message-error-component
-    [message]="errorMsge()"
-  />
+  <app-message-error-component [message]="errorMsge()"/>
 }
 
 @if(successMsge()) {
-  <app-message-success-component
-    [message]="successMsge()"
-  />
+  <app-message-success-component [message]="successMsge()"/>
 }
 
-@if(isLoading()) {
-  <div class="flex justify-center p-4">
-    <app-loading-component />
-  </div>
-} @else {
-  <form (ngSubmit)="submit()" class="space-y-4">
-    <!-- Campo de búsqueda -->
-    <div class="fieldset">
-      <div class="label">
-        <span class="label-text">{{ textTitle() }}</span>
-      </div>
-
-      <div class="flex">
-        <!-- Input + icono -->
-        <div class="input flex items-center gap-2 flex-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000" d="M1 19V5h2v14zm3 0V5h2v14zm3 0V5h1v14zm3 0V5h2v14zm3 0V5h3v14zm4 0V5h1v14zm3 0V5h3v14z"/></svg>
-          <input 
-            type="search" class="flex-1 text-center" required placeholder="Código de Barra" 
-            [disabled]="disabled()"
-            [value]="formData() ?? ''"
-            (input)="updateCode($any($event.target).value)"
-          />
-        </div>
-
-        <!-- Botón Buscar (submit nativo) -->
-        <app-button-component [icon]="'search'" [type]="'submit'" [textBtn]="'Buscar'"/>
-      </div>
+<form (submit)="$event.preventDefault(); submit()" class="space-y-4">
+  <!-- Campo de búsqueda -->
+  <div class="fieldset">
+    <div class="label">
+      <span class="label-text">{{ textTitle() }}</span>
     </div>
-  </form>
-}
+
+    <div class="flex">
+      <!-- Input + icono -->
+      <div class="input flex items-center gap-2 flex-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000" d="M1 19V5h2v14zm3 0V5h2v14zm3 0V5h1v14zm3 0V5h2v14zm3 0V5h3v14zm4 0V5h1v14zm3 0V5h3v14z"/></svg>
+        <input 
+          type="text" class="flex-1 text-center" required placeholder="Código de Barra" 
+          [disabled]="disabled()"
+          [value]="formData() ?? ''"
+          (input)="updateCode($any($event.target).value)"
+        />
+      </div>
+
+      <!-- Botón Buscar -->
+      <app-button-component [icon]="'search'" (clicked)="submit()" [textBtn]="'Buscar'"/>
+    </div>
+  </div>
+</form>

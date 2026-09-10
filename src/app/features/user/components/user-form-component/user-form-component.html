@@ -17,7 +17,7 @@
   <!-- Formulario -->
   <div class="w-full max-w-4xl">
     <form 
-      (ngSubmit)="onSubmit()"
+      (submit)="$event.preventDefault(); onSubmit()"
       class="fieldset bg-my-light rounded-box border p-6 flex flex-col gap-4">
       
       <section class="flex gap-4 flex-wrap">

@@ -14,7 +14,7 @@
   <div class="divider text-base-content/40 max-w-7xl mx-auto">Buscar Préstamo</div>
 
   <app-search-codbar-component
-    [disabled]="!!this.loanDetailModel()"
+    [disabled]="!!loanDetailModel()"
     [clearTrigger]="clearTrigger()"  
     [textTitle]="'Código de Barra de la Copia'"
     [isLoading]="isLoading()"
@@ -26,10 +26,22 @@
   />
 
   @if (loanDetailModel()) {
-    <button 
-      (click)="onReturnLoan()"
-      type="button" class="btn bg-my-purple hover:bg-my-purple/80 text-my-light w-full mt-2">
-      Registrar Devolución
-    </button>
+    <div class="pt-2 flex justify-center">
+      @if (isLoading()) {
+        <app-loading-component/>
+      } @else {
+        <app-button-component
+          [icon]="'save'"
+          [textBtn]="'Registrar Devolución'"
+          (clicked)="onReturnLoan()"
+        />
+      }
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="pt-4">
+      <app-message-error-component [message]="errorMessage()" />
+    </div>
   }
 </section>

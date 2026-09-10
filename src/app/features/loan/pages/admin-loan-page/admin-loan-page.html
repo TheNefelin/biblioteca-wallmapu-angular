@@ -4,7 +4,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <app-loan-to-return-component
       [clearTrigger]="clearCounter()"
-      [isLoading]="detail.isLoading()"
+      [isLoading]="detail.isLoading() || loan.isSaving()"
       [loanDetailModel]="detail.data()"
       (getLoanByBarcode)="onSearchLoanByBarcode($event)"
       (returnLoan)="onReturnLoan($event)"

@@ -1,9 +1,10 @@
-import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, effect, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { SearchCodbarComponent } from "@shared/components/search-codbar-component/search-codbar-component";
 import { ReservationDetailComponent } from "../reservation-detail-component/reservation-detail-component";
 import { ReservationDetailModel } from '@features/reservation/models/reservation-model';
 import { ButtonComponent } from "@shared/components/button-component/button-component";
 import { MessageErrorComponent } from "@shared/components/message-error-component/message-error-component";
+import { LoadingComponent } from "@shared/components/loading-component/loading-component";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,7 +13,8 @@ import { MessageErrorComponent } from "@shared/components/message-error-componen
     SearchCodbarComponent,
     ReservationDetailComponent,
     ButtonComponent,
-    MessageErrorComponent
+    MessageErrorComponent,
+    LoadingComponent,
   ],
   templateUrl: './reservation-to-loan-component.html',
 })
@@ -26,6 +28,12 @@ export class ReservationToLoanComponent {
 
   protected readonly disabledInput = signal<boolean>(false);
   protected readonly errorMessage = signal<string | null>(null);
+
+  protected clearEffect = effect(() => {
+    this.clearTrigger();
+    this.disabledInput.set(false);
+    this.errorMessage.set(null);
+  });
 
   protected onSearchReservation(barcode: string | null): void {
     if (!barcode) return;

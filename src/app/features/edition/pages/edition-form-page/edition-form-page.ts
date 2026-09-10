@@ -157,11 +157,16 @@ export class EditionFormPage {
     );
   }
 
-  private onEditionSaved(result: EditionModel | null | undefined): void {
+private onEditionSaved(result: EditionModel | null | undefined): void {
     if (!this.isEditMode() && result) {
-      this.router.navigate([
-        ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), result.id_edition)
-      ]);
+      const createRoute = ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), 0);
+
+      if (this.router.url === createRoute) {
+        this.router.navigate(
+          [ROUTES_CONSTANTS.PROTECTED.ADMIN.EDITION.FORM(this.bookId(), result.id_edition)],
+          { replaceUrl: true }
+        );
+      }
     } else {
       this.getEditionRX.reload();
     }

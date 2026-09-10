@@ -6,7 +6,7 @@
       <p class="text-sm text-base-content/60">Puedes enviar notificaciones y correo a usuarios registrados</p>
     </div>
 
-    <form class="grid grid-cols-1 gap-4">
+    <form (submit)="$event.preventDefault(); onSendClick()" class="grid grid-cols-1 gap-4">
       <fieldset class="fieldset">
         <label class="label">
           <input

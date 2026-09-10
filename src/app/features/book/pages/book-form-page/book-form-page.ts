@@ -106,9 +106,16 @@ return this.editionService.getAllDetailByBook(idBook).pipe(
     );
   }
 
-  private onBookSaved(result: BookModel | null | undefined): void {
+private onBookSaved(result: BookModel | null | undefined): void {
     if (!this.isEditMode() && result) {
-      this.router.navigate([ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.FORM(result.id_book)]);
+      const createRoute = ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.FORM(this.bookId());
+
+      if (this.router.url === createRoute) {
+        this.router.navigate(
+          [ROUTES_CONSTANTS.PROTECTED.ADMIN.BOOK.FORM(result.id_book)],
+          { replaceUrl: true }
+        );
+      }
     } else {
       this.getBookRX.reload();
     }

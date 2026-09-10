@@ -39,11 +39,15 @@
 
   @if (disabledInput()) {
     <div class="pt-2 flex justify-center">
-      <app-button-component
-        [icon]="'save'"
-        [textBtn]="'Registrar Préstamo'"
-        (clicked)="handleReservationToLoan()"
-      />
+      @if (isLoading()) {
+        <app-loading-component/>
+      } @else {
+        <app-button-component
+          [icon]="'save'"
+          [textBtn]="'Registrar Préstamo'"
+          (clicked)="handleReservationToLoan()"
+        />
+      }
     </div>
   }
 
